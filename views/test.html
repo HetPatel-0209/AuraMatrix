@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraMatrix</title>
+    <link rel="stylesheet" href="/stylesheets/test.css">
+</head>
+<body>
+    <div class="welcome">
+        <center class="logo">
+            <h2>AuraMatrix</h2><span><i><q>Discover world within you</q></i><br><i>Be honest with yourself</i></span>
+        </center>
+    </div>
+    <center class="questions">
+        <div>
+            <form id="personalityForm" onsubmit="handleSubmit(event)">
+                <div class="brutalist-container">
+                    <input name="answer0" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you feel about trying new and unconventional activities?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer1" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">When you're in a group, how do you usually behave?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer2" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you handle criticism?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer3" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you approach planning for the future?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer4" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you feel about helping others?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer5" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you react when faced with a challenging problem?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer6" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you feel about expressing your opinions in a group?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer7" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you handle deadlines?</label>
+                </div>
+                <div class="brutalist-container">
+                    <input name="answer8" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you feel about people who are very different from you?</label>
+                </div>
+                <div class="brutalist-container-end">
+                    <input name="answer9" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                    <label class="brutalist-label">How do you feel about taking risks?</label>
+                </div>
+                <button type="submit" class="button">Predict Personality</button>
+            </form>
+        </div>
+    </center>
+
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const answers = [];
+            
+            // Collect all answers in order
+            for (let i = 0; i < 10; i++) {
+                answers.push(formData.get(`answer${i}`));
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ answers })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                // Redirect to result page with the prediction
+                window.location.href = `/views/result.html?prediction=${encodeURIComponent(result.prediction)}`;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to submit answers. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
