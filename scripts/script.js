@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: 'https://aura-matrix-8x43bujpp-hetpatel-0209s-projects.vercel.app/'
+  origin: 'https://aura-matrix.vercel.app/test.html'
 }));
 app.use(express.json());
 
