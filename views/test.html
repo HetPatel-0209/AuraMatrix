@@ -68,13 +68,12 @@
             const formData = new FormData(form);
             const answers = [];
             
-            // Collect all answers in order
             for (let i = 0; i < 10; i++) {
                 answers.push(formData.get(`answer${i}`));
             }
 
             try {
-                const response = await fetch('/predict', {
+                const response = await fetch('https://your-render-service-name.onrender.com/predict', { // Replace with your actual Render backend URL
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -87,8 +86,7 @@
                 }
 
                 const result = await response.json();
-                // Redirect to result page with the prediction
-                window.location.href = `/views/result.html?prediction=${encodeURIComponent(result.prediction)}`;
+                window.location.href = `/result.html?prediction=${encodeURIComponent(result.prediction)}`;
             } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to submit answers. Please try again.');

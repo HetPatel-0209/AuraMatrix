@@ -8,7 +8,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://aura-matrix-8x43bujpp-hetpatel-0209s-projects.vercel.app/'
+}));
 app.use(express.json());
 
 app.post('/predict', async (req, res) => {
@@ -53,7 +55,7 @@ app.post('/predict', async (req, res) => {
           `,
         },
       ],
-      model: "mixtral-8x7b-32768",
+      model: "llama3-70b-8192",
       max_tokens: 50,
       temperature: 0,
     });
