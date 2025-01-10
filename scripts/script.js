@@ -51,7 +51,7 @@ app.post('/predict', async (req, res) => {
           Answer: ${answers[9]}\n
 
           Based on these answers, predict the user's personality type.\n
-          Format your response as: "Your personality type is: {personality_type}"\n
+          Format your response as: "Your personality type is: {personality_type} {persona_role}"\n
           `,
         },
       ],
