@@ -1,11 +1,31 @@
+function formatTraitValue(value) {
+    // Check if value is a number and not NaN
+    if (typeof value === 'number' && !isNaN(value)) {
+        return `${Math.round(value)}%`;
+    }
+    return '0%'; // Default fallback value
+}
+
+function getTraitDescription(name, value) {
+    const descriptions = {
+        'EXTRAVERSION': value >= 50 ? 'Extraverted' : 'Introverted',
+        'INTUITION': value >= 50 ? 'Intuitive' : 'Sensing',
+        'THINKING': value >= 50 ? 'Thinking' : 'Feeling',
+        'JUDGING': value >= 50 ? 'Judging' : 'Perceiving'
+    };
+    return descriptions[name.toUpperCase()] || '';
+}
+
 function displayResult() {
     const urlParams = new URLSearchParams(window.location.search);
     const predictionStr = urlParams.get('prediction');
     const firstName = localStorage.getItem('userFirstName') || '';
     const lastName = localStorage.getItem('userLastName') || '';
+    
     if (firstName || lastName) {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
     }
+
     if (predictionStr) {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
@@ -14,24 +34,33 @@ function displayResult() {
             document.getElementById('personality-type').textContent = 
                 `Your personality type is: ${prediction.personalityType}`;
             
-            // Clear previous traits
-            const traitsContainer = document.getElementById('traits-container');
-            traitsContainer.innerHTML = '';
-            
-            // Check if traits object has exactly four properties
-            if (Object.keys(prediction.traits).length !== 4) {
-                traitsContainer.innerHTML = '<p>Invalid number of traits received.</p>';
-            } else {
-                // Loop through each trait and create UI elements
-                Object.keys(prediction.traits).forEach(trait => {
-                    const traitDiv = document.createElement('div');
-                    traitDiv.className = 'trait';
-                    traitDiv.innerHTML = `
-                        <div class="trait-name">${trait}</div>
-                        <div class="trait-value">${prediction.traits[trait]}%</div>
-                        <div class="trait-description"></div>
-                    `;
-                    traitsContainer.appendChild(traitDiv);
+            // Update trait values using the existing IDs
+            if (prediction.traits) {
+                // Update Extraversion
+                document.getElementById('extraversion-value').textContent = 
+                    formatTraitValue(prediction.traits.Extraversion);
+                
+                // Update Intuition
+                document.getElementById('intuition-value').textContent = 
+                    formatTraitValue(prediction.traits.Intuition);
+                
+                // Update Thinking
+                document.getElementById('thinking-value').textContent = 
+                    formatTraitValue(prediction.traits.Thinking);
+                
+                // Update Judging
+                document.getElementById('judging-value').textContent = 
+                    formatTraitValue(prediction.traits.Judging);
+
+                // Update descriptions
+                document.querySelectorAll('.trait').forEach(traitElement => {
+                    const nameElement = traitElement.querySelector('.trait-name');
+                    const descElement = traitElement.querySelector('.trait-description');
+                    if (nameElement && descElement) {
+                        const traitName = nameElement.textContent;
+                        const traitValue = prediction.traits[traitName] || 0;
+                        descElement.textContent = getTraitDescription(traitName, traitValue);
+                    }
                 });
             }
             
@@ -39,17 +68,15 @@ function displayResult() {
                 "This personality assessment is based on your responses to our questionnaire. " +
                 "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
             
-            // Trigger trait value animations after 1 second
-            setTimeout(() => {
-                document.querySelectorAll('.trait-value').forEach(el => {
-                    el.classList.add('animate');
-                });
-            }, 1000);
-            
         } catch (error) {
             console.error('Error parsing prediction:', error);
             document.getElementById('personality-type').textContent = "Error displaying results";
             document.getElementById('description').textContent = "Please try taking the test again.";
+            
+            // Reset all trait values to 0% on error
+            ['extraversion', 'intuition', 'thinking', 'judging'].forEach(trait => {
+                document.getElementById(`${trait}-value`).textContent = '0%';
+            });
         }
     } else {
         document.getElementById('personality-type').textContent = "No prediction available";
@@ -57,6 +84,7 @@ function displayResult() {
     }
 }
 
+// Add event listener for the back button
 document.querySelector('.back-button').addEventListener('click', () => {
     window.location.href = '/test.html';
 });
