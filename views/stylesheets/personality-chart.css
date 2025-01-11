@@ -92,7 +92,6 @@
 }
 
 .aura-meter {
-  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,7 +99,6 @@
   background: linear-gradient(145deg, #f8f9fa, #ffffff);
   border-radius: 15px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1rem;
 }
 
 .aura-title {
@@ -117,11 +115,10 @@
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #4a90e2 var(--progress), #e0e0e0 var(--progress));
+  background: #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 1.5s ease;
 }
 
 .aura-ring::before {
@@ -130,13 +127,17 @@
   inset: -10px;
   border-radius: 50%;
   background: linear-gradient(45deg, #4a90e2, #63b3ed);
-  opacity: 0.3;
+  opacity: 0;
   filter: blur(15px);
-  transition: opacity 1s ease;
 }
 
 .aura-ring.animate {
-  animation: rotateAura 2s ease-out forwards;
+  background: conic-gradient(from 0deg, #4a90e2 var(--aura-level, 0%), #e0e0e0 var(--aura-level, 0%));
+}
+
+.aura-ring.animate::before {
+  opacity: 0.3;
+  transition: opacity 1s ease;
 }
 
 .aura-circle {
@@ -163,6 +164,7 @@
   color: #636e72;
   text-align: center;
 }
+
 
 @keyframes fadeIn {
   from {

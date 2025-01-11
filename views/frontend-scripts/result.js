@@ -42,14 +42,22 @@ function createAuraMeter(traits) {
     const auraElement = document.createElement('div');
     auraElement.className = 'aura-meter';
     auraElement.innerHTML = `
-        <div class="aura-title">Your Aura Level</div>
-        <div class="aura-ring">
+      <div class="aura-title">Your Aura Level</div>
+        <div class="aura-ring" style="--aura-level: ${auraLevel}">
             <div class="aura-circle">
                 <div class="aura-percentage">${auraLevel}%</div>
                 <div class="aura-description">${auraDescription}</div>
             </div>
         </div>
     `;
+
+    setTimeout(() => {
+        const ring = auraElement.querySelector('.aura-ring');
+        if (ring) {
+            ring.classList.add('animate');
+        }
+    }, 100);
+
     return auraElement;
 }
 
@@ -82,18 +90,28 @@ function animateTraitBars() {
 
 function updateTraitsDisplay(prediction) {
     const traitsContainer = document.querySelector('.traits-container');
+    if (!traitsContainer) return;
+    
+    // Clear existing content
     traitsContainer.innerHTML = '';
 
+    // Create a wrapper for the aura meter
+    const auraMeterWrapper = document.createElement('div');
+    auraMeterWrapper.className = 'aura-meter-wrapper';
+    auraMeterWrapper.appendChild(createAuraMeter(prediction.traits));
+    traitsContainer.appendChild(auraMeterWrapper);
+
+    // Add traits in a separate wrapper
+    const traitsWrapper = document.createElement('div');
+    traitsWrapper.className = 'traits-wrapper';
     Object.entries(prediction.traits).forEach(([trait, value]) => {
         const traitElement = createTraitElement(trait, value);
-        traitsContainer.appendChild(traitElement);
+        traitsWrapper.appendChild(traitElement);
     });
+    traitsContainer.appendChild(traitsWrapper);
 
     requestAnimationFrame(() => {
         animateTraitBars();
-        setTimeout(() => {
-            document.querySelector('.aura-ring').classList.add('animate');
-        }, 200);
     });
 }
 
