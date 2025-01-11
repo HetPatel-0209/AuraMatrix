@@ -63,7 +63,7 @@ app.post('/predict', async (req, res) => {
           - Thinking/Feeling
           - Judging/Perceiving
       
-          Expected output:
+          Expected output (ONLY a JSON object):
           {
             "personalityType": "INTJ (Architect)",
             "traits": {
@@ -80,8 +80,16 @@ app.post('/predict', async (req, res) => {
       max_tokens: 100,
       temperature: 0,
     });
-
-    res.json({ prediction: chatCompletion.choices[0]?.message?.content || "Unable to determine personality type" });
+    const content = chatCompletion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No prediction received from AI');
+    }
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('Invalid prediction format');
+    }
+    const prediction = JSON.parse(jsonMatch[0]);
+    res.json({ prediction });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to predict personality' });
