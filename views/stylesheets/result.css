@@ -99,6 +99,67 @@ body {
     transform: scale(1);
 }
 
+/* Add color gradients for the trait bars */
+.trait-bar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    background: linear-gradient(180deg, #4a90e2, #6cb2f0); /* Gradient */
+    transform-origin: bottom center;
+    transition: height 1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease; /* Transition for smooth effects */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+/* Change background on hover */
+.trait-bar:hover {
+    background: linear-gradient(180deg, #6cb2f0, #4a90e2);
+}
+
+/* Make labels more visually appealing */
+.trait-label, .trait-value-label {
+    position: absolute;
+    transition: opacity 0.5s ease-in-out, transform 0.3s ease; /* Include transform for smoothness */
+    font-weight: bold;
+    color: #2d3436;
+}
+
+/* Scale effect on labels when they appear */
+.trait-label {
+    transform: scale(0.8);
+}
+.trait-label.animate {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Update the circle chart */
+.circle-chart {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden; /* Ensures child elements stay within bounds */
+}
+
+/* Apply animations to the chart on load */
+@keyframes chartLoad {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Trigger the animation */
+.circle-chart {
+    animation: chartLoad 0.5s ease forwards;
+}
+
 @media (max-width: 500px) {
     .result-container {
         background: white;
