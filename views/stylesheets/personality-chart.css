@@ -91,14 +91,6 @@
   }
 }
 
-.aura-card {
-  background: white;
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  text-align: center;
-}
-
 .aura-meter {
   display: flex;
   flex-direction: column;
@@ -215,10 +207,4 @@
   .aura-percentage {
       font-size: 2rem;
   }
-}
-
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
 }
