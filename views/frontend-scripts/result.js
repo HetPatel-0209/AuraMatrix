@@ -22,7 +22,7 @@ function createTraitElement(trait, value) {
     traitElement.innerHTML = `
         <div class="trait-name">${trait}</div>
         <div class="trait-bar">
-            <div class="trait-bar-fill" style="width: 0%"></div>
+            <div class="trait-bar-fill" data-target="${value}"></div>
         </div>
         <div class="trait-value">${formatTraitValue(value)}</div>
         <div class="trait-description">${getTraitDescription(trait, value)}</div>
