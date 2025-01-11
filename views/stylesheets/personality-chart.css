@@ -1,94 +1,95 @@
 .chart-container {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    margin: 2rem auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    max-width: 600px;
-    width: 90%;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 2rem auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  max-width: 600px;
+  width: 90%;
 }
 
 .analysis-complete {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: #4a90e2;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #4a90e2;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 .analysis-complete svg {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
-h3 {
-    text-align: center;
-    color: #2d3436;
-    margin-bottom: 2rem;
+.chart-container h3 {
+  text-align: center;
+  color: #2d3436;
+  margin-bottom: 2rem;
 }
 
 .traits-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
 }
 
 .trait {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .trait:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
 .trait-name {
-    color: #4a90e2;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
+  color: #4a90e2;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
 }
 
 .trait-bar {
-    height: 10px;
-    background: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
 .trait-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4a90e2, #63b3ed);
-    transition: width 1s ease-out;
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2, #63b3ed);
+  transition: width 1s ease-out;
 }
 
 .trait-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #2d3436;
-    margin: 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2d3436;
+  margin: 0.5rem 0;
 }
 
 .trait-description {
-    font-size: 0.9rem;
-    color: #636e72;
+  font-size: 0.9rem;
+  color: #636e72;
 }
 
 @media (max-width: 600px) {
-    .chart-container {
-        padding: 1.5rem;
-    }
+  .chart-container {
+      padding: 1.5rem;
+  }
 
-    .traits-container {
-        grid-template-columns: 1fr;
-    }
+  .traits-container {
+      grid-template-columns: 1fr;
+  }
 }
+

@@ -32,7 +32,7 @@ function createTraitElement(trait, value) {
 function animateTraitBars() {
     const bars = document.querySelectorAll('.trait-bar-fill');
     bars.forEach(bar => {
-        const targetWidth = bar.style.width;
+        const targetWidth = bar.parentElement.dataset.value;
         bar.style.width = '0%';
         setTimeout(() => {
             bar.style.width = targetWidth;
