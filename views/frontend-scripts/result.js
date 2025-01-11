@@ -7,6 +7,7 @@ function getTraitDescription(name, value) {
         'EXTRAVERSION': ['Introverted', 'Extraverted'],
         'INTROVERTED': ['Extraversion', 'Extraverted'],
         'EXTRAVERTED': ['Introverted', 'Extraversion'],
+        'INTROVERSION': ['Introverted', 'Timidness'],
         'INTUITION': ['Sensing', 'Intuitive'],
         'SENSING': ['Intuition', 'Intuitive'],
         'INTUITIVE': ['Intuition', 'Sensing'],
@@ -41,14 +42,12 @@ function createAuraMeter(traits) {
     const auraDescription = getAuraDescription(auraLevel);
     
     const auraElement = document.createElement('div');
-    auraElement.className = 'aura-meter';
+    auraElement.className = 'aura-card';
     auraElement.innerHTML = `
-      <div class="aura-title">Your Aura Level</div>
-        <div class="aura-ring" style="--aura-level: ${auraLevel}">
-            <div class="aura-circle">
-                <div class="aura-percentage">${auraLevel}%</div>
-                <div class="aura-description">${auraDescription}</div>
-            </div>
+        <div class="aura-title">YOUR AURA LEVEL</div>
+        <div class="aura-circle" style="--aura-level: ${auraLevel}">
+            <div class="aura-value">${auraLevel}%</div>
+            <div class="aura-description">${auraDescription}</div>
         </div>
     `;
 
@@ -64,13 +63,15 @@ function createAuraMeter(traits) {
 
 function createTraitElement(trait, value) {
     const traitElement = document.createElement('div');
-    traitElement.className = 'trait';
+    traitElement.className = 'trait-card';
     traitElement.innerHTML = `
-        <div class="trait-name">${trait}</div>
-        <div class="trait-bar">
-            <div class="trait-bar-fill" data-target="${value}"></div>
+        <div class="trait-header">
+            <div class="trait-name">${trait}</div>
+            <div class="trait-value">${value}%</div>
         </div>
-        <div class="trait-value">${formatTraitValue(value)}</div>
+        <div class="trait-bar">
+            <div class="trait-bar-fill" style="width: ${value}%"></div>
+        </div>
         <div class="trait-description">${getTraitDescription(trait, value)}</div>
     `;
     return traitElement;
@@ -93,23 +94,36 @@ function updateTraitsDisplay(prediction) {
     const traitsContainer = document.querySelector('.traits-container');
     if (!traitsContainer) return;
     
-    // Clear existing content
     traitsContainer.innerHTML = '';
 
-    // Create a wrapper for the aura meter
-    const auraMeterWrapper = document.createElement('div');
-    auraMeterWrapper.className = 'aura-meter-wrapper';
-    auraMeterWrapper.appendChild(createAuraMeter(prediction.traits));
-    traitsContainer.appendChild(auraMeterWrapper);
+    const header = document.createElement('div');
+    header.className = 'analysis-complete';
+    header.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+        ANALYSIS COMPLETE
+    `;
+    traitsContainer.appendChild(header);
 
-    // Add traits in a separate wrapper
+    const title = document.createElement('h3');
+    title.textContent = 'Your Persona Stats';
+    traitsContainer.appendChild(title);
+
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'content-wrapper';
+
+    contentWrapper.appendChild(createAuraMeter(prediction.traits));
+
     const traitsWrapper = document.createElement('div');
     traitsWrapper.className = 'traits-wrapper';
+    
     Object.entries(prediction.traits).forEach(([trait, value]) => {
-        const traitElement = createTraitElement(trait, value);
-        traitsWrapper.appendChild(traitElement);
+        traitsWrapper.appendChild(createTraitElement(trait, value));
     });
-    traitsContainer.appendChild(traitsWrapper);
+    
+    contentWrapper.appendChild(traitsWrapper);
+    traitsContainer.appendChild(contentWrapper);
 
     requestAnimationFrame(() => {
         animateTraitBars();
