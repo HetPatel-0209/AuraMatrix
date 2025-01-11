@@ -23,7 +23,14 @@ async function handleSubmit(event) {
         }
 
         const result = await response.json();
-        window.location.href = `/result.html?prediction=${encodeURIComponent(result.prediction)}`;
+        const predictionMatch = result.prediction.match(/\{[\s\S]*\}/);
+        if (predictionMatch) {
+            const predictionData = JSON.parse(predictionMatch[0]);
+            // Store the parsed prediction data
+            window.location.href = `/result.html?prediction=${encodeURIComponent(JSON.stringify(predictionData))}`;
+        } else {
+            throw new Error('Invalid prediction format');
+        }
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to submit answers. Please try again.');
