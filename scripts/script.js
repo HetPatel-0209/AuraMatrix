@@ -22,6 +22,22 @@ app.post('/predict', async (req, res) => {
       throw new Error('Answers must be an array');
     }
 
+    const formattedAnswers = answers.map((answer, index) => {
+      const questions = [
+        "How do you feel about trying new and unconventional activities?",
+        "When you're in a group, how do you usually behave?",
+        "How do you handle criticism?",
+        "How do you approach planning for the future?",
+        "How do you feel about helping others?",
+        "How do you react when faced with a challenging problem?",
+        "How do you feel about expressing your opinions in a group?",
+        "How do you handle deadlines?",
+        "How do you feel about people who are very different from you?",
+        "How do you feel about taking risks?"
+      ];
+      return `Question ${index + 1}: ${questions[index]}\nAnswer: ${answer}`;
+    }).join('\n\n');
+
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         {
@@ -53,28 +69,7 @@ app.post('/predict', async (req, res) => {
           role: "user",
           content: `
           The user has provided the following responses to personality-related questions:\n
-          
-          1. **How do you feel about trying new and unconventional activities?**\n
-             Answer: ${answers[0]}\n
-          2. **When you're in a group, how do you usually behave?**\n
-             Answer: ${answers[1]}\n
-          3. **How do you handle criticism?**\n
-             Answer: ${answers[2]}\n
-          4. **How do you approach planning for the future?**\n
-             Answer: ${answers[3]}\n
-          5. **How do you feel about helping others?**\n
-             Answer: ${answers[4]}\n
-          6. **How do you react when faced with a challenging problem?**\n
-             Answer: ${answers[5]}\n
-          7. **How do you feel about expressing your opinions in a group?**\n
-             Answer: ${answers[6]}\n
-          8. **How do you handle deadlines?**\n
-             Answer: ${answers[7]}\n
-          9. **How do you feel about people who are very different from you?**\n
-             Answer: ${answers[8]}\n
-          10. **How do you feel about taking risks?**\n
-              Answer: ${answers[9]}\n
-      
+          ${formattedAnswers}
           **Task:** Based on these answers, predict the user's personality type.\n
 
           **Guidelines for Personality Prediction:**\n  
@@ -86,19 +81,29 @@ app.post('/predict', async (req, res) => {
         },
       ],
       model: "llama3-70b-8192",
-      max_tokens: 500,
+      max_tokens: 800,
       temperature: 0,
-      response_format: { type: "json" }
+      top_p: 1,
+      stream: false
     });
-    const aiResponse = JSON.parse(chatCompletion.choices[0]?.message?.content || '{}');
-    res.json({ prediction: chatCompletion.choices[0]?.message?.content || "Unable to determine personality type",
-      traits: aiResponse.traits || {
-        extraversion: 0,
-        intuition: 0,
-        thinking: 0,
-        judging: 0
+    const response = chatCompletion.choices[0]?.message?.content;
+    
+    const typeMatch = response.match(/personality type is: ([A-Z]{4})/);
+    const extraversionMatch = response.match(/Extraversion[:\s]+(\d+)%/);
+    const intuitionMatch = response.match(/Intuition[:\s]+(\d+)%/);
+    const thinkingMatch = response.match(/Thinking[:\s]+(\d+)%/);
+    const judgingMatch = response.match(/Judging[:\s]+(\d+)%/);
+
+    const result = {
+      prediction: typeMatch ? typeMatch[1] : "Unable to determine type",
+      traits: {
+        extraversion: parseInt(extraversionMatch?.[1] || "0"),
+        intuition: parseInt(intuitionMatch?.[1] || "0"),
+        thinking: parseInt(thinkingMatch?.[1] || "0"),
+        judging: parseInt(judgingMatch?.[1] || "0")
       }
-    });
+    };
+    res.json(result);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to predict personality' });
