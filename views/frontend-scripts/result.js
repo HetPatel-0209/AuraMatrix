@@ -45,7 +45,7 @@ function createAuraMeter(traits) {
     auraElement.className = 'aura-meter';
     auraElement.innerHTML = `
       <div class="aura-title">Your Aura Level</div>
-        <div class="aura-ring" style="--aura-level: ${auraLevel}">
+        <div class="aura-ring" style="--aura-level: ${auraLevel}, width: 80%">
             <div class="aura-circle">
                 <div class="aura-percentage">${auraLevel}%</div>
                 <div class="aura-description">${auraDescription}</div>

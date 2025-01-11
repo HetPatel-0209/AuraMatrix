@@ -7,6 +7,12 @@
   max-width: 600px;
   width: 90%;
   animation: fadeIn 1s ease-in;
+  display: flex;
+}
+
+.trait-wrapper{
+  display: flex;
+  width: 90%;
 }
 
 .analysis-complete {
