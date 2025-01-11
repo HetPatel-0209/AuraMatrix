@@ -2,6 +2,21 @@ function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
 
+function calculateAuraScore(traits) {
+    const values = Object.values(traits);
+    const sum = values.reduce((acc, val) => acc + val, 0);
+    return Math.round(sum / values.length);
+}
+
+function getAuraDescription(score) {
+    if (score >= 90) return "Legendary";
+    if (score >= 80) return "Exceptional";
+    if (score >= 70) return "Strong";
+    if (score >= 60) return "Balanced";
+    if (score >= 50) return "Developing";
+    return "Emerging";
+}
+
 function getTraitDescription(name, value) {
     const opposites = {
         'EXTRAVERSION': ['Introverted', 'Extraverted'],
@@ -14,6 +29,24 @@ function getTraitDescription(name, value) {
     const pair = opposites[name.toUpperCase()];
     if (!pair) return '';
     return value < 50 ? pair[0] : pair[1];
+}
+
+function createAuraMeter(traits) {
+    const auraScore = calculateAuraScore(traits);
+    const auraElement = document.createElement('div');
+    auraElement.className = 'aura-meter';
+    
+    auraElement.innerHTML = `
+        <h3 class="aura-title">Your Aura Score</h3>
+        <div class="aura-circle">
+            <div class="aura-value">${auraScore}%</div>
+            <div class="aura-description">${getAuraDescription(auraScore)}</div>
+        </div>
+        <div class="aura-bar">
+            <div class="aura-bar-fill" data-target="${auraScore}" style="width: 0%"></div>
+        </div>
+    `;
+    return auraElement;
 }
 
 function createTraitElement(trait, value) {

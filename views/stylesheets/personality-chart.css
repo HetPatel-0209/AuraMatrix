@@ -101,3 +101,73 @@
       transform: translateY(0);
   }
 }
+
+/* Add these styles to your existing CSS */
+
+.aura-meter {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.aura-title {
+  color: #4a90e2;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.aura-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4a90e2, #63b3ed);
+  margin: 0 auto 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.aura-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.aura-description {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.aura-bar {
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 1.5rem auto 0;
+  max-width: 200px;
+}
+
+.aura-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2, #63b3ed);
+  width: 0%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optional: Add a subtle pulsing animation to the aura circle */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.aura-circle {
+  animation: pulse 2s infinite ease-in-out;
+}
