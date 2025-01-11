@@ -57,23 +57,27 @@ app.post('/predict', async (req, res) => {
           10. **How do you feel about taking risks?**\n
               Answer: ${answers[9]}\n
       
-          **Task:** Based on these answers, predict the user's personality type.\n
+          Task: Predict the personality type and assign percentages to the traits:
+          - Extraversion/Introversion
+          - Intuition/Sensing
+          - Thinking/Feeling
+          - Judging/Perceiving
       
-          **Expected Output Format:**\n  
-          "Your personality type is: {personality_type : only_persona_role}"\n
-      
-          **Guidelines for Personality Prediction:**\n  
-          - Analyze patterns or themes across the answers.\n
-          - Use concise terms to represent personality traits (e.g., "Adventurous Thinker," "Empathetic Leader").\n
-          - Avoid ambiguity and only include the core personality role.\n
-      
-          **Example Output:**\n  
-          Your personality type is: INTJ (Architect)
+          Expected output:
+          {
+            "personalityType": "INTJ (Architect)",
+            "traits": {
+              "Extraversion": 75,
+              "Intuition": 85,
+              "Thinking": 65,
+              "Judging": 70
+            }
+          }
           `,
         },
       ],
       model: "llama3-70b-8192",
-      max_tokens: 50,
+      max_tokens: 100,
       temperature: 0,
     });
 
