@@ -87,45 +87,6 @@
             border-color: var(--input-focus);
         }
 
-        .image-upload {
-            width: 100%;
-            height: 150px;
-            border: 2px dashed var(--main-color);
-            border-radius: var(--border-radius);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            background-color: #f8f8f8;
-        }
-
-        .upload-icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
-        }
-
-        .upload-text {
-            color: var(--main-color);
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 120px;
-            display: none;
-            margin-top: 10px;
-        }
-
-        #file-input {
-            display: none;
-        }
-
         .flip-card__btn {
             margin-top: 20px;
             padding: 12px;
