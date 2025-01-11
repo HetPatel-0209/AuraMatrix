@@ -28,11 +28,12 @@ function calculateAuraLevel(traits) {
 }
 
 function getAuraDescription(level) {
-    if (level >= 80) return 'Luminous Aura';
-    if (level >= 60) return 'Vibrant Aura';
-    if (level >= 40) return 'Balanced Aura';
-    if (level >= 20) return 'Gentle Aura';
-    return 'Emerging';
+    if (level >= 90) return 'Legendry Aura';
+    if (level >= 80) return 'Exceptional Aura';
+    if (level >= 70) return 'Strong Aura';
+    if (level >= 60) return 'Balanced Aura';
+    if (level >= 50) return 'Developing Aura';
+    return 'Emerging Aura';
 }
 
 function createAuraMeter(traits) {
