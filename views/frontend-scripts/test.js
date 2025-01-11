@@ -10,7 +10,7 @@ async function handleSubmit(event) {
     }
 
     try {
-        const response = await fetch('https://auramatrix.onrender.com/predict', {
+        const response = await fetch('https://auramatrix.onrender.com/predict', { // Replace with your actual Render backend URL
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -23,12 +23,7 @@ async function handleSubmit(event) {
         }
 
         const result = await response.json();
-        
-        // Store the results in localStorage
-        localStorage.setItem('personalityResults', JSON.stringify(result));
-        
-        // Redirect to results page
-        window.location.href = '/result.html';
+        window.location.href = `/result.html?prediction=${encodeURIComponent(result.prediction)}`;
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to submit answers. Please try again.');
