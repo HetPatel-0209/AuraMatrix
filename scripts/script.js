@@ -29,6 +29,24 @@ app.post('/predict', async (req, res) => {
           content: `
           You are a Personality Predictor AI trained to analyze user responses and predict personality types.\n
           Your task is to analyze the user's answers to a series of questions and generate their personality type in the specified format.\n
+          1. Their MBTI personality type
+          2. Percentage scores for four key traits:
+             - Extraversion (E) vs Introversion (I)
+             - Sensing (S) vs Intuition (N)
+             - Thinking (T) vs Feeling (F)
+             - Judging (J) vs Perceiving (P)
+          
+          Provide the results in the following JSON format:
+          {
+            "type": "XXXX (Type Name)",
+            "traits": {
+              "extraversion": XX,
+              "intuition": XX,
+              "thinking": XX,
+              "judging": XX
+            }
+          }
+          Where XX is a percentage between 0-100.
           `,
         },
         {
@@ -58,26 +76,29 @@ app.post('/predict', async (req, res) => {
               Answer: ${answers[9]}\n
       
           **Task:** Based on these answers, predict the user's personality type.\n
-      
-          **Expected Output Format:**\n  
-          "Your personality type is: {personality_type : only_persona_role}"\n
-      
+
           **Guidelines for Personality Prediction:**\n  
           - Analyze patterns or themes across the answers.\n
           - Use concise terms to represent personality traits (e.g., "Adventurous Thinker," "Empathetic Leader").\n
           - Avoid ambiguity and only include the core personality role.\n
       
-          **Example Output:**  \n
-          Your personality type is: INTJ (Architect)
           `,
         },
       ],
       model: "llama3-70b-8192",
-      max_tokens: 50,
+      max_tokens: 500,
       temperature: 0,
+      response_format: { type: "json" }
     });
-
-    res.json({ prediction: chatCompletion.choices[0]?.message?.content || "Unable to determine personality type" });
+    const aiResponse = JSON.parse(chatCompletion.choices[0]?.message?.content || '{}');
+    res.json({ prediction: chatCompletion.choices[0]?.message?.content || "Unable to determine personality type",
+      traits: aiResponse.traits || {
+        extraversion: 0,
+        intuition: 0,
+        thinking: 0,
+        judging: 0
+      }
+    });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to predict personality' });

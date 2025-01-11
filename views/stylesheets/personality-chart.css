@@ -1,0 +1,130 @@
+.chart-container {
+    margin: 2rem auto;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .chart-title {
+    color: #4a90e2;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .circle-chart {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 2rem;
+  }
+  
+  .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #4a90e2;
+    border-radius: 50%;
+  }
+  
+  .divider-vertical,
+  .divider-horizontal {
+    position: absolute;
+    background: #4a90e2;
+  }
+  
+  .divider-vertical {
+    width: 2px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .divider-horizontal {
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .traits-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .trait {
+    text-align: center;
+  }
+  
+  .trait-name {
+    color: #4a90e2;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .trait-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2d3436;
+  }
+  
+  .trait-description {
+    font-size: 0.8rem;
+    color: #636e72;
+  }
+  
+  .aura-signature {
+    margin-top: 2rem;
+    color: #4a90e2;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+  
+  .analysis-complete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #4a90e2;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .analysis-complete svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  @media (max-width: 500px) {
+    .chart-container {
+      max-width: 90%;
+    }
+  
+    .circle-chart {
+      width: 250px;
+      height: 250px;
+    }
+  
+    .traits-container {
+      gap: 1rem;
+    }
+  
+    .trait-name {
+      font-size: 0.9rem;
+    }
+  
+    .trait-value {
+      font-size: 1.2rem;
+    }
+  
+    .trait-description {
+      font-size: 0.7rem;
+    }
+  }
+  
