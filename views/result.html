@@ -4,91 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraMatrix - Your Personality Result</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .logo {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .logo h2 {
-            font-size: 2.5rem;
-            margin: 0;
-            color: #2d3436;
-        }
-
-        .logo span {
-            color: #636e72;
-            font-size: 0.9rem;
-        }
-
-        .result-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-            animation: fadeIn 1s ease-in;
-        }
-
-        .personality-type {
-            font-size: 1.5rem;
-            color: #2d3436;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f1f2f6;
-        }
-
-        .description {
-            color: #636e72;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .back-button {
-            background: #6c5ce7;
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .back-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/stylesheets/test.css">
 </head>
 <body>
     <div class="logo">
@@ -106,25 +22,7 @@
         <a href="/test.html" class="back-button">Take Test Again</a>
     </div>
 
-    <script>
-        function displayResult() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const prediction = urlParams.get('prediction');
-            
-            if (prediction) {
-                document.getElementById('personality-type').textContent = prediction;
-                document.getElementById('description').textContent = 
-                    "This personality assessment is based on your responses to our questionnaire. " +
-                    "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
-            } else {
-                document.getElementById('personality-type').textContent = "No prediction available";
-                document.getElementById('description').textContent = "Please try taking the test again.";
-            }
-        }
-
-        // Display results when page loads
-        window.onload = displayResult;
-    </script>
-    See your persona type here : <a href="https://www.16personalities.com/personality-types">General personas</a>
+    <script src="/frontend-scripts/result.js"></script>
+    <span>See your persona type here : <a href="https://www.16personalities.com/personality-types">General personas</a></span>
 </body>
 </html>
