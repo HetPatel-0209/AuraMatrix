@@ -14,7 +14,7 @@ function getTraitDescription(name, value) {
         'THINKING': ['Feeling', 'Thinking'],
         'FEELING': ['Thinking', 'Feeling'],
         'JUDGING': ['Perceiving', 'Judging'],
-        'PERCEIVING':['Judging', 'Perceiving']
+        'PERCEIVING': ['Judging', 'Perceiving']
     };
 
     const pair = opposites[name.toUpperCase()];
@@ -40,16 +40,14 @@ function getAuraDescription(level) {
 function createAuraMeter(traits) {
     const auraLevel = calculateAuraLevel(traits);
     const auraDescription = getAuraDescription(auraLevel);
-    
+
     const auraElement = document.createElement('div');
     auraElement.className = 'aura-meter';
     auraElement.innerHTML = `
       <div class="aura-title">Your Aura Level</div>
         <div class="aura-ring" style="--aura-level: ${auraLevel}">
-            <div class="aura-circle">
-                <div class="aura-percentage">${auraLevel}%</div>
-                <div class="aura-description">${auraDescription}</div>
-            </div>
+            <div class="aura-percentage">${auraLevel}%</div>
+            <div class="aura-description">${getAuraDescription(auraLevel)}</div>
         </div>
     `;
 
@@ -67,11 +65,13 @@ function createTraitElement(trait, value) {
     const traitElement = document.createElement('div');
     traitElement.className = 'trait';
     traitElement.innerHTML = `
-        <div class="trait-name">${trait}</div>
-        <div class="trait-bar">
-            <div class="trait-bar-fill" data-target="${value}"></div>
+        <div class="trait-name">
+            ${trait}
+            <span class="trait-value">${value}%</span>
         </div>
-        <div class="trait-value">${formatTraitValue(value)}</div>
+        <div class="trait-bar">
+            <div class="trait-bar-fill" style="width: ${value}%"></div>
+        </div>
         <div class="trait-description">${getTraitDescription(trait, value)}</div>
     `;
     return traitElement;
@@ -81,9 +81,9 @@ function animateTraitBars() {
     const fills = document.querySelectorAll('.trait-bar-fill');
     fills.forEach((fill, index) => {
         const targetWidth = parseInt(fill.getAttribute('data-target'));
-    
+
         fill.getBoundingClientRect();
-        
+
         setTimeout(() => {
             fill.style.width = `${targetWidth}%`;
         }, index * 200);
@@ -93,24 +93,24 @@ function animateTraitBars() {
 function updateTraitsDisplay(prediction) {
     const traitsContainer = document.querySelector('.traits-container');
     if (!traitsContainer) return;
-    
+
     // Clear existing content
     traitsContainer.innerHTML = '';
 
-    // Create a wrapper for the aura meter
-    const auraMeterWrapper = document.createElement('div');
-    auraMeterWrapper.className = 'aura-meter-wrapper';
-    auraMeterWrapper.appendChild(createAuraMeter(prediction.traits));
-    traitsContainer.appendChild(auraMeterWrapper);
+    traitsContainer.innerHTML = `
+        <div class="analysis-complete">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            ANALYSIS COMPLETE
+        </div>
+        <h3>Your Persona Stats</h3>
+    `;
 
-    // Add traits in a separate wrapper
-    const traitsWrapper = document.createElement('div');
-    traitsWrapper.className = 'traits-wrapper';
+    traitsContainer.appendChild(createAuraMeter(prediction.traits));
     Object.entries(prediction.traits).forEach(([trait, value]) => {
-        const traitElement = createTraitElement(trait, value);
-        traitsWrapper.appendChild(traitElement);
+        traitsContainer.appendChild(createTraitElement(trait, value));
     });
-    traitsContainer.appendChild(traitsWrapper);
 
     requestAnimationFrame(() => {
         animateTraitBars();
@@ -131,7 +131,7 @@ function displayResult() {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
 
-            document.getElementById('personality-type').textContent = 
+            document.getElementById('personality-type').textContent =
                 `Your personality type is: ${prediction.personalityType}`;
 
             if (prediction.traits) {
