@@ -30,13 +30,22 @@ function createTraitElement(trait, value) {
 }
 
 function animateTraitBars() {
-    const bars = document.querySelectorAll('.trait-bar-fill');
-    bars.forEach(bar => {
-        const targetWidth = bar.parentElement.dataset.value;
-        bar.style.width = '0%';
+    const bars = document.querySelectorAll('.trait-bar');
+    bars.forEach((bar, index) => {
+        const fill = bar.querySelector('.trait-bar-fill');
+        const targetWidth = parseInt(bar.dataset.value);
+        
+        // Reset initial state
+        fill.style.width = '0%';
+        
+        // Stagger the animations slightly for visual effect
         setTimeout(() => {
-            bar.style.width = targetWidth;
-        }, 100);
+            // Use requestAnimationFrame for smooth animation
+            requestAnimationFrame(() => {
+                fill.style.transition = 'width 1s cubic-bezier(0.4, 0, 0.2, 1)';
+                fill.style.width = `${targetWidth}%`;
+            });
+        }, index * 150); // Stagger each bar by 150ms
     });
 }
 
@@ -49,7 +58,7 @@ function updateTraitsDisplay(prediction) {
         traitsContainer.appendChild(traitElement);
     });
 
-    animateTraitBars();
+    setTimeout(animateTraitBars, 100);
 }
 
 function displayResult() {
