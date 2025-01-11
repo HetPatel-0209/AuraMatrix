@@ -68,7 +68,7 @@ app.post('/predict', async (req, res) => {
           - Avoid ambiguity and only include the core personality role.\n
       
           **Example Output:**\n  
-          Your personality type is: {Explorer : Creative Visionary}
+          Your personality type is: INTJ (Architect)
           `,
         },
       ],
