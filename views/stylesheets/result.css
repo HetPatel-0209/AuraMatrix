@@ -31,7 +31,7 @@ body {
     background: white;
     border-radius: 20px;
     padding: 2rem;
-    margin: 2rem;
+    margin: 2rem 2rem 1rem 2rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     max-width: 600px;
     width: 90%;
