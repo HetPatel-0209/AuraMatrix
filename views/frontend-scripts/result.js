@@ -5,15 +5,52 @@ function formatTraitValue(value) {
 function getTraitDescription(name, value) {
     const opposites = {
         'EXTRAVERSION': ['Introverted', 'Extraverted'],
+        'INTROVERTED': ['Extraversion', 'Extraverted'],
+        'EXTRAVERTED': ['Introverted', 'Extraversion'],
         'INTUITION': ['Sensing', 'Intuitive'],
+        'SENSING': ['Intuition', 'Intuitive'],
+        'INTUITIVE': ['Intuition', 'Sensing'],
         'THINKING': ['Feeling', 'Thinking'],
+        'FEELING': ['Thinking', 'Feeling'],
         'JUDGING': ['Perceiving', 'Judging'],
-        'FEELING': ['Thinking', 'Feeling']
+        'PERCEIVING':['Judging', 'Perceiving']
     };
 
     const pair = opposites[name.toUpperCase()];
     if (!pair) return '';
     return value < 50 ? pair[0] : pair[1];
+}
+
+function calculateAuraLevel(traits) {
+    const values = Object.values(traits);
+    const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+    return Math.round(average);
+}
+
+function getAuraDescription(level) {
+    if (level >= 80) return 'Luminous Aura';
+    if (level >= 60) return 'Vibrant Aura';
+    if (level >= 40) return 'Balanced Aura';
+    if (level >= 20) return 'Gentle Aura';
+    return 'Emerging';
+}
+
+function createAuraMeter(traits) {
+    const auraLevel = calculateAuraLevel(traits);
+    const auraDescription = getAuraDescription(auraLevel);
+    
+    const auraElement = document.createElement('div');
+    auraElement.className = 'aura-meter';
+    auraElement.innerHTML = `
+        <div class="aura-title">Your Aura Level</div>
+        <div class="aura-ring">
+            <div class="aura-circle">
+                <div class="aura-percentage">${auraLevel}%</div>
+                <div class="aura-description">${auraDescription}</div>
+            </div>
+        </div>
+    `;
+    return auraElement;
 }
 
 function createTraitElement(trait, value) {
@@ -54,6 +91,9 @@ function updateTraitsDisplay(prediction) {
 
     requestAnimationFrame(() => {
         animateTraitBars();
+        setTimeout(() => {
+            document.querySelector('.aura-ring').classList.add('animate');
+        }, 200);
     });
 }
 
