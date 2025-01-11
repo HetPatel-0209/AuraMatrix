@@ -1,17 +1,24 @@
 function formatTraitValue(value) {
-    // Check if value is a number and not NaN
-    if (typeof value === 'number' && !isNaN(value)) {
-        return `${Math.round(value)}%`;
-    }
-    return '0%'; // Default fallback value
+    return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
+}
+
+function mapTraitToValue(prediction, traitName) {
+    const traitMap = {
+        'EXTRAVERSION': 'Extraversion',
+        'INTUITION': 'Intuition',
+        'THINKING': 'Feeling',  // Map Thinking display to Feeling value
+        'JUDGING': 'Judging'
+    };
+    
+    return prediction.traits[traitMap[traitName.toUpperCase()]] || 0;
 }
 
 function getTraitDescription(name, value) {
     const descriptions = {
-        'EXTRAVERSION': value >= 50 ? 'Extraverted' : 'Introverted',
-        'INTUITION': value >= 50 ? 'Intuitive' : 'Sensing',
-        'THINKING': value >= 50 ? 'Thinking' : 'Feeling',
-        'JUDGING': value >= 50 ? 'Judging' : 'Perceiving'
+        'EXTRAVERSION': value < 50 ? 'Introverted' : 'Extraverted',
+        'INTUITION': value < 50 ? 'Sensing' : 'Intuitive',
+        'THINKING': value > 50 ? 'Feeling' : 'Thinking',  // Reversed for Thinking/Feeling
+        'JUDGING': value < 50 ? 'Perceiving' : 'Judging'
     };
     return descriptions[name.toUpperCase()] || '';
 }
@@ -36,30 +43,23 @@ function displayResult() {
             
             // Update trait values using the existing IDs
             if (prediction.traits) {
-                // Update Extraversion
-                document.getElementById('extraversion-value').textContent = 
-                    formatTraitValue(prediction.traits.Extraversion);
+                // Update each trait
+                const traits = ['extraversion', 'intuition', 'thinking', 'judging'];
                 
-                // Update Intuition
-                document.getElementById('intuition-value').textContent = 
-                    formatTraitValue(prediction.traits.Intuition);
-                
-                // Update Thinking
-                document.getElementById('thinking-value').textContent = 
-                    formatTraitValue(prediction.traits.Thinking);
-                
-                // Update Judging
-                document.getElementById('judging-value').textContent = 
-                    formatTraitValue(prediction.traits.Judging);
-
-                // Update descriptions
-                document.querySelectorAll('.trait').forEach(traitElement => {
+                traits.forEach(trait => {
+                    const valueElement = document.getElementById(`${trait}-value`);
+                    const traitElement = valueElement.closest('.trait');
                     const nameElement = traitElement.querySelector('.trait-name');
                     const descElement = traitElement.querySelector('.trait-description');
-                    if (nameElement && descElement) {
-                        const traitName = nameElement.textContent;
-                        const traitValue = prediction.traits[traitName] || 0;
-                        descElement.textContent = getTraitDescription(traitName, traitValue);
+                    
+                    const traitValue = mapTraitToValue(prediction, nameElement.textContent);
+                    
+                    // Update value
+                    valueElement.textContent = formatTraitValue(traitValue);
+                    
+                    // Update description
+                    if (descElement) {
+                        descElement.textContent = getTraitDescription(nameElement.textContent, traitValue);
                     }
                 });
             }
@@ -84,7 +84,6 @@ function displayResult() {
     }
 }
 
-// Add event listener for the back button
 document.querySelector('.back-button').addEventListener('click', () => {
     window.location.href = '/test.html';
 });
