@@ -9,23 +9,5 @@ async function handleSubmit(event) {
         answers.push(formData.get(`answer${i}`));
     }
 
-    try {
-        const response = await fetch('https://auramatrix.onrender.com/predict', { // Replace with your actual Render backend URL
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ answers })
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-        window.location.href = `/result.html?prediction=${encodeURIComponent(result.prediction)}`;
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to submit answers. Please try again.');
-    }
+    window.location.href = `/result.html?answers=${encodeURIComponent(JSON.stringify(answers))}`;
 }
