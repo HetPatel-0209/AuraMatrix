@@ -4,8 +4,7 @@ function formatTraitValue(value) {
 
 function calculateAuraScore(traits) {
     const values = Object.values(traits);
-    const sum = values.reduce((acc, val) => acc + val, 0);
-    return Math.round(sum / values.length);
+    return Math.round(values.reduce((acc, val) => acc + val, 0) / values.length);
 }
 
 function getAuraDescription(score) {
@@ -49,20 +48,6 @@ function createAuraMeter(traits) {
     return auraElement;
 }
 
-function createTraitElement(trait, value) {
-    const traitElement = document.createElement('div');
-    traitElement.className = 'trait';
-    traitElement.innerHTML = `
-        <div class="trait-name">${trait}</div>
-        <div class="trait-bar">
-            <div class="trait-bar-fill" data-target="${value}"></div>
-        </div>
-        <div class="trait-value">${formatTraitValue(value)}</div>
-        <div class="trait-description">${getTraitDescription(trait, value)}</div>
-    `;
-    return traitElement;
-}
-
 function animateTraitBars() {
     const fills = document.querySelectorAll('.trait-bar-fill');
     fills.forEach((fill, index) => {
@@ -74,6 +59,22 @@ function animateTraitBars() {
             fill.style.width = `${targetWidth}%`;
         }, index * 200);
     });
+}
+
+function updateAuraMeter(traits) {
+    const auraScore = calculateAuraScore(traits);
+    const auraValue = document.querySelector('.aura-value');
+    const auraDescription = document.querySelector('.aura-description');
+    const auraBarFill = document.querySelector('.aura-bar-fill');
+
+    // Update values
+    auraValue.textContent = `${auraScore}%`;
+    auraDescription.textContent = getAuraDescription(auraScore);
+    
+    // Animate the bar
+    setTimeout(() => {
+        auraBarFill.style.width = `${auraScore}%`;
+    }, 100);
 }
 
 function updateTraitsDisplay(prediction) {

@@ -102,22 +102,11 @@
   }
 }
 
-/* Add these styles to your existing CSS */
-
 .aura-meter {
-  background: white;
-  border-radius: 15px;
-  padding: 2rem;
-  margin-bottom: 2rem;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.aura-title {
-  color: #4a90e2;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin: 2rem 0;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #f1f2f6;
 }
 
 .aura-circle {
@@ -132,6 +121,7 @@
   align-items: center;
   color: white;
   box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+  animation: pulse 2s infinite ease-in-out;
 }
 
 .aura-value {
@@ -146,11 +136,11 @@
 }
 
 .aura-bar {
-  height: 10px;
+  height: 8px;
   background: #e0e0e0;
-  border-radius: 5px;
+  border-radius: 4px;
   overflow: hidden;
-  margin: 1.5rem auto 0;
+  margin: 1rem auto 0;
   max-width: 200px;
 }
 
@@ -161,13 +151,8 @@
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Optional: Add a subtle pulsing animation to the aura circle */
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.02); }
   100% { transform: scale(1); }
-}
-
-.aura-circle {
-  animation: pulse 2s infinite ease-in-out;
 }
