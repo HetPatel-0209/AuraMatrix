@@ -80,6 +80,20 @@ body {
     font-weight: bold;
 }
 
+@media (max-width: 500px) {
+    .result-container {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 600px;
+        width: 80%;
+        text-align: center;
+        animation: fadeIn 1s ease-in;
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
