@@ -61,20 +61,25 @@
   
   .trait-name {
     color: #4a90e2;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
   }
   
   .trait-value {
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     font-weight: bold;
-    color: #2d3436;
+    color: #4a90e2;
+    margin: 0.5rem 0;
+    transition: color 0.3s ease;
+    animation: valueChange 0.5s ease-out forwards;
   }
   
   .trait-description {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: #636e72;
+    margin-top: 0.25rem;
   }
   
   .aura-signature {
@@ -101,6 +106,17 @@
     height: 24px;
   }
   
+  @keyframes valueChange {
+      from {
+          transform: scale(0.8);
+          opacity: 0;
+      }
+      to {
+          transform: scale(1);
+          opacity: 1;
+      }
+  }
+  
   @media (max-width: 500px) {
     .chart-container {
       max-width: 90%;
@@ -116,15 +132,14 @@
     }
   
     .trait-name {
-      font-size: 0.9rem;
+      font-size: 1rem;
     }
   
     .trait-value {
-      font-size: 1.2rem;
+      font-size: 2rem;
     }
   
     .trait-description {
-      font-size: 0.7rem;
+      font-size: 0.9rem;
     }
-  }
-  
+  }  
