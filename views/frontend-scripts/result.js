@@ -1,7 +1,11 @@
 function displayResult() {
     const urlParams = new URLSearchParams(window.location.search);
     const prediction = urlParams.get('prediction');
-    
+    const firstName = localStorage.getItem('userFirstName') || '';
+    const lastName = localStorage.getItem('userLastName') || '';
+    if (firstName || lastName) {
+        document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
+    }
     if (prediction) {
         document.getElementById('personality-type').textContent = prediction;
         document.getElementById('description').textContent = 

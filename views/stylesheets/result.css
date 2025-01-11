@@ -74,6 +74,14 @@ body {
     box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
 }
 
+.user-name {
+    font-size: 1.2rem;
+    color: #000;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
