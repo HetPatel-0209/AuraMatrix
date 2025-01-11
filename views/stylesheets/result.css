@@ -70,7 +70,9 @@ body {
 }
 
 .back-button:hover {
+    color: var(--hover-text);
     transform: translateY(-2px);
+    background: var(--hover-bg);
     box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
 }
 
