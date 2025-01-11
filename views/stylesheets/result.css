@@ -54,9 +54,12 @@ body {
 }
 
 .back-button {
-    background: #6c5ce7;
+    --bg: #000;
+    --hover-bg: #68a1e3;
+    --hover-text: #fff;
+    background: var(--bg);
     color: white;
-    border: none;
+    border: 1px solid var(--bg);
     padding: 0.8rem 2rem;
     border-radius: 50px;
     font-size: 1rem;
