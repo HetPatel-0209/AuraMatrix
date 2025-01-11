@@ -45,7 +45,7 @@ function animateTraitBars() {
 
 function updateTraitsDisplay(prediction) {
     const traitsContainer = document.querySelector('.traits-container');
-    traitsContainer.innerHTML = ''; // Clear existing traits
+    traitsContainer.innerHTML = '';
 
     Object.entries(prediction.traits).forEach(([trait, value]) => {
         const traitElement = createTraitElement(trait, value);

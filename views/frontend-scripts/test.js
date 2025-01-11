@@ -24,7 +24,6 @@ async function handleSubmit(event) {
 
         const result = await response.json();
         if (result.prediction) {
-            // Store the parsed prediction data
             window.location.href = `/result.html?prediction=${encodeURIComponent(JSON.stringify(result.prediction))}`;
         } else {
             throw new Error('Invalid prediction format');
