@@ -82,9 +82,7 @@ app.post('/predict', async (req, res) => {
       ],
       model: "llama3-70b-8192",
       max_tokens: 800,
-      temperature: 0,
-      top_p: 1,
-      stream: false
+      temperature: 0
     });
     const response = chatCompletion.choices[0]?.message?.content;
     
