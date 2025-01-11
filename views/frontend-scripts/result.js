@@ -7,7 +7,8 @@ function getTraitDescription(name, value) {
         'EXTRAVERSION': ['Introverted', 'Extraverted'],
         'INTUITION': ['Sensing', 'Intuitive'],
         'THINKING': ['Feeling', 'Thinking'],
-        'JUDGING': ['Perceiving', 'Judging']
+        'JUDGING': ['Perceiving', 'Judging'],
+        'FEELING': ['Thinking', 'Feeling']
     };
 
     const pair = opposites[name.toUpperCase()];
@@ -30,22 +31,15 @@ function createTraitElement(trait, value) {
 }
 
 function animateTraitBars() {
-    const bars = document.querySelectorAll('.trait-bar');
-    bars.forEach((bar, index) => {
-        const fill = bar.querySelector('.trait-bar-fill');
-        const targetWidth = parseInt(bar.dataset.value);
+    const fills = document.querySelectorAll('.trait-bar-fill');
+    fills.forEach((fill, index) => {
+        const targetWidth = parseInt(fill.getAttribute('data-target'));
+    
+        fill.getBoundingClientRect();
         
-        // Reset initial state
-        fill.style.width = '0%';
-        
-        // Stagger the animations slightly for visual effect
         setTimeout(() => {
-            // Use requestAnimationFrame for smooth animation
-            requestAnimationFrame(() => {
-                fill.style.transition = 'width 1s cubic-bezier(0.4, 0, 0.2, 1)';
-                fill.style.width = `${targetWidth}%`;
-            });
-        }, index * 150); // Stagger each bar by 150ms
+            fill.style.width = `${targetWidth}%`;
+        }, index * 200);
     });
 }
 
@@ -58,7 +52,9 @@ function updateTraitsDisplay(prediction) {
         traitsContainer.appendChild(traitElement);
     });
 
-    setTimeout(animateTraitBars, 100);
+    requestAnimationFrame(() => {
+        animateTraitBars();
+    });
 }
 
 function displayResult() {

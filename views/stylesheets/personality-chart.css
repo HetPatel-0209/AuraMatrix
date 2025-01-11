@@ -58,20 +58,22 @@
   background: #e0e0e0;
   border-radius: 5px;
   overflow: hidden;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem 0;
 }
 
 .trait-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #4a90e2, #63b3ed);
-  transition: width 1s ease-out;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .trait-value {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   color: #2d3436;
   margin: 0.5rem 0;
+  text-transform: uppercase;
 }
 
 .trait-description {
