@@ -10,11 +10,6 @@
   display: flex;
 }
 
-.trait-wrapper{
-  display: flex;
-  width: 90%;
-}
-
 .analysis-complete {
   display: flex;
   align-items: center;
