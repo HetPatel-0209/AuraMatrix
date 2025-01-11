@@ -2,20 +2,6 @@ function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
 
-function calculateAuraScore(traits) {
-    const values = Object.values(traits);
-    return Math.round(values.reduce((acc, val) => acc + val, 0) / values.length);
-}
-
-function getAuraDescription(score) {
-    if (score >= 90) return "Legendary";
-    if (score >= 80) return "Exceptional";
-    if (score >= 70) return "Strong";
-    if (score >= 60) return "Balanced";
-    if (score >= 50) return "Developing";
-    return "Emerging";
-}
-
 function getTraitDescription(name, value) {
     const opposites = {
         'EXTRAVERSION': ['Introverted', 'Extraverted'],
@@ -30,22 +16,18 @@ function getTraitDescription(name, value) {
     return value < 50 ? pair[0] : pair[1];
 }
 
-function createAuraMeter(traits) {
-    const auraScore = calculateAuraScore(traits);
-    const auraElement = document.createElement('div');
-    auraElement.className = 'aura-meter';
-    
-    auraElement.innerHTML = `
-        <h3 class="aura-title">Your Aura Score</h3>
-        <div class="aura-circle">
-            <div class="aura-value">${auraScore}%</div>
-            <div class="aura-description">${getAuraDescription(auraScore)}</div>
+function createTraitElement(trait, value) {
+    const traitElement = document.createElement('div');
+    traitElement.className = 'trait';
+    traitElement.innerHTML = `
+        <div class="trait-name">${trait}</div>
+        <div class="trait-bar">
+            <div class="trait-bar-fill" data-target="${value}"></div>
         </div>
-        <div class="aura-bar">
-            <div class="aura-bar-fill" data-target="${auraScore}" style="width: 0%"></div>
-        </div>
+        <div class="trait-value">${formatTraitValue(value)}</div>
+        <div class="trait-description">${getTraitDescription(trait, value)}</div>
     `;
-    return auraElement;
+    return traitElement;
 }
 
 function animateTraitBars() {
@@ -59,22 +41,6 @@ function animateTraitBars() {
             fill.style.width = `${targetWidth}%`;
         }, index * 200);
     });
-}
-
-function updateAuraMeter(traits) {
-    const auraScore = calculateAuraScore(traits);
-    const auraValue = document.querySelector('.aura-value');
-    const auraDescription = document.querySelector('.aura-description');
-    const auraBarFill = document.querySelector('.aura-bar-fill');
-
-    // Update values
-    auraValue.textContent = `${auraScore}%`;
-    auraDescription.textContent = getAuraDescription(auraScore);
-    
-    // Animate the bar
-    setTimeout(() => {
-        auraBarFill.style.width = `${auraScore}%`;
-    }, 100);
 }
 
 function updateTraitsDisplay(prediction) {
