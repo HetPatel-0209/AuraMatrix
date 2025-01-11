@@ -1,96 +1,14 @@
 .chart-container {
-    margin: auto;
-    max-width: 400px;
-    text-align: center;
-  }
-  
-  .chart-title {
-    color: #4a90e2;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-  
-  .circle-chart {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 0 auto 2rem;
-  }
-  
-  .circle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 2px solid #4a90e2;
-    border-radius: 50%;
-  }
-  
-  .divider-vertical,
-  .divider-horizontal {
-    position: absolute;
-    background: #4a90e2;
-  }
-  
-  .divider-vertical {
-    width: 2px;
-    height: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .divider-horizontal {
-    width: 100%;
-    height: 2px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .traits-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-  
-  .trait {
-    text-align: center;
-  }
-  
-  .trait-name {
-    color: #4a90e2;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-  }
-  
-  .trait-value {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #4a90e2;
-    margin: 0.5rem 0;
-    transition: color 0.3s ease;
-    animation: valueChange 0.5s ease-out forwards;
-  }
-  
-  .trait-description {
-    font-size: 1rem;
-    color: #636e72;
-    margin-top: 0.25rem;
-  }
-  
-  .aura-signature {
-    margin-top: 2rem;
-    color: #4a90e2;
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-  }
-  
-  .analysis-complete {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 90%;
+}
+
+.analysis-complete {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -99,47 +17,78 @@
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1rem;
-  }
-  
-  .analysis-complete svg {
+}
+
+.analysis-complete svg {
     width: 24px;
     height: 24px;
-  }
-  
-  @keyframes valueChange {
-      from {
-          transform: scale(0.8);
-          opacity: 0;
-      }
-      to {
-          transform: scale(1);
-          opacity: 1;
-      }
-  }
-  
-  @media (max-width: 500px) {
+}
+
+h3 {
+    text-align: center;
+    color: #2d3436;
+    margin-bottom: 2rem;
+}
+
+.traits-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.trait {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trait:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.trait-name {
+    color: #4a90e2;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.trait-bar {
+    height: 10px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.trait-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4a90e2, #63b3ed);
+    transition: width 1s ease-out;
+}
+
+.trait-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2d3436;
+    margin: 0.5rem 0;
+}
+
+.trait-description {
+    font-size: 0.9rem;
+    color: #636e72;
+}
+
+@media (max-width: 600px) {
     .chart-container {
-      max-width: 90%;
+        padding: 1.5rem;
     }
-  
-    .circle-chart {
-      width: 250px;
-      height: 250px;
-    }
-  
+
     .traits-container {
-      gap: 1rem;
+        grid-template-columns: 1fr;
     }
-  
-    .trait-name {
-      font-size: 1rem;
-    }
-  
-    .trait-value {
-      font-size: 2rem;
-    }
-  
-    .trait-description {
-      font-size: 0.9rem;
-    }
-  }  
+}
