@@ -1,7 +1,8 @@
 async function fetchResults() {
     try {
-        const answers = JSON.parse(localStorage.getItem('personalityAnswers') || '[]');
-        
+        const urlParams = new URLSearchParams(window.location.search);
+        const answers = JSON.parse(decodeURIComponent(urlParams.get('answers')));
+
         const response = await fetch('https://auramatrix.onrender.com/predict', {
             method: 'POST',
             headers: {
@@ -34,58 +35,32 @@ function displayResult(result) {
     // Display personality type
     document.getElementById('personality-type').textContent = result.prediction;
 
-    // Display trait percentages with animation
-    const traits = ['extraversion', 'intuition', 'thinking', 'judging'];
-    traits.forEach(trait => {
-        const value = result.traits[trait];
-        const element = document.getElementById(`${trait}-value`);
-        element.textContent = '0%';
-        
-        // Animate the percentage
-        let current = 0;
-        const target = value;
-        const increment = target / 50; // Adjust for animation speed
-        
-        const animate = () => {
-            if (current < target) {
-                current += increment;
-                if (current > target) current = target;
-                element.textContent = `${Math.round(current)}%`;
-                requestAnimationFrame(animate);
-            }
-        };
-        
-        animate();
-        
-        // Update descriptions
-        const description = document.getElementById(`${trait}-description`);
-        description.textContent = value > 50 ? 
-            trait.charAt(0).toUpperCase() + trait.slice(1) :
-            getOppositeDescription(trait);
-    });
+    // Display trait percentages
+    document.getElementById('extraversion-value').textContent = `${result.traits.extraversion}%`;
+    document.getElementById('intuition-value').textContent = `${result.traits.intuition}%`;
+    document.getElementById('thinking-value').textContent = `${result.traits.thinking}%`;
+    document.getElementById('judging-value').textContent = `${result.traits.judging}%`;
+
+    // Update descriptions based on percentages
+    document.getElementById('extraversion-description').textContent = result.traits.extraversion > 50 ? 'Extraverted' : 'Introverted';
+    document.getElementById('intuition-description').textContent = result.traits.intuition > 50 ? 'Intuitive' : 'Sensing';
+    document.getElementById('thinking-description').textContent = result.traits.thinking > 50 ? 'Thinking' : 'Feeling';
+    document.getElementById('judging-description').textContent = result.traits.judging > 50 ? 'Judging' : 'Perceiving';
 
     // Display description
     document.getElementById('description').textContent = 
-        "Your personality profile has been analyzed based on your responses. " +
-        "This assessment provides insights into your personality traits and tendencies. " +
-        "Remember that personality is dynamic and can evolve over time.";
-}
+        "This personality assessment is based on your responses to our questionnaire. " +
+        "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
 
-function getOppositeDescription(trait) {
-    const opposites = {
-        'extraversion': 'Introverted',
-        'intuition': 'Sensing',
-        'thinking': 'Feeling',
-        'judging': 'Perceiving'
-    };
-    return opposites[trait] || '';
+    // Show result container
+    document.getElementById('result').style.display = 'block';
 }
 
 function displayError() {
     document.getElementById('personality-type').textContent = "Error occurred";
-    document.getElementById('description').textContent = 
-        "We encountered an error while processing your results. Please try taking the test again.";
+    document.getElementById('description').textContent = "We encountered an error while processing your results. Please try taking the test again.";
+    document.getElementById('result').style.display = 'block';
 }
 
 // Fetch and display results when page loads
-window.addEventListener('load', fetchResults);
+window.onload = fetchResults;
