@@ -26,8 +26,6 @@
 
         .wrapper {
             position: relative;
-            perspective: 1000px;
-            margin-top: 60px;
         }
 
         .card-switch {
