@@ -223,6 +223,11 @@
   }
 }
 
+.web{
+  margin-bottom: 5px;
+  animation: fadeIn 1s ease-in;
+}
+
 .stats-layout {
   display: flex;
   flex-direction: column;
