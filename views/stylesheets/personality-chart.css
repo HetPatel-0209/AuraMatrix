@@ -242,4 +242,7 @@
     padding: 1.2rem;
     width: 80%;
   }
+  .aura-title {
+    font-size: 1rem;
+  }
 }
