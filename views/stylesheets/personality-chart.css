@@ -238,4 +238,8 @@
   .traits-grid {
       grid-template-columns: 1fr;
   }
+  .chart-container {
+    padding: 1.2rem;
+    width: 80%;
+  }
 }
