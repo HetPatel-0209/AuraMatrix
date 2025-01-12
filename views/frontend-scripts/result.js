@@ -91,26 +91,23 @@ function animateTraitBars() {
 }
 
 function updateTraitsDisplay(prediction) {
-    const traitsContainer = document.querySelector('.traits-container');
+    const traitsContainer = document.querySelector('.traits-grid');
+    const auraMeterWrapper = document.querySelector('.aura-meter-wrapper');
+
     if (!traitsContainer) return;
     
     // Clear existing content
     traitsContainer.innerHTML = '';
+    auraMeterWrapper.innerHTML = '';
 
     // Create a wrapper for the aura meter
-    const auraMeterWrapper = document.createElement('div');
-    auraMeterWrapper.className = 'aura-meter-wrapper';
     auraMeterWrapper.appendChild(createAuraMeter(prediction.traits));
-    traitsContainer.appendChild(auraMeterWrapper);
 
     // Add traits in a separate wrapper
-    const traitsWrapper = document.createElement('div');
-    traitsWrapper.className = 'traits-wrapper';
     Object.entries(prediction.traits).forEach(([trait, value]) => {
         const traitElement = createTraitElement(trait, value);
-        traitsWrapper.appendChild(traitElement);
+        traitsContainer.appendChild(traitElement);
     });
-    traitsContainer.appendChild(traitsWrapper);
 
     requestAnimationFrame(() => {
         animateTraitBars();

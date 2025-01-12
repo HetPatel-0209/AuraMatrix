@@ -25,15 +25,23 @@
     </div>
     <span style="margin-bottom: 5px;">Know your persona : <a href="https://www.16personalities.com/personality-types">General personas</a></span>
     <div class="chart-container">
-        <div class="analysis-complete">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-            </svg>
-            ANALYSIS COMPLETE
-        </div>
-        <h3>Your Persona Stats</h3>
-        <div class="traits-container" id="traits-container">
-            <!-- Traits will be dynamically inserted here -->
+        <div class="chart-content">
+            <div class="analysis-complete">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                ANALYSIS COMPLETE
+            </div>
+            <h3>Your Persona Stats</h3>
+            <div class="stats-layout">
+                <div class="aura-section">
+                    <div class="aura-meter-wrapper"></div>
+                </div>
+            
+                <div class="traits-grid">
+                    <!-- Traits will be dynamically inserted here -->
+                </div>
+            </div>
         </div>
     </div>
     <script src="/frontend-scripts/result.js"></script>

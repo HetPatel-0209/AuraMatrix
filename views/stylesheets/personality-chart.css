@@ -3,11 +3,15 @@
   border-radius: 20px;
   padding: 2rem;
   margin: 1rem auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   width: 90%;
   animation: fadeIn 1s ease-in;
   display: flex;
+}
+
+.chart-content {
+  width: 100%;
 }
 
 .analysis-complete {
@@ -32,10 +36,11 @@
   margin-bottom: 2rem;
 }
 
-.traits-container {
+.traits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  padding: 1rem;
 }
 
 .trait {
@@ -59,7 +64,7 @@
   background: #e0e0e0;
   border-radius: 5px;
   overflow: hidden;
-  margin-bottom: 0.5rem 0;
+  margin: 0.5rem 0;
 }
 
 .trait-bar-fill {
@@ -73,22 +78,23 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: #2d3436;
-  margin: 0.5rem 0;
+  margin-top: 0.5rem;
   text-transform: uppercase;
 }
 
 .trait-description {
   font-size: 0.9rem;
   color: #636e72;
+  margin-top: 0.25rem;
 }
 
 @media (max-width: 600px) {
   .chart-container {
-      padding: 1.5rem;
+    padding: 1.5rem;
   }
 
   .traits-container {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -166,46 +172,65 @@
   text-align: center;
 }
 
+.aura-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
 
 @keyframes fadeIn {
   from {
-      opacity: 0;
-      transform: translateY(20px);
+    opacity: 0;
+    transform: translateY(20px);
   }
+
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes rotateAura {
   from {
-      --progress: 0%;
+    --progress: 0%;
   }
+
   to {
-      --progress: calc(var(--aura-level) * 1%);
+    --progress: calc(var(--aura-level) * 1%);
   }
 }
 
 @media (max-width: 600px) {
   .chart-container {
-      padding: 1.5rem;
+    padding: 1.5rem;
   }
 
   .traits-container {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 
   .aura-meter {
-      padding: 1rem;
+    padding: 1rem;
   }
 
   .aura-ring {
-      width: 150px;
-      height: 150px;
+    width: 150px;
+    height: 150px;
   }
 
   .aura-percentage {
-      font-size: 2rem;
+    font-size: 2rem;
+  }
+}
+
+.stats-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (max-width: 500px) {
+  .traits-grid {
+      grid-template-columns: 1fr;
   }
 }
