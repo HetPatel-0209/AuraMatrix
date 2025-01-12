@@ -46,7 +46,7 @@
 .trait {
   background: #f8f9fa;
   border-radius: 10px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
