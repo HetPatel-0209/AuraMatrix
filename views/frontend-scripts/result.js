@@ -217,10 +217,20 @@ function updateSVGCard(prediction) {
         traitCircles.appendChild(circle);
     });
 
-    // Update aura level
     const auraLevel = calculateAuraLevel(prediction.traits);
-    document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
-    document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
+    const auraPercentage = document.querySelector('#auraPercentage');
+    const auraDescription = document.querySelector('#auraDescription');
+    
+    auraPercentage.setAttribute("x", "450");
+    auraPercentage.setAttribute("y", "400");
+    auraDescription.setAttribute("x", "450");
+    auraDescription.setAttribute("y", "450");
+    
+    auraPercentage.textContent = `${auraLevel}%`;
+    auraDescription.textContent = getAuraDescription(auraLevel);
+    
+    auraPercentage.setAttribute("fill", "white");
+    auraDescription.setAttribute("fill", "white");
 }
 
 async function downloadAuraCard() {
@@ -230,13 +240,28 @@ async function downloadAuraCard() {
         // Make card visible temporarily for capture
         card.style.display = 'block';
         
+        const wrapper = document.createElement('div');
+        wrapper.style.borderRadius = '20px';
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.width = '600px';
+        wrapper.style.height = '800px';
+
+        const cardClone = card.cloneNode(true);
+        cardClone.style.display = 'block';
+        wrapper.appendChild(cardClone);
+        document.body.appendChild(wrapper);
+
         // Convert SVG to canvas
         const canvas = await html2canvas(card, {
             scale: 2,
             backgroundColor: '#fff9f0',
             logging: false,
-            borderRadius: 20
+            useCORS: true,
+            allowTaint: true
         });
+
+        document.body.removeChild(wrapper);
+        card.style.display = 'none';
         
         // Hide card again
         card.style.display = 'none';
