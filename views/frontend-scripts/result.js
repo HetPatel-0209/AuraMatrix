@@ -151,4 +151,112 @@ function displayResult() {
     }
 }
 
+// Aura card
+function createTraitCircle(trait, value, index) {
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    circle.setAttribute("transform", `translate(0, ${index * 120})`);
+    
+    // Create circle
+    const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circleElement.setAttribute("cx", "60");
+    circleElement.setAttribute("cy", "60");
+    circleElement.setAttribute("r", "50");
+    circleElement.setAttribute("fill", "#FFB347");
+    
+    // Create value text
+    const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    valueText.setAttribute("x", "60");
+    valueText.setAttribute("y", "55");
+    valueText.setAttribute("text-anchor", "middle");
+    valueText.setAttribute("font-size", "32");
+    valueText.setAttribute("fill", "white");
+    valueText.setAttribute("font-weight", "bold");
+    valueText.textContent = Math.round(value);
+    
+    // Create trait name text
+    const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    traitText.setAttribute("x", "60");
+    traitText.setAttribute("y", "80");
+    traitText.setAttribute("text-anchor", "middle");
+    traitText.setAttribute("font-size", "14");
+    traitText.setAttribute("fill", "white");
+    traitText.textContent = trait;
+    
+    circle.appendChild(circleElement);
+    circle.appendChild(valueText);
+    circle.appendChild(traitText);
+    
+    return circle;
+}
+
+function updateSVGCard(prediction) {
+    const svg = document.querySelector('#auraCard svg');
+    if (!svg) return;
+
+    // Update name and type
+    const userName = localStorage.getItem('userFirstName') || 'User';
+    document.querySelector('#userName').textContent = userName;
+    document.querySelector('#userType').textContent = prediction.personalityType.split(' ')[0];
+
+    // Clear existing trait circles
+    const traitCircles = document.querySelector('#traitCircles');
+    traitCircles.innerHTML = '';
+
+    // Add new trait circles
+    Object.entries(prediction.traits).forEach(([trait, value], index) => {
+        const circle = createTraitCircle(trait, value, index);
+        traitCircles.appendChild(circle);
+    });
+
+    // Update aura level
+    const auraLevel = calculateAuraLevel(prediction.traits);
+    document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
+    document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
+}
+
+async function downloadAuraCard() {
+    const card = document.getElementById('auraCard');
+    
+    try {
+        // Convert SVG to canvas
+        const canvas = await html2canvas(card, {
+            scale: 2,
+            backgroundColor: '#fff9f0',
+            logging: false
+        });
+
+        // Download the image
+        const link = document.createElement('a');
+        link.download = 'AuraMatrix-Card.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (error) {
+        console.error('Error generating card:', error);
+    }
+}
+
+
+const oldDisplayResult = displayResult;
+displayResult = function() {
+    oldDisplayResult();
+    const urlParams = new URLSearchParams(window.location.search);
+    const predictionStr = urlParams.get('prediction');
+    if (predictionStr) {
+        try {
+            const prediction = JSON.parse(decodeURIComponent(predictionStr));
+            updateSVGCard(prediction);
+        } catch (error) {
+            console.error('Error creating aura card:', error);
+        }
+    }
+};
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const downloadButton = document.getElementById('downloadCard');
+    if (downloadButton) {
+        downloadButton.addEventListener('click', downloadAuraCard);
+    }
+});
+
 document.addEventListener('DOMContentLoaded', displayResult);

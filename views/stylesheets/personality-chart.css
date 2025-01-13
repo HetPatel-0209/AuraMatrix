@@ -245,3 +245,51 @@
     font-size: 1.5rem;
   }
 }
+
+/* Add these new styles to your existing CSS */
+
+.aura-card-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+.download-button {
+  padding: 1rem 2rem;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.download-button:hover {
+  background: #357abd;
+}
+
+.aura-card {
+  width: 600px;
+  height: 800px;
+  background: #fff9f0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.aura-card svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .aura-card {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3/4;
+  }
+}
