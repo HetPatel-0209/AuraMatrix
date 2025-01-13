@@ -269,6 +269,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: fadeIn 1s ease-in;
   text-decoration: none;
   display: inline-block;
 }
