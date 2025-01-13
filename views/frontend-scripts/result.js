@@ -154,7 +154,7 @@ function displayResult() {
 // Aura card
 function createTraitCircle(trait, value, index) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    circle.setAttribute("transform", `translate(0, ${index * 120})`);
+    circle.setAttribute("transform", `translate(0, ${index * 140})`);
     
     // Create circle
     const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -176,9 +176,9 @@ function createTraitCircle(trait, value, index) {
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     traitText.setAttribute("x", "60");
-    traitText.setAttribute("y", "80");
+    traitText.setAttribute("y", "85");
     traitText.setAttribute("text-anchor", "middle");
-    traitText.setAttribute("font-size", "14");
+    traitText.setAttribute("font-size", "16");
     traitText.setAttribute("fill", "white");
     traitText.textContent = trait;
     
@@ -194,9 +194,18 @@ function updateSVGCard(prediction) {
     if (!svg) return;
 
     // Update name and type
-    const userName = localStorage.getItem('userFirstName') || 'User';
-    document.querySelector('#userName').textContent = userName;
-    document.querySelector('#userType').textContent = prediction.personalityType.split(' ')[0];
+    const firstName = localStorage.getItem('userFirstName') || 'User';
+    const lastName = localStorage.getItem('userLastName') || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    document.querySelector('#userName').textContent = fullName;
+    
+    const personalityType = prediction.personalityType;
+    const matches = personalityType.match(/([A-Z]{4})\s*$$([^)]+)$$/);
+    if (matches) {
+        document.querySelector('#userType').textContent = `${matches[1]} (${matches[2]})`;
+    } else {
+        document.querySelector('#userType').textContent = personalityType;
+    }
 
     // Clear existing trait circles
     const traitCircles = document.querySelector('#traitCircles');
@@ -218,12 +227,19 @@ async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
     
     try {
+        // Make card visible temporarily for capture
+        card.style.display = 'block';
+        
         // Convert SVG to canvas
         const canvas = await html2canvas(card, {
             scale: 2,
             backgroundColor: '#fff9f0',
-            logging: false
+            logging: false,
+            borderRadius: 20
         });
+        
+        // Hide card again
+        card.style.display = 'none';
 
         // Download the image
         const link = document.createElement('a');

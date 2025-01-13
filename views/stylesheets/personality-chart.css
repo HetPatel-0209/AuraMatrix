@@ -258,18 +258,24 @@
 }
 
 .download-button {
-  padding: 1rem 2rem;
-  background: #4a90e2;
+  --bg: #000;
+  --hover-text: #fff;
+  background: var(--bg);
   color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
+  border: 1px solid var(--bg);
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .download-button:hover {
-  background: #357abd;
+  color: var(--hover-text);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
 }
 
 .aura-card {
