@@ -266,7 +266,7 @@
   padding: 0.8rem 2rem;
   border-radius: 50px;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
