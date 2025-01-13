@@ -154,13 +154,13 @@ function displayResult() {
 // Aura card
 function createTraitCircle(trait, value, index) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    circle.setAttribute("transform", `translate(0, ${index * 120})`);
+    circle.setAttribute("transform", `translate(0, ${index * 140})`);
     
     // Create circle
     const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circleElement.setAttribute("cx", "60");
     circleElement.setAttribute("cy", "60");
-    circleElement.setAttribute("r", "50");
+    circleElement.setAttribute("r", "60");
     circleElement.setAttribute("fill", "#FFB347");
     
     // Create value text
@@ -168,7 +168,7 @@ function createTraitCircle(trait, value, index) {
     valueText.setAttribute("x", "60");
     valueText.setAttribute("y", "55");
     valueText.setAttribute("text-anchor", "middle");
-    valueText.setAttribute("font-size", "42");
+    valueText.setAttribute("font-size", "48");
     valueText.setAttribute("fill", "white");
     valueText.setAttribute("font-weight", "bold");
     valueText.textContent = Math.round(value);
@@ -176,12 +176,11 @@ function createTraitCircle(trait, value, index) {
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     traitText.setAttribute("x", "60");
-    traitText.setAttribute("y", "80");
+    traitText.setAttribute("y", "85");
     traitText.setAttribute("text-anchor", "middle");
     traitText.setAttribute("font-size", "16");
     traitText.setAttribute("fill", "white");
-    traitText.textContent = trait.toLowerCase();
-    traitText.style.textTransform = "capitalize";
+    traitText.textContent = trait;
     
     circle.appendChild(circleElement);
     circle.appendChild(valueText);
@@ -200,6 +199,7 @@ function updateSVGCard(prediction) {
     const fullName = `${firstName} ${lastName}`.trim();
     document.querySelector('#userName').textContent = fullName;
     
+    // Update personality type with format: "ENFJ (Protagonist)"
     const personalityType = prediction.personalityType;
     const matches = personalityType.match(/([A-Z]{4})\s*$$([^)]+)$$/);
     if (matches) {
@@ -218,55 +218,41 @@ function updateSVGCard(prediction) {
         traitCircles.appendChild(circle);
     });
 
+    // Update aura level
     const auraLevel = calculateAuraLevel(prediction.traits);
-    const auraPercentage = document.querySelector('.auraPercentage');
-    const auraDescription = document.querySelector('.auraDescription');
-    
-    auraPercentage.textContent = `${auraLevel}%`;
-    auraDescription.textContent = getAuraDescription(auraLevel);
+    document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
+    document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
 }
 
 async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
     
     try {
-        // Temporarily make visible for capture
-        card.style.position = 'fixed';
-        card.style.left = '0';
-        card.style.top = '0';
-        card.style.visibility = 'visible';
+        // Make card visible temporarily for capture
+        card.style.display = 'block';
         
+        // Convert SVG to canvas
         const canvas = await html2canvas(card, {
             scale: 2,
-            backgroundColor: '#FFF9F0',
+            backgroundColor: '#fff9f0',
             logging: false,
-            useCORS: true,
-            allowTaint: true,
-            width: 600,
-            height: 800,
             borderRadius: 20
         });
+        
+        // Hide card again
+        card.style.display = 'none';
 
-        // Hide again
-        card.style.position = 'absolute';
-        card.style.left = '-9999px';
-        card.style.visibility = 'hidden';
-
-        // Download
+        // Download the image
         const link = document.createElement('a');
         link.download = 'AuraMatrix-Card.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     } catch (error) {
         console.error('Error generating card:', error);
-        // Ensure card is hidden on error
-        card.style.position = 'absolute';
-        card.style.left = '-9999px';
-        card.style.visibility = 'hidden';
     }
 }
 
-
+// Modify your existing displayResult function
 const oldDisplayResult = displayResult;
 displayResult = function() {
     oldDisplayResult();

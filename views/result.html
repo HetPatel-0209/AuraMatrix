@@ -49,35 +49,37 @@
     <div class="aura-card-section">
         <button id="downloadCard" class="download-button">Download Your Aura Card</button>
         
-        <div id="auraCard" style="position: absolute; left: -9999px; visibility: hidden;">
-            <svg width="600" height="800" viewBox="0 0 600 800" fill="transparent" xmlns="http://www.w3.org/2000/svg">
-                <!-- Background -->
+        <div id="auraCard" class="aura-card" style="display: none;">
+            <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background with rounded corners -->
                 <rect width="600" height="800" rx="20" ry="20" fill="#FFF9F0"/>
                 
-                <!-- Large Semi-circle -->
-                <path d="M300 0 Q 600 0, 600 400 Q 600 800, 300 800 L 600 800 L 600 0 Z" fill="url(#gradient)"/>
+                <!-- Decorative Circle -->
+                <path d="M400 0C600 0 700 200 700 400C700 600 600 800 400 800C500 600 500 200 400 0Z" fill="url(#gradient)"/>
                 
                 <!-- Gradient Definition -->
                 <defs>
-                    <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="800" gradientUnits="userSpaceOnUse">
+                    <linearGradient id="gradient" x1="400" y1="0" x2="700" y2="800" gradientUnits="userSpaceOnUse">
                         <stop offset="0%" stop-color="#FFD280"/>
                         <stop offset="100%" stop-color="#FFB347"/>
                     </linearGradient>
                 </defs>
                 
-                <!-- Content -->
+                <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
-                    <text id="userName" x="50" y="100" font-size="72" font-weight="700" fill="#4A3000"></text>
-                    <text id="userType" x="50" y="160" font-size="36" font-weight="500" fill="#4A3000" opacity="0.8"></text>
+                    <text id="userName" x="50" y="80" font-size="64" font-weight="700" fill="#4A3000"></text>
+                    <text id="userType" x="50" y="140" font-size="32" font-weight="500" fill="#4A3000" opacity="0.8"></text>
                     
                     <!-- Trait Circles -->
-                    <g id="traitCircles" transform="translate(50, 240)"></g>
+                    <g id="traitCircles" transform="translate(50, 200)">
+                        <!-- Circles will be added dynamically -->
+                    </g>
                     
                     <!-- Aura Level -->
-                    <g id="auraLevel" transform="translate(450, 400)">
-                        <text class="aura-percentage" x="0" y="0" font-size="96" font-weight="700" fill="#FFFFFF" text-anchor="middle"></text>
-                        <text class="aura-description" x="0" y="60" font-size="32" font-weight="500" fill="#FFFFFF" text-anchor="middle"></text>
+                    <g id="auraLevel" transform="translate(400, 400)">
+                        <text id="auraPercentage" x="0" y="0" font-size="96" font-weight="700" fill="#4A3000" text-anchor="middle"></text>
+                        <text id="auraDescription" x="0" y="50" font-size="32" font-weight="500" fill="#4A3000" text-anchor="middle"></text>
                     </g>
                     
                     <!-- Brand -->
