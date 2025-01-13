@@ -219,7 +219,7 @@ function updateSVGCard(prediction) {
 
     // Update aura level
     const auraLevel = calculateAuraLevel(prediction.traits);
-    document.querySelector('#auraPercentage').textContent = `${auraLevel}`;
+    document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
     document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
 }
 
