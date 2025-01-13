@@ -154,7 +154,7 @@ function displayResult() {
 // Aura card
 function createTraitCircle(trait, value, index) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    circle.setAttribute("transform", `translate(0, ${index * 140})`);
+    circle.setAttribute("transform", `translate(0, ${index * 120})`);
     
     // Create circle
     const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -168,7 +168,7 @@ function createTraitCircle(trait, value, index) {
     valueText.setAttribute("x", "60");
     valueText.setAttribute("y", "55");
     valueText.setAttribute("text-anchor", "middle");
-    valueText.setAttribute("font-size", "32");
+    valueText.setAttribute("font-size", "42");
     valueText.setAttribute("fill", "white");
     valueText.setAttribute("font-weight", "bold");
     valueText.textContent = Math.round(value);
@@ -176,11 +176,12 @@ function createTraitCircle(trait, value, index) {
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     traitText.setAttribute("x", "60");
-    traitText.setAttribute("y", "85");
+    traitText.setAttribute("y", "80");
     traitText.setAttribute("text-anchor", "middle");
     traitText.setAttribute("font-size", "16");
     traitText.setAttribute("fill", "white");
-    traitText.textContent = trait;
+    traitText.textContent = trait.toLowerCase();
+    traitText.style.textTransform = "capitalize";
     
     circle.appendChild(circleElement);
     circle.appendChild(valueText);
@@ -218,19 +219,11 @@ function updateSVGCard(prediction) {
     });
 
     const auraLevel = calculateAuraLevel(prediction.traits);
-    const auraPercentage = document.querySelector('#auraPercentage');
-    const auraDescription = document.querySelector('#auraDescription');
-    
-    auraPercentage.setAttribute("x", "450");
-    auraPercentage.setAttribute("y", "400");
-    auraDescription.setAttribute("x", "450");
-    auraDescription.setAttribute("y", "450");
+    const auraPercentage = document.querySelector('.auraPercentage');
+    const auraDescription = document.querySelector('.auraDescription');
     
     auraPercentage.textContent = `${auraLevel}%`;
     auraDescription.textContent = getAuraDescription(auraLevel);
-    
-    auraPercentage.setAttribute("fill", "white");
-    auraDescription.setAttribute("fill", "white");
 }
 
 async function downloadAuraCard() {
@@ -240,16 +233,18 @@ async function downloadAuraCard() {
         // Make card visible temporarily for capture
         card.style.display = 'block';
         
-        const wrapper = document.createElement('div');
-        wrapper.style.borderRadius = '20px';
-        wrapper.style.overflow = 'hidden';
-        wrapper.style.width = '600px';
-        wrapper.style.height = '800px';
+        const container = document.createElement('div');
+        container.style.width = '600px';
+        container.style.height = '800px';
+        container.style.position = 'fixed';
+        container.style.left = '-9999px';
+        container.style.borderRadius = '20px';
+        container.style.overflow = 'hidden';
 
         const cardClone = card.cloneNode(true);
         cardClone.style.display = 'block';
-        wrapper.appendChild(cardClone);
-        document.body.appendChild(wrapper);
+        container.appendChild(cardClone);
+        document.body.appendChild(container);
 
         // Convert SVG to canvas
         const canvas = await html2canvas(card, {
@@ -257,13 +252,12 @@ async function downloadAuraCard() {
             backgroundColor: '#fff9f0',
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            height: 800,
+            width: 600
         });
 
         document.body.removeChild(wrapper);
-        card.style.display = 'none';
-        
-        // Hide card again
         card.style.display = 'none';
 
         // Download the image
