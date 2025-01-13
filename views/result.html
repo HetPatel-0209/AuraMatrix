@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +9,6 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 </head>
-
 <body>
     <div class="logo">
         <h2>AuraMatrix</h2>
@@ -27,14 +25,12 @@
         </p>
         <a href="/test.html" class="back-button">Take Test Again</a>
     </div>
-    <span class="web">Know your persona : <a href="https://www.16personalities.com/personality-types">General
-            personas</a></span>
+    <span class="web">Know your persona : <a href="https://www.16personalities.com/personality-types">General personas</a></span>
     <div class="chart-container">
         <div class="chart-content">
             <div class="analysis-complete">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                 </svg>
                 ANALYSIS COMPLETE
             </div>
@@ -43,7 +39,7 @@
                 <div class="aura-section">
                     <div class="aura-meter-wrapper"></div>
                 </div>
-
+            
                 <div class="traits-grid">
                     <!-- Traits will be dynamically inserted here -->
                 </div>
@@ -52,54 +48,46 @@
     </div>
     <div class="aura-card-section">
         <button id="downloadCard" class="download-button">Download AuraCard</button>
-
+        
         <div id="auraCard" class="aura-card" style="display: none;">
-            <svg width="600" height="800" viewBox="0 0 600 800" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+            <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <!-- Background with rounded corners -->
-                <rect width="600" height="800" rx="20" ry="20" fill="#FFF9F0" />
-
+                <rect width="600" height="800" rx="20" ry="20" fill="#FFF9F0"/>
+                
                 <!-- Decorative Circle -->
-                <path d="M400,0 A400,400 0 0 1 600,400 L600,0 Z" fill="url(#gradient)" />
-
-                <!-- Bottom-Right Decorative Curve -->
-                <path d="M0,800 Q300,650 600,800 L600,800 L0,800 Z" fill="url(#gradient)" />
-
+                <path d="M1083.020694,179.703066l5.941956,1244.8397C690.695588,1436.060076,459.899365,1049.702582,465.057311,800c28.981976-377.591781,269.573295-587.783517,617.963383-620.296934Z" transform="translate(-.000002-2.244477)" fill="url(#gradient)"/>
+                
                 <!-- Gradient Definition -->
                 <defs>
                     <linearGradient id="gradient" x1="400" y1="0" x2="700" y2="800" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stop-color="#FFD280" />
-                        <stop offset="100%" stop-color="#FFB347" />
+                        <stop offset="0%" stop-color="#FFD280"/>
+                        <stop offset="100%" stop-color="#FFB347"/>
                     </linearGradient>
                 </defs>
-
+                
                 <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
                     <text id="userName" x="50" y="80" font-size="64" font-weight="700" fill="#4A3000"></text>
-                    <text id="userType" x="50" y="140" font-size="32" font-weight="500" fill="#4A3000"
-                        opacity="0.8"></text>
-
+                    <text id="userType" x="50" y="140" font-size="32" font-weight="500" fill="#4A3000" opacity="0.8"></text>
+                    
                     <!-- Trait Circles -->
                     <g id="traitCircles" transform="translate(50, 200)">
                         <!-- Circles will be added dynamically -->
                     </g>
-
+                    
                     <!-- Aura Level -->
                     <g id="auraLevel" transform="translate(400, 400)">
-                        <text id="auraPercentage" x="0" y="0" font-size="96" font-weight="700" fill="#482e00"
-                            text-anchor="middle"></text>
-                        <text id="auraDescription" x="0" y="50" font-size="32" font-weight="500" fill="#482e00"
-                            text-anchor="middle"></text>
+                        <text id="auraPercentage" x="0" y="0" font-size="96" font-weight="700" fill="#ffffff" text-anchor="middle"></text>
+                        <text id="auraDescription" x="0" y="50" font-size="32" font-weight="500" fill="#ffffff" text-anchor="middle"></text>
                     </g>
-
+                    
                     <!-- Brand -->
-                    <text x="550" y="750" font-size="32" font-weight="700" fill="#4A3000"
-                        text-anchor="end">AuraMatrix</text>
+                    <text x="550" y="750" font-size="32" font-weight="700" fill="#4A3000" text-anchor="end">AuraMatrix</text>
                 </g>
             </svg>
         </div>
     </div>
     <script src="/frontend-scripts/result.js"></script>
 </body>
-
 </html>
