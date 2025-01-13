@@ -74,14 +74,14 @@ app.post('/predict', async (req, res) => {
             }
           }
 
-          If user answer is random gibberish and you can't understand user answer return:
+          If the user's input consists of random gibberish, nonsensical characters, or unintelligible responses that cannot be interpreted or mapped to a valid personality type, return the following JSON structure:
           {
             "personalityType": "Unknown",
             "traits": {
-              "???": 00,
-              "???": 00,
-              "???": 00,
-              "???": 00
+              "Unclear Trait 1": 0,
+              "Unclear Trait 2": 0,
+              "Unclear Trait 3": 0,
+              "Unclear Trait 4": 0
             }
           }
           `,
