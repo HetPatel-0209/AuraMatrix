@@ -196,7 +196,7 @@ function updateSVGCard(prediction) {
     // Update name and type
     const firstName = localStorage.getItem('userFirstName') || 'User';
     const lastName = localStorage.getItem('userLastName') || '';
-    const fullName = `${firstName} ${lastName}`.trim();
+    const fullName = `${firstName}\n ${lastName}`.trim();
     document.querySelector('#userName').textContent = fullName;
     
     // Update personality type with format: "ENFJ (Protagonist)"
@@ -220,7 +220,7 @@ function updateSVGCard(prediction) {
 
     // Update aura level
     const auraLevel = calculateAuraLevel(prediction.traits);
-    document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
+    document.querySelector('#auraPercentage').textContent = `${auraLevel}`;
     document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
 }
 
