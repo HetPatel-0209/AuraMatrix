@@ -45,48 +45,48 @@
                 </div>
             </div>
         </div>
-        <div class="aura-card-section">
-            <button id="downloadCard" class="download-button">Download Your Aura Card</button>
-            
-            <div id="auraCard" class="aura-card">
-                <!-- SVG Template for the card -->
-                <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Background -->
-                    <rect width="600" height="800" fill="#FFF9F0"/>
+    </div>
+    <div class="aura-card-section">
+        <button id="downloadCard" class="download-button">Download Your Aura Card</button>
+        
+        <div id="auraCard" class="aura-card">
+            <!-- SVG Template for the card -->
+            <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect width="600" height="800" fill="#FFF9F0"/>
+                
+                <!-- Decorative Circle -->
+                <path d="M400 0C600 0 700 200 700 400C700 600 600 800 400 800C500 600 500 200 400 0Z" fill="url(#gradient)"/>
+                
+                <!-- Gradient Definition -->
+                <defs>
+                    <linearGradient id="gradient" x1="400" y1="0" x2="700" y2="800" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#FFD280"/>
+                        <stop offset="100%" stop-color="#FFB347"/>
+                    </linearGradient>
+                </defs>
+                
+                <!-- Dynamic Content -->
+                <g id="cardContent">
+                    <!-- Name and Type -->
+                    <text id="userName" x="50" y="80" font-size="48" font-weight="700" fill="#4A3000"></text>
+                    <text id="userType" x="50" y="130" font-size="32" font-weight="500" fill="#4A3000" opacity="0.8"></text>
                     
-                    <!-- Decorative Circle -->
-                    <path d="M400 0C600 0 700 200 700 400C700 600 600 800 400 800C500 600 500 200 400 0Z" fill="url(#gradient)"/>
-                    
-                    <!-- Gradient Definition -->
-                    <defs>
-                        <linearGradient id="gradient" x1="400" y1="0" x2="700" y2="800" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#FFD280"/>
-                            <stop offset="100%" stop-color="#FFB347"/>
-                        </linearGradient>
-                    </defs>
-                    
-                    <!-- Dynamic Content -->
-                    <g id="cardContent">
-                        <!-- Name and Type -->
-                        <text id="userName" x="50" y="80" font-size="48" font-weight="700" fill="#4A3000"></text>
-                        <text id="userType" x="50" y="130" font-size="32" font-weight="500" fill="#4A3000" opacity="0.8"></text>
-                        
-                        <!-- Trait Circles -->
-                        <g id="traitCircles" transform="translate(50, 200)">
-                            <!-- Circles will be added dynamically -->
-                        </g>
-                        
-                        <!-- Aura Level -->
-                        <g id="auraLevel" transform="translate(400, 400)">
-                            <text id="auraPercentage" x="0" y="0" font-size="72" font-weight="700" fill="#4A3000" text-anchor="middle"></text>
-                            <text id="auraDescription" x="0" y="50" font-size="24" font-weight="500" fill="#4A3000" text-anchor="middle"></text>
-                        </g>
-                        
-                        <!-- Brand -->
-                        <text x="550" y="750" font-size="24" font-weight="500" fill="#4A3000" text-anchor="end">AuraMatrix</text>
+                    <!-- Trait Circles -->
+                    <g id="traitCircles" transform="translate(50, 200)">
+                        <!-- Circles will be added dynamically -->
                     </g>
-                </svg>
-            </div>
+                    
+                    <!-- Aura Level -->
+                    <g id="auraLevel" transform="translate(400, 400)">
+                        <text id="auraPercentage" x="0" y="0" font-size="72" font-weight="700" fill="#4A3000" text-anchor="middle"></text>
+                        <text id="auraDescription" x="0" y="50" font-size="24" font-weight="500" fill="#4A3000" text-anchor="middle"></text>
+                    </g>
+                    
+                    <!-- Brand -->
+                    <text x="550" y="750" font-size="24" font-weight="500" fill="#4A3000" text-anchor="end">AuraMatrix</text>
+                </g>
+            </svg>
         </div>
     </div>
     <script src="/frontend-scripts/result.js"></script>
