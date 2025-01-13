@@ -162,7 +162,6 @@ function createTraitCircle(trait, value, index) {
     circleElement.setAttribute("cy", "60");
     circleElement.setAttribute("r", "60");
     circleElement.setAttribute("fill", "#FFB347");
-    
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     valueText.setAttribute("x", "60");
