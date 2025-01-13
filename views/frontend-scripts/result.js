@@ -230,43 +230,39 @@ async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
     
     try {
-        // Make card visible temporarily for capture
-        card.style.display = 'block';
+        // Temporarily make visible for capture
+        card.style.position = 'fixed';
+        card.style.left = '0';
+        card.style.top = '0';
+        card.style.visibility = 'visible';
         
-        const container = document.createElement('div');
-        container.style.width = '600px';
-        container.style.height = '800px';
-        container.style.position = 'fixed';
-        container.style.left = '-9999px';
-        container.style.borderRadius = '20px';
-        container.style.overflow = 'hidden';
-
-        const cardClone = card.cloneNode(true);
-        cardClone.style.display = 'block';
-        container.appendChild(cardClone);
-        document.body.appendChild(container);
-
-        // Convert SVG to canvas
         const canvas = await html2canvas(card, {
             scale: 2,
-            backgroundColor: '#fff9f0',
+            backgroundColor: '#FFF9F0',
             logging: false,
             useCORS: true,
             allowTaint: true,
+            width: 600,
             height: 800,
-            width: 600
+            borderRadius: 20
         });
 
-        document.body.removeChild(wrapper);
-        card.style.display = 'none';
+        // Hide again
+        card.style.position = 'absolute';
+        card.style.left = '-9999px';
+        card.style.visibility = 'hidden';
 
-        // Download the image
+        // Download
         const link = document.createElement('a');
         link.download = 'AuraMatrix-Card.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     } catch (error) {
         console.error('Error generating card:', error);
+        // Ensure card is hidden on error
+        card.style.position = 'absolute';
+        card.style.left = '-9999px';
+        card.style.visibility = 'hidden';
     }
 }
 

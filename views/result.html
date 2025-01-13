@@ -49,17 +49,17 @@
     <div class="aura-card-section">
         <button id="downloadCard" class="download-button">Download Your Aura Card</button>
         
-        <div id="auraCard" class="aura-card" style="display: none;">
-            <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div id="auraCard" style="position: absolute; left: -9999px; visibility: hidden;">
+            <svg width="600" height="800" viewBox="0 0 600 800" fill="transparent" xmlns="http://www.w3.org/2000/svg">
                 <!-- Background -->
                 <rect width="600" height="800" rx="20" ry="20" fill="#FFF9F0"/>
                 
                 <!-- Large Semi-circle -->
-                <path d="M450 0C650 0 700 200 700 400C700 600 650 800 450 800L600 800L600 0L450 0Z" fill="url(#gradient)"/>
+                <path d="M300 0 Q 600 0, 600 400 Q 600 800, 300 800 L 600 800 L 600 0 Z" fill="url(#gradient)"/>
                 
                 <!-- Gradient Definition -->
                 <defs>
-                    <linearGradient id="gradient" x1="450" y1="0" x2="450" y2="800" gradientUnits="userSpaceOnUse">
+                    <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="800" gradientUnits="userSpaceOnUse">
                         <stop offset="0%" stop-color="#FFD280"/>
                         <stop offset="100%" stop-color="#FFB347"/>
                     </linearGradient>
