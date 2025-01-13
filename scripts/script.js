@@ -73,6 +73,17 @@ app.post('/predict', async (req, res) => {
               "Judging": 70
             }
           }
+
+          If user answer is random gibberish and you can't understand user answer return:
+          {
+            "personalityType": "Unknown",
+            "traits": {
+              "???": 00,
+              "???": 00,
+              "???": 00,
+              "???": 00
+            }
+          }
           `,
         },
       ],
