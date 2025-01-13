@@ -1,12 +1,10 @@
 .chart-container {
-  background: white;
-  border-radius: 20px;
+  background: #e5e5e5;
+  border: 2px solid #4a90e2;
   padding: 2rem;
   margin: 1rem auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   width: 90%;
-  animation: fadeIn 1s ease-in;
   display: flex;
 }
 
@@ -34,6 +32,7 @@
   text-align: center;
   color: #2d3436;
   margin-bottom: 2rem;
+  font-weight: bold;
 }
 
 .traits-grid {
@@ -44,10 +43,9 @@
 }
 
 .trait {
-  background: #f8f9fa;
-  border-radius: 10px;
+  background: #d3d3d3;
+  border: 2px solid #4a90e2;
   padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -61,8 +59,7 @@
 
 .trait-bar {
   height: 10px;
-  background: #e0e0e0;
-  border-radius: 5px;
+  background: #808080;
   overflow: hidden;
   margin: 0.5rem 0;
 }
@@ -103,9 +100,8 @@
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(145deg, #f8f9fa, #ffffff);
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  background: #e5e5e5;
+  border: 2px solid #808080;
 }
 
 .aura-title {
@@ -122,7 +118,7 @@
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: #e0e0e0;
+  background: #808080;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,8 +130,8 @@
   inset: -10px;
   border-radius: 50%;
   background: linear-gradient(45deg, #4a90e2, #63b3ed);
-  opacity: 0;
-  filter: blur(15px);
+  opacity: 0.5;
+  filter: blur(15px);  /* remove if needed */
 }
 
 .aura-ring.animate {
@@ -150,13 +146,12 @@
 .aura-circle {
   width: 80%;
   height: 80%;
-  background: white;
+  background: #d3d3d3;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .aura-percentage {
@@ -224,7 +219,6 @@
 
 .web{
   margin-bottom: 5px;
-  animation: fadeIn 1s ease-in;
 }
 
 .stats-layout {
@@ -246,8 +240,6 @@
   }
 }
 
-/* Add these new styles to your existing CSS */
-
 .aura-card-section {
   display: flex;
   flex-direction: column;
@@ -258,18 +250,16 @@
 }
 
 .download-button {
-  --bg: #000;
-  --hover-text: #fff;
+  --bg: #808080;
+  --hover-text: #d3d3d3;
   background: var(--bg);
-  color: white;
+  color: #d3d3d3;
   border: 1px solid var(--bg);
   padding: 0.8rem 2rem;
-  border-radius: 50px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: fadeIn 1s ease-in;
   text-decoration: none;
   display: inline-block;
 }
@@ -277,7 +267,7 @@
 .download-button:hover {
   color: var(--hover-text);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .aura-card {
