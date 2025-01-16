@@ -9,13 +9,13 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: 'https://aura-matrix.vercel.app'
+  origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500']
 }));
 app.use(express.json());
 
 app.post('/predict', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = new Groq({ apiKey: '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' });
     const { answers } = req.body;
 
     if (!Array.isArray(answers)) {
@@ -105,6 +105,10 @@ app.post('/predict', async (req, res) => {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to predict personality' });
   }
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
 app.listen(port, () => {

@@ -6,11 +6,12 @@
         "start": "node scripts/script.js"
     },
     "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
         "express": "^4.21.2",
-        "groq-sdk": "^0.3.0",
-        "cors": "^2.8.5"
+        "groq-sdk": "^0.3.3"
     },
     "engines": {
         "node": ">=18.0.0"
-      }
+    }
 }
