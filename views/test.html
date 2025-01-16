@@ -1,64 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraMatrix</title>
-    <link rel="stylesheet" href="/stylesheets/test.css">
+    <link rel="stylesheet" href="./stylesheets/test.css">
 </head>
+
 <body>
     <div class="welcome">
         <center class="logo">
-            <h2 style="font-family: 'Poppins', sans-serif; font-weight: bolder;">AuraMatrix</h2><span><i><q style="font-family: 'Poppins', sans-serif;">Discover world within you</q></i><br><i style="font-family: 'Poppins', sans-serif;">Be honest with yourself</i></span>
+            <h2 style="font-family: 'Poppins', sans-serif; font-weight: bolder;">AuraMatrix</h2><span><i><q
+                        style="font-family: 'Poppins', sans-serif;">Discover world within you</q></i><br><i
+                    style="font-family: 'Poppins', sans-serif;">Be honest with yourself</i></span>
         </center>
     </div>
     <center class="questions">
         <div>
             <form id="personalityForm" onsubmit="handleSubmit(event)">
-                <div class="brutalist-container">
-                    <input name="answer0" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
-                    <label class="brutalist-label">How do you feel about trying new and unconventional activities?</label>
+                <div class="brutalist-container active" data-question="0">
+                    <input name="answer0" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
+                    <label class="brutalist-label">How do you feel about trying new and unconventional
+                        activities?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer1" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="1">
+                    <input name="answer1" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">When you're in a group, how do you usually behave?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer2" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="2">
+                    <input name="answer2" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you handle criticism?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer3" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="3">
+                    <input name="answer3" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you approach planning for the future?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer4" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="4">
+                    <input name="answer4" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you feel about helping others?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer5" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="5">
+                    <input name="answer5" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you react when faced with a challenging problem?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer6" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="6">
+                    <input name="answer6" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you feel about expressing your opinions in a group?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer7" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="7">
+                    <input name="answer7" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you handle deadlines?</label>
                 </div>
-                <div class="brutalist-container">
-                    <input name="answer8" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container" data-question="8">
+                    <input name="answer8" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you feel about people who are very different from you?</label>
                 </div>
-                <div class="brutalist-container-end">
-                    <input name="answer9" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text" required />
+                <div class="brutalist-container-end" data-question="9">
+                    <input name="answer9" placeholder="TYPE HERE" class="brutalist-input smooth-type" type="text"
+                        required />
                     <label class="brutalist-label">How do you feel about taking risks?</label>
                 </div>
-                <button type="submit" class="button">Predict Personality</button>
+                <div class="navigation-buttons">
+                    <button type="button" class="button" id="prevBtn" onclick="previousQuestion()"
+                        disabled>Previous</button>
+                    <button type="button" class="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+                </div>
+                <button type="submit" class="button" id="submitBtn" style="display: none;">Predict Personality</button>
             </form>
         </div>
     </center>
-    <script src="/frontend-scripts/test.js"></script>
+
+    <script>
+        let currentQuestion = 0;
+        const totalQuestions = 10;
+
+        function showQuestion(questionNumber) {
+            // Hide all questions
+            document.querySelectorAll('.brutalist-container, .brutalist-container-end').forEach(container => {
+                container.classList.remove('active');
+            });
+
+            // Show current question
+            const currentContainer = document.querySelector(`[data-question="${questionNumber}"]`);
+            if (currentContainer) {
+                currentContainer.classList.add('active');
+            }
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = questionNumber === 0;
+            document.getElementById('nextBtn').style.display = questionNumber === totalQuestions - 1 ? 'none' : 'inline-block';
+            document.getElementById('submitBtn').style.display = questionNumber === totalQuestions - 1 ? 'inline-block' : 'none';
+
+            // Focus on the current input
+            const currentInput = currentContainer.querySelector('input');
+            if (currentInput) {
+                currentInput.focus();
+            }
+        }
+
+        function nextQuestion() {
+            const currentInput = document.querySelector(`[data-question="${currentQuestion}"] input`);
+            if (currentInput && currentInput.value.trim() === '') {
+                alert('Please answer the current question before proceeding.');
+                return;
+            }
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+        showQuestion(0);
+
+    </script>
+    <script src="./frontend-scripts/test.js"></script>
 </body>
+
 </html>

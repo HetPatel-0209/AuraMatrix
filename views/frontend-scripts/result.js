@@ -14,7 +14,7 @@ function getTraitDescription(name, value) {
         'THINKING': ['Feeling', 'Thinking'],
         'FEELING': ['Thinking', 'Feeling'],
         'JUDGING': ['Perceiving', 'Judging'],
-        'PERCEIVING':['Judging', 'Perceiving']
+        'PERCEIVING': ['Judging', 'Perceiving']
     };
 
     const pair = opposites[name.toUpperCase()];
@@ -40,7 +40,7 @@ function getAuraDescription(level) {
 function createAuraMeter(traits) {
     const auraLevel = calculateAuraLevel(traits);
     const auraDescription = getAuraDescription(auraLevel);
-    
+
     const auraElement = document.createElement('div');
     auraElement.className = 'aura-meter';
     auraElement.innerHTML = `
@@ -81,9 +81,9 @@ function animateTraitBars() {
     const fills = document.querySelectorAll('.trait-bar-fill');
     fills.forEach((fill, index) => {
         const targetWidth = parseInt(fill.getAttribute('data-target'));
-    
+
         fill.getBoundingClientRect();
-        
+
         setTimeout(() => {
             fill.style.width = `${targetWidth}%`;
         }, index * 200);
@@ -95,7 +95,7 @@ function updateTraitsDisplay(prediction) {
     const auraMeterWrapper = document.querySelector('.aura-meter-wrapper');
 
     if (!traitsContainer) return;
-    
+
     // Clear existing content
     traitsContainer.innerHTML = '';
     auraMeterWrapper.innerHTML = '';
@@ -128,7 +128,7 @@ function displayResult() {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
 
-            document.getElementById('personality-type').textContent = 
+            document.getElementById('personality-type').textContent =
                 `Your personality type is: ${prediction.personalityType}`;
 
             if (prediction.traits) {
@@ -155,7 +155,7 @@ function displayResult() {
 function createTraitCircle(trait, value, index) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
     circle.setAttribute("transform", `translate(0, ${index * 140})`);
-    
+
     // Create circle
     const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circleElement.setAttribute("cx", "60");
@@ -171,7 +171,7 @@ function createTraitCircle(trait, value, index) {
     valueText.setAttribute("fill", "white");
     valueText.setAttribute("font-weight", "bold");
     valueText.textContent = Math.round(value);
-    
+
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     traitText.setAttribute("x", "60");
@@ -180,11 +180,11 @@ function createTraitCircle(trait, value, index) {
     traitText.setAttribute("font-size", "16");
     traitText.setAttribute("fill", "white");
     traitText.textContent = trait;
-    
+
     circle.appendChild(circleElement);
     circle.appendChild(valueText);
     circle.appendChild(traitText);
-    
+
     return circle;
 }
 
@@ -197,7 +197,7 @@ function updateSVGCard(prediction) {
     const lastName = localStorage.getItem('userLastName') || '';
     const fullName = `${firstName}\n ${lastName}`.trim();
     document.querySelector('#userName').textContent = fullName;
-    
+
     // Update personality type with format: "ENFJ (Protagonist)"
     const personalityType = prediction.personalityType;
     const matches = personalityType.match(/([A-Z]{4})\s*$$([^)]+)$$/);
@@ -225,11 +225,11 @@ function updateSVGCard(prediction) {
 
 async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
-    
+
     try {
         // Make card visible temporarily for capture
         card.style.display = 'block';
-        
+
         // Convert SVG to canvas
         const canvas = await html2canvas(card, {
             scale: 2,
@@ -237,7 +237,7 @@ async function downloadAuraCard() {
             logging: false,
             borderRadius: 20
         });
-        
+
         // Hide card again
         card.style.display = 'none';
 
@@ -253,7 +253,7 @@ async function downloadAuraCard() {
 
 // Modify your existing displayResult function
 const oldDisplayResult = displayResult;
-displayResult = function() {
+displayResult = function () {
     oldDisplayResult();
     const urlParams = new URLSearchParams(window.location.search);
     const predictionStr = urlParams.get('prediction');
