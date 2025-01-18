@@ -276,25 +276,29 @@ async function generateStickers(personalityType) {
     loadingSpinner.style.display = 'flex';
     
     try {
-        const response = await fetch('https://auramatrix.onrender.com/generate-stickers', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ personalityType }),
-        });
+        console.log('Connecting to Hugging Face space...');
+        const client = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
         
-        if (!response.ok) {
-            throw new Error('Failed to generate stickers');
+        const stickers = [];
+        for (let i = 0; i < 4; i++) {
+            console.log(`Generating sticker ${i + 1}/4...`);
+            const result = await client.predict(
+                "/predict",
+                [   // API inputs should be in an array format
+                    `${personalityType} personality sticker in low-poly illustration with white background`  // prompt
+                ]
+            );
+            
+            console.log(`Sticker ${i + 1} result:`, result);
+            if (result.data && result.data[0]) {  // Access first element of data array
+                stickers.push(result.data[0]);
+            }
         }
         
-        const data = await response.json();
-        return data.stickers;
+        return stickers;
     } catch (error) {
         console.error('Error generating stickers:', error);
         return null;
-    } finally {
-        loadingSpinner.style.display = 'none';
     }
 }
 
