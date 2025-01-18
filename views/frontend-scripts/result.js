@@ -278,8 +278,14 @@ async function generateStickers(personalityType) {
     }
     
     try {
-        console.log('Connecting to sticker generation API...');
-        const response = await fetch('https://aura-matrix.vercel.app/generate-stickers', {
+        // Check if we're in development or production
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://aura-matrix.vercel.app';
+
+        console.log(`Connecting to sticker generation API at ${baseUrl}...`);
+        
+        const response = await fetch(`${baseUrl}/generate-stickers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -288,13 +294,39 @@ async function generateStickers(personalityType) {
         });
         
         if (!response.ok) {
-            throw new Error('Failed to generate stickers');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const { stickers } = await response.json();
-        return stickers;
+        const data = await response.json();
+        
+        if (!data.stickers || !Array.isArray(data.stickers)) {
+            throw new Error('Invalid sticker data received');
+        }
+        
+        return data.stickers;
     } catch (error) {
         console.error('Error generating stickers:', error);
+        // Show error message to user
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'sticker-error';
+        errorContainer.innerHTML = `
+            <p>Sorry, we couldn't generate your stickers right now. You can try:</p>
+            <ul>
+                <li>Refreshing the page</li>
+                <li>Checking your internet connection</li>
+                <li>Trying again later</li>
+            </ul>
+        `;
+        
+        const stickerSection = document.querySelector('.sticker-section');
+        if (stickerSection) {
+            const existingError = stickerSection.querySelector('.sticker-error');
+            if (existingError) {
+                existingError.remove();
+            }
+            stickerSection.appendChild(errorContainer);
+        }
+        
         return null;
     } finally {
         if (loadingSpinner) {
