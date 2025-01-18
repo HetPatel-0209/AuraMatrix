@@ -261,7 +261,6 @@ displayResult = async function () {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
             updateSVGCard(prediction);
-
             const stickers = await generateStickers(prediction.personalityType);
             if (stickers) {
               displayStickers(stickers);
@@ -273,6 +272,9 @@ displayResult = async function () {
 };
 
 async function generateStickers(personalityType) {
+    const loadingSpinner = document.getElementById('loading-stickers');
+    loadingSpinner.style.display = 'flex';
+    
     try {
         const response = await fetch('https://auramatrix.onrender.com/generate-stickers', {
             method: 'POST',
@@ -281,35 +283,42 @@ async function generateStickers(personalityType) {
             },
             body: JSON.stringify({ personalityType }),
         });
+        
+        if (!response.ok) {
+            throw new Error('Failed to generate stickers');
+        }
+        
         const data = await response.json();
         return data.stickers;
     } catch (error) {
         console.error('Error generating stickers:', error);
         return null;
+    } finally {
+        loadingSpinner.style.display = 'none';
     }
 }
 
 function displayStickers(stickers) {
-    const stickerGrid = document.querySelector('.sticker-grid');
+    if (!stickers || !Array.isArray(stickers)) return;
+    
     stickers.forEach((stickerUrl, index) => {
-        const stickerDiv = stickerGrid.querySelector(`.sticker${index + 1}`);
-        stickerDiv.style.backgroundImage = `url(${stickerUrl})`;
-        stickerDiv.style.backgroundSize = 'cover';
-        stickerDiv.style.backgroundPosition = 'center';
-
-        // Add download functionality
-        const downloadBtn = document.createElement('button');
-        downloadBtn.textContent = 'Download';
-        downloadBtn.className = 'download-sticker-btn';
-        downloadBtn.onclick = () => downloadSticker(stickerUrl, `sticker${index + 1}.png`);
-        stickerDiv.appendChild(downloadBtn);
+        const stickerElement = document.querySelector(`.sticker${index + 1}`);
+        if (stickerElement) {
+            stickerElement.style.backgroundImage = `url(${stickerUrl})`;
+            
+            // Set up download button
+            const downloadBtn = stickerElement.parentElement.querySelector('.download-sticker-btn');
+            if (downloadBtn) {
+                downloadBtn.onclick = () => downloadSticker(stickerUrl, `sticker${index + 1}.png`);
+            }
+        }
     });
-    // Add download all button
-    const downloadAllBtn = document.createElement('button');
-    downloadAllBtn.textContent = 'Download All Stickers';
-    downloadAllBtn.className = 'download-all-btn';
-    downloadAllBtn.onclick = () => downloadAllStickers(stickers);
-    stickerGrid.appendChild(downloadAllBtn);
+    
+    // Set up download all button
+    const downloadAllBtn = document.querySelector('.download-all-btn');
+    if (downloadAllBtn) {
+        downloadAllBtn.onclick = () => downloadAllStickers(stickers);
+    }
 }
 
 function downloadSticker(url, filename) {
@@ -322,8 +331,12 @@ function downloadSticker(url, filename) {
 }
 
 function downloadAllStickers(stickers) {
+    if (!stickers || !Array.isArray(stickers)) return;
+    
     stickers.forEach((url, index) => {
-        downloadSticker(url, `sticker${index + 1}.png`);
+        setTimeout(() => {
+            downloadSticker(url, `sticker${index + 1}.png`);
+        }, index * 500); // Add delay between downloads
     });
 }
 

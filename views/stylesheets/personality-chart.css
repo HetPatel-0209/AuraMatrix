@@ -305,51 +305,114 @@
   left: 0;
 }
 
+/* Add to personality-chart.css */
+.sticker-section {
+  margin: 2rem auto;
+  max-width: 800px;
+  padding: 0 1rem;
+}
+
+.sticker-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #2d3436;
+}
+
 .sticker-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin-top: 30px;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
-.sticker-grid>div {
+.sticker-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sticker {
+  width: 100%;
   aspect-ratio: 1;
   border-radius: 10px;
-  position: relative;
+  background-color: #f8f9fa;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.sticker:hover {
+  transform: scale(1.05);
 }
 
 .download-sticker-btn {
-  --bg: #000;
-  --hover-text: #fff;
-  background: var(--bg);
+  padding: 0.5rem 1.5rem;
+  background-color: #4a90e2;
   color: white;
-  border: 1px solid var(--bg);
-  padding: 0.8rem 2rem;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: 500;
+  border: none;
+  border-radius: 25px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: fadeIn 1s ease-in;
-  text-decoration: none;
-  display: inline-block;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.download-sticker-btn:hover {
+  background-color: #357abd;
 }
 
 .download-all-btn {
-  --bg: #000;
-  --hover-text: #fff;
-  background: var(--bg);
-  color: white;
-  border: 1px solid var(--bg);
+  display: block;
+  margin: 2rem auto;
   padding: 0.8rem 2rem;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: 500;
+  background-color: #2d3436;
+  color: white;
+  border: none;
+  border-radius: 25px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: fadeIn 1s ease-in;
-  text-decoration: none;
-  display: inline-block;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.download-all-btn:hover {
+  background-color: #1e2527;
+}
+
+.loading-spinner {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4a90e2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .sticker-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+  }
+  
+  .sticker {
+      max-width: 300px;
+      margin: 0 auto;
+  }
 }
 
 @media (max-width: 768px) {
