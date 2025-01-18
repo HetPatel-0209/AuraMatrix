@@ -118,7 +118,7 @@ app.post('/generate-stickers', async (req, res) => {
     
     const stickers = [];
     for (let i = 0; i < 4; i++) {
-      const result = await client.predict("/predict", { 		
+      const result = await client.predict("/predict-sticker", { 		
         param_0: `${personalityType} personality sticker in low-poly illustration with white background`, 
       });
       stickers.push(result.data);
