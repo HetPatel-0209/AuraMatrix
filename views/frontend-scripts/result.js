@@ -278,33 +278,25 @@ async function generateStickers(personalityType) {
     }
     
     try {
-        console.log('Connecting to Hugging Face space...');
-        const client = await  gradio.client("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
+        console.log('Connecting to sticker generation API...');
+        const response = await fetch('https://aura-matrix.vercel.app/generate-stickers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ personalityType }),
+        });
         
-        
-        const stickers = [];
-        for (let i = 0; i < 4; i++) {
-            console.log(`Generating sticker ${i + 1}/4...`);
-            try{
-                const result = await client.predict(
-                    `${personalityType} personality sticker in low-poly illustration with white background`,
-                    api_name="/predict"
-                );
-                
-                console.log(`Sticker ${i + 1} result:`, result);
-                if (result && result.length > 0) {
-                    stickers.push(result[0]);
-                }
-            }catch(predictError){
-                console.error(`Error generating sticker ${i + 1}:`, predictError);
-            }
+        if (!response.ok) {
+            throw new Error('Failed to generate stickers');
         }
         
+        const { stickers } = await response.json();
         return stickers;
     } catch (error) {
         console.error('Error generating stickers:', error);
         return null;
-    }finally {
+    } finally {
         if (loadingSpinner) {
             loadingSpinner.style.display = 'none';
         }
