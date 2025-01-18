@@ -2,12 +2,15 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import Groq from 'groq-sdk';
+import { Client } from "@gradio/client";
 import cors from 'cors';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
+
+//for llm response and personality evaluation
 app.use(cors({
   origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500']
 }));
@@ -114,3 +117,34 @@ app.get('/health', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+//for sticker generation
+app.post('/generate-stickers', async (req, res) => {
+  try {
+    const { personalityType } = req.body;
+    const client = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
+    
+    const stickers = [];
+    for (let i = 0; i < 4; i++) {
+      const result = await client.predict("/predict", { 		
+        param_0: `${personalityType} personality sticker in low-poly illustration with white background`, 
+      });
+      stickers.push(result.data);
+    }
+    
+    res.json({ stickers });
+  } catch (error) {
+    console.error('Error generating stickers:', error);
+    res.status(500).json({ error: 'Failed to generate stickers' });
+  }
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
