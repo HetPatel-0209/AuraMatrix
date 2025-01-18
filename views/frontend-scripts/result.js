@@ -274,7 +274,7 @@ displayResult = async function () {
 
 async function generateStickers(personalityType) {
     try {
-        const response = await fetch('https://your-server-url.com/generate-stickers', {
+        const response = await fetch('https://auramatrix.onrender.com/generate-stickers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
