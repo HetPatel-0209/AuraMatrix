@@ -129,6 +129,7 @@ app.post('/generate-stickers', async (req, res) => {
     console.error('Error generating stickers:', error);
     res.status(500).json({ error: 'Failed to generate stickers' });
   }
+  res.json({ message: 'Endpoint is working!' });
 });
 
 app.get('/health', (req, res) => {
