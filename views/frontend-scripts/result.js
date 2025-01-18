@@ -273,25 +273,30 @@ displayResult = async function () {
 
 async function generateStickers(personalityType) {
     const loadingSpinner = document.getElementById('loading-stickers');
-    loadingSpinner.style.display = 'flex';
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'flex';
+    }
     
     try {
         console.log('Connecting to Hugging Face space...');
-        const client = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
+        const client = await  gradio.client("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
+        
         
         const stickers = [];
         for (let i = 0; i < 4; i++) {
             console.log(`Generating sticker ${i + 1}/4...`);
-            const result = await client.predict(
-                "/predict",
-                [   // API inputs should be in an array format
-                    `${personalityType} personality sticker in low-poly illustration with white background`  // prompt
-                ]
-            );
-            
-            console.log(`Sticker ${i + 1} result:`, result);
-            if (result.data && result.data[0]) {  // Access first element of data array
-                stickers.push(result.data[0]);
+            try{
+                const result = await client.predict(
+                    `${personalityType} personality sticker in low-poly illustration with white background`,
+                    api_name="/predict"
+                );
+                
+                console.log(`Sticker ${i + 1} result:`, result);
+                if (result && result.length > 0) {
+                    stickers.push(result[0]);
+                }
+            }catch(predictError){
+                console.error(`Error generating sticker ${i + 1}:`, predictError);
             }
         }
         
@@ -299,13 +304,22 @@ async function generateStickers(personalityType) {
     } catch (error) {
         console.error('Error generating stickers:', error);
         return null;
+    }finally {
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+        }
     }
 }
 
 function displayStickers(stickers) {
-    if (!stickers || !Array.isArray(stickers)) return;
+    if (!stickers || !Array.isArray(stickers) || stickers.length === 0) {
+        console.warn('No valid stickers to display');
+        return;
+    }
     
     stickers.forEach((stickerUrl, index) => {
+        if (!stickerUrl) return;
+        
         const stickerElement = document.querySelector(`.sticker${index + 1}`);
         if (stickerElement) {
             stickerElement.style.backgroundImage = `url(${stickerUrl})`;
@@ -313,7 +327,7 @@ function displayStickers(stickers) {
             // Set up download button
             const downloadBtn = stickerElement.parentElement.querySelector('.download-sticker-btn');
             if (downloadBtn) {
-                downloadBtn.onclick = () => downloadSticker(stickerUrl, `sticker${index + 1}.png`);
+                downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
             }
         }
     });
@@ -326,21 +340,34 @@ function displayStickers(stickers) {
 }
 
 function downloadSticker(url, filename) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    if (!url) return;
+    
+    fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+        })
+        .catch(error => console.error('Error downloading sticker:', error));
 }
 
 function downloadAllStickers(stickers) {
-    if (!stickers || !Array.isArray(stickers)) return;
+    if (!stickers || !Array.isArray(stickers) || stickers.length === 0) {
+        console.warn('No stickers to download');
+        return;
+    }
     
     stickers.forEach((url, index) => {
+        if (!url) return;
         setTimeout(() => {
-            downloadSticker(url, `sticker${index + 1}.png`);
-        }, index * 500); // Add delay between downloads
+            downloadSticker(url, `personality-sticker-${index + 1}.png`);
+        }, index * 500);
     });
 }
 
