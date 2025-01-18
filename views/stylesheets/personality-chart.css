@@ -305,6 +305,53 @@
   left: 0;
 }
 
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.sticker-grid>div {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  position: relative;
+}
+
+.download-sticker-btn {
+  --bg: #000;
+  --hover-text: #fff;
+  background: var(--bg);
+  color: white;
+  border: 1px solid var(--bg);
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: fadeIn 1s ease-in;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.download-all-btn {
+  --bg: #000;
+  --hover-text: #fff;
+  background: var(--bg);
+  color: white;
+  border: 1px solid var(--bg);
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: fadeIn 1s ease-in;
+  text-decoration: none;
+  display: inline-block;
+}
+
 @media (max-width: 768px) {
   .aura-card {
       width: 100%;

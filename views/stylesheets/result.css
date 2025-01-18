@@ -94,27 +94,37 @@ body {
 }
 
 .download-sticker-btn {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ffb347;
+    --bg: #000;
+    --hover-text: #fff;
+    background: var(--bg);
     color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    border: 1px solid var(--bg);
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeIn 1s ease-in;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .download-all-btn {
-    grid-column: 1 / -1;
-    background-color: #ffb347;
+    --bg: #000;
+    --hover-text: #fff;
+    background: var(--bg);
     color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
+    border: 1px solid var(--bg);
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    margin-top: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeIn 1s ease-in;
+    text-decoration: none;
+    display: inline-block;
 }
 
 
