@@ -2,7 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import Groq from 'groq-sdk';
-import { Client } from "@gradio/client";
+import { predictWithGradio } from './helpers/gradio_helper.js';
 import cors from 'cors';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -112,24 +112,40 @@ app.post('/predict', async (req, res) => {
 
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
+  const { personalityType } = req.body;
+
   try {
-    const { personalityType } = req.body;
-    const client = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1", );
-    
-    const stickers = [];
-    for (let i = 0; i < 4; i++) {
-      const result = await client.predict("/predict-sticker", { 		
-        param_0: `${personalityType} personality sticker in low-poly illustration with white background`, 
-      });
-      stickers.push(result.data);
-    }
-    
-    res.json({ stickers });
+      if (!personalityType) {
+          return res.status(400).json({ error: 'personalityType is required' });
+      }
+
+      // Set up Server-Sent Events (SSE) for progress updates
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+
+      // Generate stickers using Gradio API with progress tracking
+      await predictWithGradio(
+          `${personalityType} personality sticker in low-poly illustration with white background,`,
+          (status) => {
+              // Send progress updates to the client
+              res.write(`data: ${JSON.stringify(status)}\n\n`);
+          }
+      )
+          .then((imageUrl) => {
+              // Send the final image URL
+              res.write(`data: ${JSON.stringify({ imageUrl })}\n\n`);
+              res.end();
+          })
+          .catch((error) => {
+              // Send an error message
+              res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+              res.end();
+          });
   } catch (error) {
-    console.error('Error generating stickers:', error);
-    res.status(500).json({ error: 'Failed to generate stickers' });
+      console.error('Error generating stickers:', error);
+      res.status(500).json({ error: 'Failed to generate stickers' });
   }
-  res.json({ message: 'Endpoint is working!' });
 });
 
 app.get('/health', (req, res) => {
