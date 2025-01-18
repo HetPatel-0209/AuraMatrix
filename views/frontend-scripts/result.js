@@ -283,7 +283,7 @@ async function generateStickers(personalityType) {
             ? 'http://localhost:3000'
             : 'https://aura-matrix.vercel.app';
 
-        console.log(`Connecting to sticker generation API at ${baseUrl}...`);
+        console.log(`Connecting to sticker generation API at ${baseUrl}/generate-stickers...`);
         
         const response = await fetch(`${baseUrl}/generate-stickers`, {
             method: 'POST',
@@ -298,6 +298,7 @@ async function generateStickers(personalityType) {
         }
         
         const data = await response.json();
+        console.log('Received sticker data:', data);
         
         if (!data.stickers || !Array.isArray(data.stickers)) {
             throw new Error('Invalid sticker data received');
