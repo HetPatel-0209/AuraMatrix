@@ -110,15 +110,11 @@ app.post('/predict', async (req, res) => {
   }
 });
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
   try {
     const { personalityType } = req.body;
-    const client = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
+    const client = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1", );
     
     const stickers = [];
     for (let i = 0; i < 4; i++) {
