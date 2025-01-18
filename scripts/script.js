@@ -6,8 +6,9 @@ import { Client } from "@gradio/client";
 import cors from 'cors';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
 
 //for llm response and personality evaluation
