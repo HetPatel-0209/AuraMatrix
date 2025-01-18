@@ -7,7 +7,7 @@ import cors from 'cors';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 3000;
 
 
 //for llm response and personality evaluation
@@ -113,11 +113,6 @@ app.post('/predict', async (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
-
 
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
