@@ -214,18 +214,14 @@ async function downloadAuraCard() {
     }
 }
 
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3000'
-  : 'https://aura-matrix.vercel.app';
-
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
     try {
-        const baseUrl = window.location.hostname === API_BASE_URL;
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://aura-matrix.vercel.app';
 
         console.log(`Connecting to sticker generation API at ${baseUrl}/generate-stickers...`);
-
-        const stickers = [];
 
         for (let i = 0; i < stickerCards.length; i++) {
             const card = stickerCards[i];
@@ -267,7 +263,7 @@ async function generateStickers(personalityType) {
                     }
                     if (stickerUrl) break;
                 }
-                stickers.push(stickerUrl);
+
                 displaySticker(card, stickerUrl, i);
             } catch (error) {
                 console.error(`Error generating sticker ${i + 1}:`, error);
@@ -276,10 +272,8 @@ async function generateStickers(personalityType) {
                 loader.style.display = 'none';
             }
         }
-        return stickers;
     } catch (error) {
         console.error('Error in sticker generation process:', error);
-        return null;
     }
 }
 
@@ -325,7 +319,7 @@ function downloadAllStickers(stickers) {
     });
 }
 
-function displayResult() {
+async function displayResult() {
     const urlParams = new URLSearchParams(window.location.search);
     const predictionStr = urlParams.get('prediction');
     const firstName = localStorage.getItem('userFirstName') || '';
@@ -348,7 +342,7 @@ function displayResult() {
                 "This personality assessment is based on your responses to our questionnaire. " +
                 "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
             updateSVGCard(prediction);
-            generateStickers(prediction.personalityType);
+            await generateStickers(prediction.personalityType);
         } catch (error) {
             console.error('Error parsing prediction:', error);
             document.getElementById('personality-type').textContent = "Error displaying results";
