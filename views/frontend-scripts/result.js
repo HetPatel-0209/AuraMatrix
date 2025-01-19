@@ -157,21 +157,35 @@ function updateSVGCard(prediction) {
     const svg = document.querySelector('#auraCard svg');
     if (!svg) return;
 
-    const defs = svg.querySelector('defs');
-    if (!defs.querySelector('style')) {
-        const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
-        styleElement.textContent = `
-            @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    const defsStyle = svg.querySelector('defs style');
+    if (defsStyle) {
+        defsStyle.textContent = `
+            @font-face {
+                font-family: 'Bricolage Grotesque';
+                src: url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: 'Poppins';
+                src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+                font-weight: normal;
+                font-style: normal;
+            }
             
             .name-text {
-                font-family: 'Bricolage Grotesque', sans-serif;
+                font-family: 'Bricolage Grotesque', sans-serif !important;
+                font-weight: 700;
             }
-            .regular-text {
-                font-family: 'Poppins', sans-serif;
+            .type-text {
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 500;
+            }
+            .stat-text {
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400;
             }
         `;
-        defs.appendChild(styleElement);
     }
 
     // Update name and type
@@ -181,6 +195,7 @@ function updateSVGCard(prediction) {
 
     const userName = document.querySelector('#userName');
     userName.textContent = fullName;
+    userName.style.cssText = "font-family: 'Bricolage Grotesque', sans-serif !important; font-weight: 700;";
     userName.setAttribute('class', 'name-text');
 
     // Update personality type with format: "ENFJ (Protagonist)"
@@ -193,7 +208,8 @@ function updateSVGCard(prediction) {
         userType.textContent = personalityType;
     }
 
-    userType.setAttribute('class', 'regular-text');
+    userType.style.cssText = "font-family: 'Poppins', sans-serif !important; font-weight: 500;";
+    userType.setAttribute('class', 'type-text');
 
     // Clear existing trait circles
     const traitCircles = document.querySelector('#traitCircles');
@@ -204,31 +220,30 @@ function updateSVGCard(prediction) {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
         circle.setAttribute("transform", `translate(0, ${index * 140})`);
 
-        // Circle background
         const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circleElement.setAttribute("cx", "60");
         circleElement.setAttribute("cy", "60");
         circleElement.setAttribute("r", "60");
         circleElement.setAttribute("fill", "#febd59");
 
-        // Value text with Poppins font
         const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
         valueText.setAttribute("x", "60");
         valueText.setAttribute("y", "55");
         valueText.setAttribute("text-anchor", "middle");
         valueText.setAttribute("font-size", "48");
         valueText.setAttribute("fill", "white");
-        valueText.setAttribute("class", "regular-text");
+        valueText.style.cssText = "font-family: 'Poppins', sans-serif !important; font-weight: 600;";
+        valueText.setAttribute('class', 'stat-text');
         valueText.textContent = Math.round(value);
 
-        // Trait name with Poppins font
         const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
         traitText.setAttribute("x", "60");
         traitText.setAttribute("y", "85");
         traitText.setAttribute("text-anchor", "middle");
         traitText.setAttribute("font-size", "16");
         traitText.setAttribute("fill", "white");
-        traitText.setAttribute("class", "regular-text");
+        traitText.style.cssText = "font-family: 'Poppins', sans-serif !important; font-weight: 400;";
+        traitText.setAttribute('class', 'stat-text');
         traitText.textContent = trait;
 
         circle.appendChild(circleElement);
@@ -243,11 +258,12 @@ function updateSVGCard(prediction) {
     const auraDescription = document.querySelector('#auraDescription');
 
     auraPercentage.textContent = `${auraLevel}%`;
-    auraPercentage.setAttribute('class', 'regular-text');
+    auraPercentage.style.cssText = "font-family: 'Poppins', sans-serif !important; font-weight: 700;";
+    auraPercentage.setAttribute('class', 'stat-text');
     
     auraDescription.textContent = getAuraDescription(auraLevel);
-    auraDescription.setAttribute('class', 'regular-text');
-
+    auraDescription.style.cssText = "font-family: 'Poppins', sans-serif !important; font-weight: 500;";
+    auraDescription.setAttribute('class', 'stat-text');
 }
 
 async function downloadAuraCard() {
