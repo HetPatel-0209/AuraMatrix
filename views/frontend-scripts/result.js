@@ -200,7 +200,7 @@ async function downloadAuraCard() {
         hiddenContainer.style.left = '-9999px';
         hiddenContainer.style.top = '-9999px';
         document.body.appendChild(hiddenContainer);
-        
+
         // Clone the card and append to hidden container
         const cardClone = card.cloneNode(true);
         cardClone.style.display = 'block';
@@ -216,7 +216,7 @@ async function downloadAuraCard() {
                 // Force font-family on cloned elements
                 const nameText = clonedDoc.querySelector('.force-poppins');
                 if (nameText) nameText.style.fontFamily = "'Bricolage Grotesque', sans-serif";
-                
+
                 const regularTexts = clonedDoc.querySelectorAll('.force-poppins');
                 regularTexts.forEach(text => text.style.fontFamily = "'Poppins', sans-serif");
             }
@@ -263,7 +263,7 @@ async function generateStickers(personalityType) {
                 }
 
                 const reader = response.body.getReader();
-                let stickerUrl = '';
+                let stickerUrls = [];
 
                 while (true) {
                     const { done, value } = await reader.read();
@@ -273,16 +273,20 @@ async function generateStickers(personalityType) {
                     for (const line of lines) {
                         if (line.startsWith('data: ')) {
                             const data = JSON.parse(line.slice(5));
-                            if (data.imageUrl) {
-                                stickerUrl = data.imageUrl;
+                            if (data.imageUrls) {
+                                stickerUrls = data.imageUrls;
                                 break;
                             }
                         }
                     }
-                    if (stickerUrl) break;
+                    if (stickerUrls > 0) break;
                 }
 
-                displaySticker(card, stickerUrl, i);
+                if (stickerUrls.length > i) {
+                    displaySticker(card, stickerUrls[i], i);
+                } else {
+                    displayStickerError(card);
+                }
             } catch (error) {
                 console.error(`Error generating sticker ${i + 1}:`, error);
                 displayStickerError(card);

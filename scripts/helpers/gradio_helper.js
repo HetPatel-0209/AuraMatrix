@@ -4,7 +4,6 @@ import { Client } from '@gradio/client';
 async function predictWithGradio(input, onProgress) {
     try {
         const app = await Client.connect("Het01/black-forest-labs-FLUX.1-schnell-AuraMatrix1");
-
         const job = app.submit("/predict", [input], {
             on_status: (status) => {
                 if (onProgress) {
@@ -13,22 +12,23 @@ async function predictWithGradio(input, onProgress) {
             },
         });
 
-        let finalResult = null;
+        let imageUrls = [];
         for await (const message of job) {
             if (message.type === "data") {
                 const data = message.data;
-                if (data.length > 0) {
-                    finalResult = data[0].url;
-                }
-                break;
+                data.forEach((item) => {
+                    if (item.url) {
+                        imageUrls.push(item.url);
+                    }
+                });
             }
         }
 
-        if (!finalResult) {
-            throw new Error("Failed to fetch image from Gradio API.");
+        if (imageUrls.length === 0) {
+            throw new Error("No images received from Gradio API.");
         }
 
-        return finalResult;
+        return imageUrls;
     } catch (error) {
         console.error("Error in Gradio API call:", error);
         throw new Error("Failed to fetch image from Gradio API.");

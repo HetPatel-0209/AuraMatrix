@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.post('/predict', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey:process.env.GROQ_API_KEY });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { answers } = req.body;
 
     if (!Array.isArray(answers)) {
@@ -112,43 +112,37 @@ app.post('/predict', async (req, res) => {
 
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
-  console.log('Received generate-stickers request');
   const { personalityType } = req.body;
 
   try {
-      if (!personalityType) {
-          return res.status(400).json({ error: 'personalityType is required' });
+    if (!personalityType) {
+      return res.status(400).json({ error: 'personalityType is required' });
+    }
+
+    const roleMatch = personalityType.match(/\((.*?)\)/);
+    const role = roleMatch ? roleMatch[1] : personalityType;
+
+    // Set up Server-Sent Events (SSE) for progress updates
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    // Generate stickers using Gradio API with progress tracking
+    await predictWithGradio(
+      `${role} personality sticker in low-poly illustration with black background,`,
+      (status) => {
+        res.write(`data: ${JSON.stringify(status)}\n\n`);
       }
-
-      const roleMatch = personalityType.match(/\((.*?)\)/);
-      const role = roleMatch ? roleMatch[1] : personalityType;
-
-      // Set up Server-Sent Events (SSE) for progress updates
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
-
-      // Generate stickers using Gradio API with progress tracking
-      await predictWithGradio(
-          `${role} personality sticker in low-poly illustration with black background,`,
-          (status) => {
-              // Send progress updates to the client
-              res.write(`data: ${JSON.stringify(status)}\n\n`);
-          }
-      )
-          .then((imageUrl) => {
-              // Send the final image URL
-              res.write(`data: ${JSON.stringify({ imageUrl })}\n\n`);
-              res.end();
-          })
-          .catch((error) => {
-              // Send an error message
-              res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-              res.end();
-          });
+    ).then((imageUrls) => {
+      res.write(`data: ${JSON.stringify({ imageUrls })}\n\n`);
+      res.end();
+    }).catch((error) => {
+      res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+      res.end();
+    });
   } catch (error) {
-      console.error('Error generating stickers:', error);
-      res.status(500).json({ error: 'Failed to generate stickers' });
+    console.error('Error generating stickers:', error);
+    res.status(500).json({ error: 'Failed to generate stickers' });
   }
 });
 
