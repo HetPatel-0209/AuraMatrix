@@ -133,7 +133,7 @@ function createTraitCircle(trait, value, index) {
     valueText.setAttribute("font-size", "48");
     valueText.setAttribute("fill", "white");
     valueText.setAttribute("font-weight", "bold");
-    valueText.classList.add("regular-text");
+    valueText.classList.add("force-poppins");
     valueText.style.fontFamily = "Poppins, sans-serif";
     valueText.textContent = Math.round(value);
 
@@ -144,7 +144,7 @@ function createTraitCircle(trait, value, index) {
     traitText.setAttribute("text-anchor", "middle");
     traitText.setAttribute("font-size", "16");
     traitText.setAttribute("fill", "white");
-    traitText.classList.add("regular-text");
+    traitText.classList.add("force-poppins");
     traitText.style.fontFamily = "Poppins, sans-serif";
     traitText.textContent = trait;
 
@@ -206,12 +206,6 @@ async function downloadAuraCard() {
         cardClone.style.display = 'block';
         hiddenContainer.appendChild(cardClone);
 
-        // Wait for fonts to load
-        await document.fonts.ready;
-        
-        // Additional delay to ensure font rendering
-        await new Promise(resolve => setTimeout(resolve, 100));
-
         const canvas = await html2canvas(cardClone, {
             scale: 2,
             backgroundColor: '#000000',
@@ -220,10 +214,10 @@ async function downloadAuraCard() {
             useCORS: true,
             onclone: (clonedDoc) => {
                 // Force font-family on cloned elements
-                const nameText = clonedDoc.querySelector('.name-text');
+                const nameText = clonedDoc.querySelector('.force-poppins');
                 if (nameText) nameText.style.fontFamily = "'Bricolage Grotesque', sans-serif";
                 
-                const regularTexts = clonedDoc.querySelectorAll('.regular-text');
+                const regularTexts = clonedDoc.querySelectorAll('.force-poppins');
                 regularTexts.forEach(text => text.style.fontFamily = "'Poppins', sans-serif");
             }
         });
