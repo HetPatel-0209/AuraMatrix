@@ -157,20 +157,43 @@ function updateSVGCard(prediction) {
     const svg = document.querySelector('#auraCard svg');
     if (!svg) return;
 
+    const defs = svg.querySelector('defs');
+    if (!defs.querySelector('style')) {
+        const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+        styleElement.textContent = `
+            @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+            
+            .name-text {
+                font-family: 'Bricolage Grotesque', sans-serif;
+            }
+            .regular-text {
+                font-family: 'Poppins', sans-serif;
+            }
+        `;
+        defs.appendChild(styleElement);
+    }
+
     // Update name and type
     const firstName = localStorage.getItem('userFirstName') || 'User';
     const lastName = localStorage.getItem('userLastName') || '';
     const fullName = `${firstName}\n ${lastName}`.trim();
-    document.querySelector('#userName').textContent = fullName;
+
+    const userName = document.querySelector('#userName');
+    userName.textContent = fullName;
+    userName.setAttribute('class', 'name-text');
 
     // Update personality type with format: "ENFJ (Protagonist)"
     const personalityType = prediction.personalityType;
     const matches = personalityType.match(/([A-Z]{4})\s*$$([^)]+)$$/);
+    const userType = document.querySelector('#userType');
     if (matches) {
-        document.querySelector('#userType').textContent = `${matches[1]} (${matches[2]})`;
+        userType.textContent = matches[2] ? `${matches[1]} (${matches[2]})` : matches[1];
     } else {
-        document.querySelector('#userType').textContent = personalityType;
+        userType.textContent = personalityType;
     }
+
+    userType.setAttribute('class', 'regular-text');
 
     // Clear existing trait circles
     const traitCircles = document.querySelector('#traitCircles');
@@ -178,14 +201,53 @@ function updateSVGCard(prediction) {
 
     // Add new trait circles
     Object.entries(prediction.traits).forEach(([trait, value], index) => {
-        const circle = createTraitCircle(trait, value, index);
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        circle.setAttribute("transform", `translate(0, ${index * 140})`);
+
+        // Circle background
+        const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circleElement.setAttribute("cx", "60");
+        circleElement.setAttribute("cy", "60");
+        circleElement.setAttribute("r", "60");
+        circleElement.setAttribute("fill", "#febd59");
+
+        // Value text with Poppins font
+        const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        valueText.setAttribute("x", "60");
+        valueText.setAttribute("y", "55");
+        valueText.setAttribute("text-anchor", "middle");
+        valueText.setAttribute("font-size", "48");
+        valueText.setAttribute("fill", "white");
+        valueText.setAttribute("class", "regular-text");
+        valueText.textContent = Math.round(value);
+
+        // Trait name with Poppins font
+        const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        traitText.setAttribute("x", "60");
+        traitText.setAttribute("y", "85");
+        traitText.setAttribute("text-anchor", "middle");
+        traitText.setAttribute("font-size", "16");
+        traitText.setAttribute("fill", "white");
+        traitText.setAttribute("class", "regular-text");
+        traitText.textContent = trait;
+
+        circle.appendChild(circleElement);
+        circle.appendChild(valueText);
+        circle.appendChild(traitText);
         traitCircles.appendChild(circle);
     });
 
     // Update aura level
     const auraLevel = calculateAuraLevel(prediction.traits);
-    document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
-    document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
+    const auraPercentage = document.querySelector('#auraPercentage');
+    const auraDescription = document.querySelector('#auraDescription');
+
+    auraPercentage.textContent = `${auraLevel}%`;
+    auraPercentage.setAttribute('class', 'regular-text');
+    
+    auraDescription.textContent = getAuraDescription(auraLevel);
+    auraDescription.setAttribute('class', 'regular-text');
+
 }
 
 async function downloadAuraCard() {
