@@ -8,12 +8,31 @@
     <link rel="stylesheet" href="./stylesheets/result.css">
     <link rel="stylesheet" href="./stylesheets/personality-chart.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        /* Force font loading */
+        .force-bricolage {
+            font-family: 'Bricolage Grotesque', sans-serif;
+        }
+
+        .force-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
 </head>
 </head>
 
 <body>
+    <div style="position: absolute; visibility: hidden;">
+        <span class="force-bricolage">Force Bricolage</span>
+        <span class="force-poppins">Force Poppins</span>
+    </div>
     <div class="logo">
         <h2>AuraMatrix</h2>
         <span><i><q>Discover world within you</q></i><br></span>
@@ -62,10 +81,15 @@
                 <defs>
                     <style type="text/css">
                         @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-                    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-                    
-                    .name-text { font-family: 'Bricolage Grotesque', sans-serif !important; }
-                    .regular-text { font-family: 'Poppins', sans-serif !important; }
+                        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+                        .name-text {
+                            font-family: 'Bricolage Grotesque', sans-serif !important;
+                        }
+
+                        .regular-text {
+                            font-family: 'Poppins', sans-serif !important;
+                        }
                     </style>
                 </defs>
                 <!-- Decorative Circle -->
@@ -95,8 +119,10 @@
                 <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
-                    <text id="userName" class="name-text" x="50" y="80" font-size="64" font-weight="700" fill="#5d4017" ></text>
-                    <text id="userType" class="regular-text" x="50" y="140" font-size="32" font-weight="500" fill="#5d4017" opacity="0.8"></text>
+                    <text id="userName" class="force-bricolage" x="50" y="80" font-size="64" font-weight="700"
+                        fill="#5d4017"></text>
+                    <text id="userType" class="force-poppins" x="50" y="140" font-size="32" font-weight="500"
+                        fill="#5d4017" opacity="0.8"></text>
 
                     <!-- Trait Circles -->
                     <g id="traitCircles" transform="translate(50, 200)">
@@ -105,10 +131,10 @@
 
                     <!-- Aura Level -->
                     <g id="auraLevel" transform="translate(400, 400)">
-                        <text id="auraPercentage" class="regular-text" x="60" y="0" font-size="96" font-weight="700" fill="#ffffff"
-                            text-anchor="middle"></text>
-                        <text id="auraDescription" class="regular-text" x="60" y="50" font-size="32" font-weight="500" fill="#ffffff"
-                            text-anchor="middle"></text>
+                        <text id="auraPercentage" class="force-poppins" x="60" y="0" font-size="96" font-weight="700"
+                            fill="#ffffff" text-anchor="middle"></text>
+                        <text id="auraDescription" class="force-poppins" x="60" y="50" font-size="32" font-weight="500"
+                            fill="#ffffff" text-anchor="middle"></text>
                     </g>
 
                     <!-- Brand -->
@@ -143,10 +169,6 @@
             </div>
         </div>
         <button class="download-all-btn">Download All Stickers</button>
-    </div>
-    <div style="position: absolute; visibility: hidden;">
-        <span class="force-bricolage">Force Bricolage</span>
-        <span class="force-poppins">Force Poppins</span>
     </div>
     <script src="./frontend-scripts/result.js"></script>
 </body>
