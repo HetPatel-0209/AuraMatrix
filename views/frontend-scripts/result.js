@@ -124,7 +124,7 @@ function createTraitCircle(trait, value, index) {
     circleElement.setAttribute("cx", "60");
     circleElement.setAttribute("cy", "60");
     circleElement.setAttribute("r", "60");
-    circleElement.setAttribute("fill", "#FFB347");
+    circleElement.setAttribute("fill", "#febd59");
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     valueText.setAttribute("x", "60");
@@ -196,7 +196,7 @@ async function downloadAuraCard() {
         // Convert SVG to canvas
         const canvas = await html2canvas(card, {
             scale: 2,
-            backgroundColor: '#fff9f0',
+            backgroundColor: '#000000',
             logging: false,
             borderRadius: 20
         });
