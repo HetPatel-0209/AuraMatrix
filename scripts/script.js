@@ -4,11 +4,11 @@ import { dirname, join } from 'path';
 import Groq from 'groq-sdk';
 import { predictWithGradio } from './helpers/gradio_helper.js';
 import cors from 'cors';
+import axios from 'axios';
+import sharp from 'sharp';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
-const axios = require('axios');
-const sharp = require('sharp');
 const port = process.env.PORT || 3000;
 
 
