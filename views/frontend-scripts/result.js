@@ -244,27 +244,14 @@ async function generateStickers(personalityType) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const reader = response.body.getReader();
-                let stickerUrl = '';
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                sticker.style.backgroundImage = `url(${url})`;
+                const downloadBtn = card.querySelector('.download-sticker-btn');
+                downloadBtn.href = url;
+                downloadBtn.download = `sticker-${i + 1}.jpg`;
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    const chunk = new TextDecoder().decode(value);
-                    const lines = chunk.split('\n');
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const data = JSON.parse(line.slice(5));
-                            if (data.imageUrl) {
-                                stickerUrl = data.imageUrl;
-                                break;
-                            }
-                        }
-                    }
-                    if (stickerUrl) break;
-                }
-
-                displaySticker(card, stickerUrl, i);
+                displaySticker(card, url, i);
             } catch (error) {
                 console.error(`Error generating sticker ${i + 1}:`, error);
                 displayStickerError(card);
@@ -281,8 +268,17 @@ function displaySticker(card, stickerUrl, index) {
     const sticker = card.querySelector('.sticker');
     const downloadBtn = card.querySelector('.download-sticker-btn');
 
-    sticker.style.backgroundImage = `url(${stickerUrl})`;
-    downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
+    const imgElement = document.createElement('img');
+    imgElement.src = stickerUrl;
+    imgElement.onload = () => {
+        // Optionally, add some styling or event handlers
+        sticker.appendChild(imgElement);
+    };
+    imgElement.onerror = () => {
+        console.error('Failed to load sticker image.');
+    };
+
+    downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.jpg`);
 }
 
 function displayStickerError(card) {
