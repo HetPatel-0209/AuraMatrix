@@ -133,8 +133,7 @@ function createTraitCircle(trait, value, index) {
     valueText.setAttribute("font-size", "48");
     valueText.setAttribute("fill", "white");
     valueText.setAttribute("font-weight", "bold");
-    valueText.classList.add("force-poppins");
-    valueText.style.fontFamily = "Poppins, sans-serif";
+    valueText.setAttribute("font-family", "Poppins, sans-serif");
     valueText.textContent = Math.round(value);
 
     // Create trait name text
@@ -144,8 +143,7 @@ function createTraitCircle(trait, value, index) {
     traitText.setAttribute("text-anchor", "middle");
     traitText.setAttribute("font-size", "16");
     traitText.setAttribute("fill", "white");
-    traitText.classList.add("force-poppins");
-    traitText.style.fontFamily = "Poppins, sans-serif";
+    traitText.setAttribute("font-family", "Poppins, sans-serif");
     traitText.textContent = trait;
 
     circle.appendChild(circleElement);

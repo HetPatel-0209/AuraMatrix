@@ -76,11 +76,9 @@
 
         <div id="auraCard" class="aura-card" style="display: none;">
             <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Background with rounded corners -->
-                <rect width="600" height="800" rx="20" ry="20" fill="#fffdee" />
                 <defs>
                     <style type="text/css">
-                        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+                        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap');
                         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
                         .name-text {
@@ -92,6 +90,8 @@
                         }
                     </style>
                 </defs>
+                <!-- Background with rounded corners -->                 
+                <rect width="600" height="800" rx="20" ry="20" fill="#fffdee" />
                 <!-- Decorative Circle -->
                 <svg y="40" width="600" height="700" viewBox="0 0 1 994" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -119,9 +119,9 @@
                 <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
-                    <text id="userName" class="force-bricolage" x="50" y="80" font-size="64" font-weight="700"
+                    <text id="userName" class="name-text" x="50" y="80" font-size="64" font-weight="700"
                         fill="#5d4017"></text>
-                    <text id="userType" class="force-poppins" x="50" y="140" font-size="32" font-weight="500"
+                    <text id="userType" class="regular-text" x="50" y="140" font-size="32" font-weight="500"
                         fill="#5d4017" opacity="0.8"></text>
 
                     <!-- Trait Circles -->
@@ -131,9 +131,9 @@
 
                     <!-- Aura Level -->
                     <g id="auraLevel" transform="translate(400, 400)">
-                        <text id="auraPercentage" class="force-poppins" x="60" y="0" font-size="96" font-weight="700"
+                        <text id="auraPercentage" class="regular-text" x="60" y="0" font-size="96" font-weight="700"
                             fill="#ffffff" text-anchor="middle"></text>
-                        <text id="auraDescription" class="force-poppins" x="60" y="50" font-size="32" font-weight="500"
+                        <text id="auraDescription" class="regular-text" x="60" y="50" font-size="32" font-weight="500"
                             fill="#ffffff" text-anchor="middle"></text>
                     </g>
 
