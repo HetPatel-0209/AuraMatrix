@@ -219,7 +219,7 @@ async function generateStickers(personalityType) {
     try {
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3000'
-            : 'https://aura-matrix.vercel.app';
+            : 'https://auramatrix.onrender.com';
 
         console.log(`Connecting to sticker generation API at ${baseUrl}/generate-stickers...`);
 

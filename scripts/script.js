@@ -112,6 +112,7 @@ app.post('/predict', async (req, res) => {
 
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
+  console.log('Received generate-stickers request');
   const { personalityType } = req.body;
 
   try {

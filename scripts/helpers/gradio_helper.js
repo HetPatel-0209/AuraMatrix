@@ -35,4 +35,4 @@ async function predictWithGradio(input, onProgress) {
     }
 }
 
-export { predictWithGradio }; // Correct export
+export { predictWithGradio };
