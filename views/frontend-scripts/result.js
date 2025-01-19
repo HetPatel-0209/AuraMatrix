@@ -202,9 +202,13 @@ async function downloadAuraCard() {
         cardClone.style.display = 'block';
         hiddenContainer.appendChild(cardClone);
 
-        // Hide card again
-        card.style.display = 'none';
-
+        const canvas = await html2canvas(cardClone, {
+            scale: 2,
+            backgroundColor: '#000000',
+            logging: false,
+            borderRadius: 20
+        });
+        hiddenContainer.remove();
         // Download the image
         const link = document.createElement('a');
         link.download = 'AuraMatrix-Card.png';
