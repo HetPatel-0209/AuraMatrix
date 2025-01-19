@@ -114,43 +114,6 @@ function updateTraitsDisplay(prediction) {
     });
 }
 
-function displayResult() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const predictionStr = urlParams.get('prediction');
-    const firstName = localStorage.getItem('userFirstName') || '';
-    const lastName = localStorage.getItem('userLastName') || '';
-
-    if (firstName || lastName) {
-        document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
-    }
-
-    if (predictionStr) {
-        try {
-            const prediction = JSON.parse(decodeURIComponent(predictionStr));
-
-            document.getElementById('personality-type').textContent =
-                `Your personality type is: ${prediction.personalityType}`;
-
-            if (prediction.traits) {
-                updateTraitsDisplay(prediction);
-            }
-
-            document.getElementById('description').textContent =
-                "This personality assessment is based on your responses to our questionnaire. " +
-                "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
-
-        } catch (error) {
-            console.error('Error parsing prediction:', error);
-            document.getElementById('personality-type').textContent = "Error displaying results";
-            document.getElementById('description').textContent = "Please try taking the test again.";
-            document.querySelector('.traits-container').innerHTML = '';
-        }
-    } else {
-        document.getElementById('personality-type').textContent = "No prediction available";
-        document.getElementById('description').textContent = "Please try taking the test again.";
-    }
-}
-
 // Aura card
 function createTraitCircle(trait, value, index) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -251,6 +214,153 @@ async function downloadAuraCard() {
     }
 }
 
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://aura-matrix.vercel.app';
+
+async function generateStickers(personalityType) {
+    const stickerCards = document.querySelectorAll('.sticker-card');
+    try {
+        const baseUrl = window.location.hostname === API_BASE_URL;
+
+        console.log(`Connecting to sticker generation API at ${baseUrl}/generate-stickers...`);
+
+        const stickers = [];
+
+        for (let i = 0; i < stickerCards.length; i++) {
+            const card = stickerCards[i];
+            const loader = card.querySelector('.sticker-loader');
+            const sticker = card.querySelector('.sticker');
+
+            loader.style.display = 'block';
+            sticker.style.backgroundImage = 'none';
+
+            try {
+                const response = await fetch(`${baseUrl}/generate-stickers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ personalityType }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                let stickerUrl = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = new TextDecoder().decode(value);
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = JSON.parse(line.slice(5));
+                            if (data.imageUrl) {
+                                stickerUrl = data.imageUrl;
+                                break;
+                            }
+                        }
+                    }
+                    if (stickerUrl) break;
+                }
+                stickers.push(stickerUrl);
+                displaySticker(card, stickerUrl, i);
+            } catch (error) {
+                console.error(`Error generating sticker ${i + 1}:`, error);
+                displayStickerError(card);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+        return stickers;
+    } catch (error) {
+        console.error('Error in sticker generation process:', error);
+        return null;
+    }
+}
+
+function displaySticker(card, stickerUrl, index) {
+    const sticker = card.querySelector('.sticker');
+    const downloadBtn = card.querySelector('.download-sticker-btn');
+
+    sticker.style.backgroundImage = `url(${stickerUrl})`;
+    downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
+}
+
+function displayStickerError(card) {
+    const sticker = card.querySelector('.sticker');
+    sticker.innerHTML = `
+        <p>Sorry, we couldn't generate this sticker.</p>
+        <p>Please try refreshing the page.</p>
+    `;
+    sticker.style.display = 'flex';
+    sticker.style.flexDirection = 'column';
+    sticker.style.justifyContent = 'center';
+    sticker.style.alignItems = 'center';
+    sticker.style.textAlign = 'center';
+    sticker.style.color = '#ff0000';
+    sticker.style.fontSize = '14px';
+}
+
+function downloadSticker(url, filename) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+}
+
+function downloadAllStickers(stickers) {
+    const stickerCards = document.querySelectorAll('.sticker-card');
+    stickerCards.forEach((card, index) => {
+        const sticker = card.querySelector('.sticker');
+        const backgroundImage = sticker.style.backgroundImage;
+        if (backgroundImage) {
+            const url = backgroundImage.slice(5, -2); // Remove 'url("' and '")'
+            downloadSticker(url, `personality-sticker-${index + 1}.png`);
+        }
+    });
+}
+
+function displayResult() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const predictionStr = urlParams.get('prediction');
+    const firstName = localStorage.getItem('userFirstName') || '';
+    const lastName = localStorage.getItem('userLastName') || '';
+
+    if (firstName || lastName) {
+        document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
+    }
+
+    if (predictionStr) {
+        try {
+            const prediction = JSON.parse(decodeURIComponent(predictionStr));
+            document.getElementById('personality-type').textContent = `Your personality type is: ${prediction.personalityType}`;
+
+            if (prediction.traits) {
+                updateTraitsDisplay(prediction);
+            }
+
+            document.getElementById('description').textContent =
+                "This personality assessment is based on your responses to our questionnaire. " +
+                "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
+            updateSVGCard(prediction);
+            generateStickers(prediction.personalityType);
+        } catch (error) {
+            console.error('Error parsing prediction:', error);
+            document.getElementById('personality-type').textContent = "Error displaying results";
+            document.getElementById('description').textContent = "Please try taking the test again.";
+            document.querySelector('.traits-container').innerHTML = '';
+        }
+    } else {
+        document.getElementById('personality-type').textContent = "No prediction available";
+        document.getElementById('description').textContent = "Please try taking the test again.";
+    }
+}
+
 // Modify your existing displayResult function
 const oldDisplayResult = displayResult;
 displayResult = async function () {
@@ -263,7 +373,7 @@ displayResult = async function () {
             updateSVGCard(prediction);
             const stickers = await generateStickers(prediction.personalityType);
             if (stickers) {
-              displayStickers(stickers);
+                displayStickers(stickers);
             }
         } catch (error) {
             console.error('Error creating aura card or stickers:', error);
@@ -271,137 +381,15 @@ displayResult = async function () {
     }
 };
 
-async function generateStickers(personalityType) {
-    const loadingSpinner = document.getElementById('loading-stickers');
-    if (loadingSpinner) {
-        loadingSpinner.style.display = 'flex';
-    }
-    
-    try {
-        // Check if we're in development or production
-        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:3000'
-            : 'https://aura-matrix.vercel.app';
-
-        console.log(`Connecting to sticker generation API at ${baseUrl}/generate-stickers...`);
-        
-        const response = await fetch(`${baseUrl}/generate-stickers`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ personalityType }),
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Received sticker data:', data);
-        
-        if (!data.stickers || !Array.isArray(data.stickers)) {
-            throw new Error('Invalid sticker data received');
-        }
-        
-        return data.stickers;
-    } catch (error) {
-        console.error('Error generating stickers:', error);
-        // Show error message to user
-        const errorContainer = document.createElement('div');
-        errorContainer.className = 'sticker-error';
-        errorContainer.innerHTML = `
-            <p>Sorry, we couldn't generate your stickers right now. You can try:</p>
-            <ul>
-                <li>Refreshing the page</li>
-                <li>Checking your internet connection</li>
-                <li>Trying again later</li>
-            </ul>
-        `;
-        
-        const stickerSection = document.querySelector('.sticker-section');
-        if (stickerSection) {
-            const existingError = stickerSection.querySelector('.sticker-error');
-            if (existingError) {
-                existingError.remove();
-            }
-            stickerSection.appendChild(errorContainer);
-        }
-        
-        return null;
-    } finally {
-        if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-        }
-    }
-}
-
-function displayStickers(stickers) {
-    if (!stickers || !Array.isArray(stickers) || stickers.length === 0) {
-        console.warn('No valid stickers to display');
-        return;
-    }
-    
-    stickers.forEach((stickerUrl, index) => {
-        if (!stickerUrl) return;
-        
-        const stickerElement = document.querySelector(`.sticker${index + 1}`);
-        if (stickerElement) {
-            stickerElement.style.backgroundImage = `url(${stickerUrl})`;
-            
-            // Set up download button
-            const downloadBtn = stickerElement.parentElement.querySelector('.download-sticker-btn');
-            if (downloadBtn) {
-                downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
-            }
-        }
-    });
-    
-    // Set up download all button
-    const downloadAllBtn = document.querySelector('.download-all-btn');
-    if (downloadAllBtn) {
-        downloadAllBtn.onclick = () => downloadAllStickers(stickers);
-    }
-}
-
-function downloadSticker(url, filename) {
-    if (!url) return;
-    
-    fetch(url)
-        .then(response => response.blob())
-        .then(blob => {
-            const blobUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(blobUrl);
-        })
-        .catch(error => console.error('Error downloading sticker:', error));
-}
-
-function downloadAllStickers(stickers) {
-    if (!stickers || !Array.isArray(stickers) || stickers.length === 0) {
-        console.warn('No stickers to download');
-        return;
-    }
-    
-    stickers.forEach((url, index) => {
-        if (!url) return;
-        setTimeout(() => {
-            downloadSticker(url, `personality-sticker-${index + 1}.png`);
-        }, index * 500);
-    });
-}
-
 // Add event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    displayResult();
     const downloadButton = document.getElementById('downloadCard');
     if (downloadButton) {
         downloadButton.addEventListener('click', downloadAuraCard);
     }
+    const downloadAllButton = document.querySelector('.download-all-btn');
+    if (downloadAllButton) {
+        downloadAllButton.addEventListener('click', downloadAllStickers);
+    }
 });
-
-document.addEventListener('DOMContentLoaded', displayResult);

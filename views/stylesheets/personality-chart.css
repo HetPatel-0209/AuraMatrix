@@ -328,21 +328,19 @@
 }
 
 .sticker-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  width: 150px;
+  height: 150px;
+  border: 1px solid #ccc;
+  margin: 10px;
+  position: relative;
+  display: inline-block;
 }
 
 .sticker {
   width: 100%;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  background-color: #f8f9fa;
+  height: 100%;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
 }
 
 .sticker:hover {
@@ -350,14 +348,14 @@
 }
 
 .download-sticker-btn {
-  padding: 0.5rem 1.5rem;
-  background-color: #4a90e2;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 25px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s ease;
 }
 
 .download-sticker-btn:hover {
@@ -366,42 +364,26 @@
 
 .download-all-btn {
   display: block;
-  margin: 2rem auto;
-  padding: 0.8rem 2rem;
-  background-color: #2d3436;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 25px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
 }
 
 .download-all-btn:hover {
   background-color: #1e2527;
 }
 
-.loading-spinner {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin: 2rem 0;
+.sticker-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none; /* Initially hidden */
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #4a90e2;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
 @media (max-width: 640px) {
   .sticker-grid {
