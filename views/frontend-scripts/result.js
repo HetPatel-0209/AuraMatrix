@@ -190,16 +190,17 @@ async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
 
     try {
-        // Make card visible temporarily for capture
-        card.style.display = 'block';
-
-        // Convert SVG to canvas
-        const canvas = await html2canvas(card, {
-            scale: 2,
-            backgroundColor: '#000000',
-            logging: false,
-            borderRadius: 20
-        });
+        // Create a hidden container
+        const hiddenContainer = document.createElement('div');
+        hiddenContainer.style.position = 'absolute';
+        hiddenContainer.style.left = '-9999px';
+        hiddenContainer.style.top = '-9999px';
+        document.body.appendChild(hiddenContainer);
+        
+        // Clone the card and append to hidden container
+        const cardClone = card.cloneNode(true);
+        cardClone.style.display = 'block';
+        hiddenContainer.appendChild(cardClone);
 
         // Hide card again
         card.style.display = 'none';
