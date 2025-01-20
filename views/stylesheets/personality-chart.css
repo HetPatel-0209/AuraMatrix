@@ -339,7 +339,7 @@
 }
 
 .sticker-card {
-  border: 1px solid #ccc;
+  border: 2px solid #000;
   position: relative;
   display: inline-block;
 }
