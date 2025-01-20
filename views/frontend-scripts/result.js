@@ -249,7 +249,7 @@ async function generateStickers(personalityType) {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ personalityType, timestamp: Date.now() }),
+                    body: JSON.stringify({ personalityType }),
                 });
 
                 if (!response.ok) {
