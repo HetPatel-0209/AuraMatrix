@@ -235,8 +235,6 @@ async function generateStickers(personalityType) {
             ? 'http://localhost:3000'
             : 'https://auramatrix.onrender.com';
 
-        console.log(`Connecting to sticker generation API at ${baseUrl}/generate-stickers...`);
-
         for (let i = 0; i < stickerCards.length; i++) {
             const card = stickerCards[i];
             const loader = card.querySelector('.sticker-loader');
@@ -246,7 +244,7 @@ async function generateStickers(personalityType) {
             sticker.style.backgroundImage = 'none';
 
             try {
-                const response = await fetch(`${baseUrl}/generate-stickers`, {
+                const response = await fetch(`${baseUrl}/generate-stickers?ts=${Date.now()}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
