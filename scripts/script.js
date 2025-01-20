@@ -123,8 +123,8 @@ app.post('/generate-stickers', async (req, res) => {
     const role = roleMatch ? roleMatch[1] : personalityType;
 
     // Set up Server-Sent Events (SSE) for progress updates
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Connection', 'keep-alive');
 
     // Generate stickers using Gradio API with progress tracking

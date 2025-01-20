@@ -251,7 +251,7 @@ async function generateStickers(personalityType) {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ personalityType }),
+                    body: JSON.stringify({ personalityType, timestamp: Date.now() }),
                 });
 
                 if (!response.ok) {
@@ -319,20 +319,25 @@ function displayStickerError(card) {
 }
 
 function downloadSticker(url, filename) {
+    if (!filename.endsWith('.png')) filename += '.png';
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
     link.click();
 }
 
-function downloadAllStickers(stickers) {
+function downloadAllStickers() {
     const stickerCards = document.querySelectorAll('.sticker-card');
     stickerCards.forEach((card, index) => {
         const sticker = card.querySelector('.sticker');
         const backgroundImage = sticker.style.backgroundImage;
         if (backgroundImage) {
-            const url = backgroundImage.slice(5, -2); // Remove 'url("' and '")'
-            downloadSticker(url, `personality-sticker-${index + 1}.png`);
+            const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+            let filename = `personality-sticker-${index + 1}`;
+            filename = filename.endsWith('.png') ? filename : `${filename}.png`;
+            
+            downloadSticker(url, filename);
+
         }
     });
 }
