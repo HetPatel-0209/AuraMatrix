@@ -244,7 +244,7 @@ async function generateStickers(personalityType) {
             sticker.style.backgroundImage = 'none';
 
             try {
-                const response = await fetch(`${baseUrl}/generate-stickers?ts=${Date.now()}`, {
+                const response = await fetch(`${baseUrl}/generate-stickers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
