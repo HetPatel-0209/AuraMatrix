@@ -126,6 +126,7 @@ app.post('/generate-stickers', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Pragma', 'no-cache');
 
     // Generate stickers using Gradio API with progress tracking
     await predictWithGradio(
