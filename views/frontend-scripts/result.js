@@ -310,28 +310,82 @@ function displayStickerError(card) {
     sticker.style.fontSize = '14px';
 }
 
-function downloadSticker(url, filename) {
-    if (!filename.endsWith('.png')) filename += '.png';
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
+async function convertWebPToPNG(webpUrl) {
+    try {
+        // Create a new image element
+        const img = new Image();
+        // Create a canvas element
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Create a promise to handle image loading
+        const imageLoadPromise = new Promise((resolve, reject) => {
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.crossOrigin = 'anonymous'; // Enable CORS
+            img.src = webpUrl;
+        });
+
+        // Wait for image to load
+        const loadedImg = await imageLoadPromise;
+        
+        // Set canvas dimensions to match image
+        canvas.width = loadedImg.width;
+        canvas.height = loadedImg.height;
+        
+        // Draw image onto canvas
+        ctx.drawImage(loadedImg, 0, 0);
+        
+        // Convert canvas content to PNG
+        return canvas.toDataURL('image/png');
+    } catch (error) {
+        console.error('Error converting WebP to PNG:', error);
+        throw error;
+    }
 }
 
-function downloadAllStickers() {
+async function downloadSticker(url, filename) {
+    try {
+        if (!filename.endsWith('.png')) filename += '.png';
+        
+        // Convert WebP to PNG
+        const pngDataUrl = await convertWebPToPNG(url);
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = pngDataUrl;
+        link.download = filename;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Error downloading sticker:', error);
+        alert('Failed to download sticker. Please try again.');
+    }
+}
+
+async function downloadAllStickers() {
     const stickerCards = document.querySelectorAll('.sticker-card');
-    stickerCards.forEach((card, index) => {
+    for (let i = 0; i < stickerCards.length; i++) {
+        const card = stickerCards[i];
         const sticker = card.querySelector('.sticker');
         const backgroundImage = sticker.style.backgroundImage;
+        
         if (backgroundImage) {
-            const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-            let filename = `personality-sticker-${index + 1}`;
-            filename = filename.endsWith('.png') ? filename : `${filename}.png`;
-            
-            downloadSticker(url, filename);
-
+            try {
+                const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                const filename = `personality-sticker-${i + 1}.png`;
+                
+                // Add slight delay between downloads to prevent overwhelming the browser
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await downloadSticker(url, filename);
+            } catch (error) {
+                console.error(`Error downloading sticker ${i + 1}:`, error);
+            }
         }
-    });
+    }
 }
 
 async function displayResult() {
