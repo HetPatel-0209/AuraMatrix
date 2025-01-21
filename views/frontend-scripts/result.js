@@ -291,25 +291,8 @@ function displaySticker(card, stickerUrl, index) {
     const sticker = card.querySelector('.sticker');
     const downloadBtn = card.querySelector('.download-sticker-btn');
 
-    const img = new Image();
-    img.onload = () => {
-        // Create canvas to display as PNG
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        
-        // Use PNG data URL for display
-        sticker.style.backgroundImage = `url(${canvas.toDataURL('image/png')})`;
-    };
-    img.onerror = () => {
-        sticker.style.backgroundImage = `url(${stickerUrl})`;
-    };
-    img.src = stickerUrl;
-
-    // Update download handler
-    downloadBtn.onclick = () => downloadSticker(stickerUrl, `sticker-${index + 1}.png`);
+    sticker.style.backgroundImage = `url(${stickerUrl})`;
+    downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
 }
 
 function displayStickerError(card) {
@@ -328,125 +311,27 @@ function displayStickerError(card) {
 }
 
 function downloadSticker(url, filename) {
-    filename = filename.endsWith('.png') ? filename : `${filename}.png`;
-    const img = new Image();
-    img.onload = async () => {
-        try {
-            // Create canvas and draw image
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-
-            // Convert to PNG blob
-            const blob = await new Promise(resolve => 
-                canvas.toBlob(resolve, 'image/png')
-            );
-
-            // Create download link
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.click();
-            
-            // Cleanup
-            URL.revokeObjectURL(link.href);
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Conversion error:', error);
-            // Fallback to original download
-            const fallbackLink = document.createElement('a');
-            fallbackLink.download = filename;
-            fallbackLink.href = url;
-            fallbackLink.click();
-        }
-    };
-
-    img.onerror = () => {
-        console.error('Error loading image');
-        // Fallback to original URL
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = url;
-        link.click();
-    };
-
-    img.src = url;
+    if (!filename.endsWith('.png')) filename += '.png';
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
 }
 
-async function downloadAllStickers() {
+function downloadAllStickers() {
     const stickerCards = document.querySelectorAll('.sticker-card');
-    
-    // Create helper function to convert WebP to PNG
-    const convertWebPtoPNG = async (url) => {
-        try {
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const img = await createImageBitmap(blob);
-            
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            
-            return new Promise((resolve) => 
-                canvas.toBlob(resolve, 'image/png')
-            );
-        } catch (error) {
-            console.error('Conversion failed:', error);
-            return null;
-        }
-    };
-
-    // Process all stickers with progress feedback
-    for (let i = 0; i < stickerCards.length; i++) {
-        const card = stickerCards[i];
+    stickerCards.forEach((card, index) => {
         const sticker = card.querySelector('.sticker');
         const backgroundImage = sticker.style.backgroundImage;
-        
         if (backgroundImage) {
-            const originalUrl = backgroundImage
-                .replace(/^url\(["']?/, '')
-                .replace(/["']?\)$/, '');
+            const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+            let filename = `personality-sticker-${index + 1}`;
+            filename = filename.endsWith('.png') ? filename : `${filename}.png`;
             
-            try {
-                // Show converting status
-                const originalText = card.querySelector('.download-sticker-btn').textContent;
-                card.querySelector('.download-sticker-btn').textContent = 'Converting...';
-                
-                // Convert and download
-                const pngBlob = await convertWebPtoPNG(originalUrl);
-                if (pngBlob) {
-                    const link = document.createElement('a');
-                    link.download = `aura-sticker-${i + 1}.png`;
-                    link.href = URL.createObjectURL(pngBlob);
-                    document.body.appendChild(link);
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                    document.body.removeChild(link);
-                }
-                
-                // Restore button text after short delay
-                setTimeout(() => {
-                    card.querySelector('.download-sticker-btn').textContent = originalText;
-                }, 2000);
-                
-                // Add slight delay between downloads
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-            } catch (error) {
-                console.error(`Error downloading sticker ${i + 1}:`, error);
-                // Fallback to original download
-                const fallbackLink = document.createElement('a');
-                fallbackLink.download = `aura-sticker-${i + 1}.webp`;
-                fallbackLink.href = originalUrl;
-                fallbackLink.click();
-            }
+            downloadSticker(url, filename);
+
         }
-    }
+    });
 }
 
 async function displayResult() {
