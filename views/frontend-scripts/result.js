@@ -433,32 +433,33 @@ async function displayResult() {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
     }
 
+    if (userAnswers.length > 0) {
+        const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
+
+        try {
+            const response = await fetch('/extra-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answers: userAnswers,
+                    personalityType: prediction.personalityType
+                })
+            });
+            const data = await response.json();
+            if (data.prediction?.values) {
+                await updatePersonalityMatrix(userAnswers, data.prediction.values);
+            }
+        } catch (error) {
+            console.error('Error loading personality matrix:', error);
+        }
+    }
+
     if (predictionStr) {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
             document.getElementById('personality-type').textContent = `Your personality type is: ${prediction.personalityType}`;
-            const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
-
-            if (userAnswers.length > 0) {
-                try {
-                    const response = await fetch('/extra-info', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            answers: userAnswers,
-                            personalityType: prediction.personalityType
-                        })
-                    });
-                    const data = await response.json();
-                    if (data.prediction?.values) {
-                        await updatePersonalityMatrix(userAnswers, data.prediction.values);
-                    }
-                } catch (error) {
-                    console.error('Error loading personality matrix:', error);
-                }
-            }
 
             if (prediction.traits) {
                 updateTraitsDisplay(prediction);
