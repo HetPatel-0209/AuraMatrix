@@ -16,7 +16,7 @@ async function handleSubmit(event) {
 
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        const timeoutId = setTimeout(() => controller.abort(), 40000);
 
         const response = await fetch('https://auramatrix.onrender.com/predict', {
             method: 'POST',
