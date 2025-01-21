@@ -421,6 +421,9 @@ async function updatePersonalityMatrix(answers, matrixData) {
                 const cellValue = matrixData[cellIndex];
                 
                 if (cellValue) {
+                    if(cellValue === 'None'){
+                        cell.innerHTML = cellValue.replace('');
+                    }
                     // Add visual emphasis for high traits
                     cell.innerHTML = cellValue.replace(
                         /(High\s+[EINSTFJP])\s*\((.*?)\)/g, 
