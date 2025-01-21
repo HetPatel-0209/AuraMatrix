@@ -390,36 +390,105 @@ async function downloadAllStickers() {
 
 async function updatePersonalityMatrix(answers, matrixData) {
     const matrixBody = document.querySelector('#personalityMatrix tbody');
-    if (!matrixBody) return;
+    if (!matrixBody) {
+        console.error('Matrix table body not found');
+        return;
+    }
 
+    // Clear existing content
     matrixBody.innerHTML = '';
 
-    // Create table rows for each answer
-    answers.forEach((answer, index) => {
-        const row = document.createElement('tr');
+    // Validate inputs
+    if (!Array.isArray(answers) || !matrixData) {
+        console.error('Invalid answers or matrix data');
+        return;
+    }
 
-        // Answer cell
-        const answerCell = document.createElement('td');
-        answerCell.textContent = answer;
+    try {
+        // Create table rows for each answer
+        answers.forEach((answer, index) => {
+            const row = document.createElement('tr');
 
-        // Trait cells
-        const cells = [
-            matrixData[`cell${index * 4 + 1}`],
-            matrixData[`cell${index * 4 + 2}`],
-            matrixData[`cell${index * 4 + 3}`],
-            matrixData[`cell${index * 4 + 4}`]
-        ];
+            // Answer cell
+            const answerCell = document.createElement('td');
+            answerCell.textContent = answer || '-';
+            answerCell.className = 'answer-cell';
 
-        row.appendChild(answerCell);
+            // Trait cells
+            const cellIndices = [1, 2, 3, 4].map(n => `cell${index * 4 + n}`);
+            const cells = cellIndices.map(cellIndex => {
+                const cell = document.createElement('td');
+                const cellValue = matrixData[cellIndex];
+                
+                if (cellValue) {
+                    // Add visual emphasis for high traits
+                    cell.innerHTML = cellValue.replace(
+                        /(High\s+[EINSTFJP])\s*\((.*?)\)/g, 
+                        '<strong>$1</strong> ($2)'
+                    );
+                    // Add class for styling
+                    cell.className = cellValue.includes('High') ? 'high-trait' : 'normal-trait';
+                } else {
+                    cell.textContent = '-';
+                    cell.className = 'empty-trait';
+                }
+                
+                return cell;
+            });
 
-        cells.forEach(cellValue => {
-            const cell = document.createElement('td');
-            cell.innerHTML = cellValue ? cellValue.replace(/High/g, '<strong>High</strong>') : '-';
-            row.appendChild(cell);
+            // Append all cells
+            row.appendChild(answerCell);
+            cells.forEach(cell => row.appendChild(cell));
+            matrixBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error updating personality matrix:', error);
+        // Add error message to the table
+        const errorRow = document.createElement('tr');
+        const errorCell = document.createElement('td');
+        errorCell.colSpan = 5;
+        errorCell.textContent = 'Error loading personality matrix data';
+        errorCell.className = 'error-message';
+        errorRow.appendChild(errorCell);
+        matrixBody.appendChild(errorRow);
+    }
+}
+
+// Add this to your displayResult function
+async function loadMatrixData(prediction, userAnswers) {
+    try {
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://auramatrix.onrender.com';
+
+        const response = await fetch(`${baseUrl}/extra-info`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                answers: userAnswers,
+                personalityType: prediction.personalityType
+            })
         });
 
-        matrixBody.appendChild(row);
-    });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.prediction?.values) {
+            await updatePersonalityMatrix(userAnswers, data.prediction.values);
+        } else {
+            throw new Error('Invalid matrix data received');
+        }
+    } catch (error) {
+        console.error('Error loading personality matrix:', error);
+        const matrixBody = document.querySelector('#personalityMatrix tbody');
+        if (matrixBody) {
+            matrixBody.innerHTML = '<tr><td colspan="5" class="error-message">Failed to load personality matrix. Please try again later.</td></tr>';
+        }
+    }
 }
 
 async function displayResult() {

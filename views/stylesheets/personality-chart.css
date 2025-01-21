@@ -439,6 +439,30 @@
   font-size: 0.9rem;
 }
 
+.high-trait {
+  font-weight: 500;
+  color: #FFB347;
+}
+
+.normal-trait {
+  color: #666;
+}
+
+.empty-trait {
+  color: #999;
+}
+
+.error-message {
+  color: #ff4444;
+  text-align: center;
+  padding: 1rem;
+}
+
+.answer-cell {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
 
 @media (max-width: 640px) {
   .sticker-grid {
