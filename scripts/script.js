@@ -110,14 +110,16 @@ app.post('/predict', async (req, res) => {
   }
 });
 
-app.post('/extra-info', async(req, res) =>{
+app.post('/extra-info', async (req, res) => {
   try {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const { answers } = req.body;
-    const { personalityType } = req.body;
+    const { answers, personalityType } = req.body;
 
-    if (!Array.isArray(answers)) {
-      throw new Error('Answers must be an array');
+    if (!Array.isArray(answers) || !personalityType) {
+      return res.status(400).json({
+        error: 'Invalid request data',
+        details: 'Both answers array and personalityType are required'
+      });
     }
 
     const chatCompletion = await groq.chat.completions.create({
@@ -226,7 +228,7 @@ app.post('/extra-info', async(req, res) =>{
     res.json({ prediction });
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ error: 'Failed to predict personality' });
+    res.status(500).json({ error: 'Failed to predict personality', details: error.message });
   }
 });
 

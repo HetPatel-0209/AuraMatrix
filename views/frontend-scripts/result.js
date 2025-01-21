@@ -477,6 +477,7 @@ async function loadMatrixData(prediction, userAnswers) {
         }
 
         const data = await response.json();
+        console.log('Matrix data received:', data);
         if (data.prediction?.values) {
             await updatePersonalityMatrix(userAnswers, data.prediction.values);
         } else {
@@ -496,6 +497,7 @@ async function displayResult() {
     const predictionStr = urlParams.get('prediction');
     const firstName = localStorage.getItem('userFirstName') || '';
     const lastName = localStorage.getItem('userLastName') || '';
+    const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
 
     if (firstName || lastName) {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
@@ -513,29 +515,10 @@ async function displayResult() {
             document.getElementById('description').textContent =
                 "This personality assessment is based on your responses to our questionnaire. " +
                 "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
-            updateSVGCard(prediction);
-            const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
             if (userAnswers.length > 0) {
-                try {
-                    const response = await fetch('/extra-info', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            answers: userAnswers,
-                            personalityType: prediction.personalityType
-                        })
-                    });
-
-                    const data = await response.json();
-                    if (data.prediction?.values) {
-                        await updatePersonalityMatrix(userAnswers, data.prediction.values);
-                    }
-                } catch (error) {
-                    console.error('Error loading personality matrix:', error);
-                }
+                await loadMatrixData(prediction, userAnswers);
             }
+            updateSVGCard(prediction);
             await generateStickers(prediction.personalityType);
         } catch (error) {
             console.error('Error parsing prediction:', error);
