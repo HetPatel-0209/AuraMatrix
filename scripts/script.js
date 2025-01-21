@@ -110,6 +110,126 @@ app.post('/predict', async (req, res) => {
   }
 });
 
+app.post('/extra-info', async(req, res) =>{
+  try {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const { answers } = req.body;
+    const { personalityType } = req.body;
+
+    if (!Array.isArray(answers)) {
+      throw new Error('Answers must be an array');
+    }
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `
+          You are a Personality Predictor AI trained to analyze user responses and predict personality types.\n
+          Your task is to create a pesonality matrix according user answers with 16 Personality System(MBTI).\n
+          `,
+        },
+        {
+          role: "user",
+          content: `
+          User's personality is ${personalityType}. Create personality matrix to satisfy 16 Personality System(MBTI).\n
+
+          Matrix layout:
+          | Answer | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |
+          |--------|-----------------------------------|---------------------------|--------------------------|----------------------------|
+          | ans1   | cell1                             | cell2                     | cell3                    | cell4                      |
+          | ans2   | cell5                             | cell6                     | cell7                    | cell8                      |
+          | ans3   | cell9                             | cell10                    | cell11                   | cell12                     |
+          | ans4   | cell13                            | cell14                    | cell15                   | cell16                     |
+          | ans5   | cell17                            | cell18                    | cell19                   | cell20                     |
+          | ans6   | cell21                            | cell22                    | cell23                   | cell24                     |
+          | ans7   | cell25                            | cell26                    | cell27                   | cell28                     |
+          | ans8   | cell29                            | cell30                    | cell31                   | cell32                     |
+          | ans9   | cell33                            | cell34                    | cell35                   | cell36                     |
+          | ans10  | cell37                            | cell38                    | cell39                   | cell40                     |
+
+          Example Matrix:
+          | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |
+          |--------------------------------------------|-----------------------------------|---------------------------|--------------------------|----------------------------|
+          | I like trying new things.                  | None                              | High N (Intuition)        | None                     | High P (Perceiving)        |
+          | I usually lead in groups.                  | High E (Extraversion)             | None                      | None                     | None                       |
+          | I take criticism well.                     | None                              | None                      | High T (Thinking)        | None                       |
+          | I plan for the future.                     | None                              | None                      | None                     | High J (Judging)           |
+          | I enjoy helping others.                    | None                              | None                      | High F (Feeling)         | None                       |
+          | I solve problems logically.                | None                              | None                      | High T (Thinking)        | None                       |
+          | I express my opinions clearly.             | High E (Extraversion)             | None                      | None                     | None                       |
+          | I meet deadlines.                          | None                              | None                      | None                     | High J (Judging)           |
+          | I get along with different people.         | None                              | None                      | High F (Feeling)         | None                       |
+          | I take calculated risks.                   | High E (Extraversion)             | High N (Intuition)        | None                     | None                       |
+
+          Expected output (ONLY a JSON object):
+          {
+            "values": {
+              "cell1": ,
+              "cell2": ,
+              "cell3": ,
+              "cell4": ,
+              "cell5": ,
+              "cell6": ,
+              "cell7": ,
+              "cell8": ,
+              "cell9": ,
+              "cell10": ,
+              "cell11": ,
+              "cell12": ,
+              "cell13": ,
+              "cell14": ,
+              "cell15": ,
+              "cell16": ,
+              "cell17": ,
+              "cell18": ,
+              "cell19": ,
+              "cell20": ,
+              "cell21": ,
+              "cell22": ,
+              "cell23": ,
+              "cell24": ,
+              "cell25": ,
+              "cell26": ,
+              "cell27": ,
+              "cell28": ,
+              "cell29": ,
+              "cell30": ,
+              "cell31": ,
+              "cell32": ,
+              "cell33": ,
+              "cell34": ,
+              "cell35": ,
+              "cell36": ,
+              "cell37": ,
+              "cell38": ,
+              "cell39": ,
+              "cell40": ,
+            }
+          }
+          `,
+        },
+      ],
+      model: "llama3-70b-8192",
+      max_tokens: 700,
+      temperature: 0,
+    });
+    const content = chatCompletion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No prediction received from AI');
+    }
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('Invalid prediction format');
+    }
+    const prediction = JSON.parse(jsonMatch[0]);
+    res.json({ prediction });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to predict personality' });
+  }
+});
+
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
   const { personalityType } = req.body;
