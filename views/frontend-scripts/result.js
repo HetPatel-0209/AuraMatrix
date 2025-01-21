@@ -235,61 +235,55 @@ async function generateStickers(personalityType) {
             ? 'http://localhost:3000'
             : 'https://auramatrix.onrender.com';
 
-        for (let i = 0; i < stickerCards.length; i++) {
-            const card = stickerCards[i];
-            const loader = card.querySelector('.sticker-loader');
-            const sticker = card.querySelector('.sticker');
+        // Show loaders for all cards first
+        stickerCards.forEach(card => {
+            card.querySelector('.sticker-loader').style.display = 'block';
+        });
 
-            loader.style.display = 'block';
-            sticker.style.backgroundImage = 'none';
+        // Single API call for all stickers
+        const response = await fetch(`${baseUrl}/generate-stickers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ personalityType }),
+        });
 
-            try {
-                const response = await fetch(`${baseUrl}/generate-stickers`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ personalityType }),
-                });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        const reader = response.body.getReader();
+        let imageUrls = [];
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = new TextDecoder().decode(value);
+            const lines = chunk.split('\n');
+            
+            lines.forEach(line => {
+                if (line.startsWith('data: ')) {
+                    const data = JSON.parse(line.slice(5));
+                    if (data.imageUrls) imageUrls = data.imageUrls;
                 }
-
-                const reader = response.body.getReader();
-                let stickerUrls = [];
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    const chunk = new TextDecoder().decode(value);
-                    const lines = chunk.split('\n');
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const data = JSON.parse(line.slice(5));
-                            if (data.imageUrls) {
-                                stickerUrls = data.imageUrls;
-                                break;
-                            }
-                        }
-                    }
-                    if (stickerUrls > 0) break;
-                }
-
-                if (stickerUrls.length > i) {
-                    displaySticker(card, stickerUrls[i], i);
-                } else {
-                    displayStickerError(card);
-                }
-            } catch (error) {
-                console.error(`Error generating sticker ${i + 1}:`, error);
-                displayStickerError(card);
-            } finally {
-                loader.style.display = 'none';
-            }
+            });
         }
+
+        // Update all sticker cards with received URLs
+        stickerCards.forEach((card, index) => {
+            if (imageUrls[index]) {
+                displaySticker(card, imageUrls[index], index);
+            } else {
+                displayStickerError(card);
+            }
+            card.querySelector('.sticker-loader').style.display = 'none';
+        });
+
     } catch (error) {
-        console.error('Error in sticker generation process:', error);
+        console.error('Error generating stickers:', error);
+        stickerCards.forEach(card => {
+            displayStickerError(card);
+            card.querySelector('.sticker-loader').style.display = 'none';
+        });
     }
 }
 
