@@ -259,7 +259,7 @@ async function generateStickers(personalityType) {
             if (done) break;
             const chunk = new TextDecoder().decode(value);
             const lines = chunk.split('\n');
-            
+
             lines.forEach(line => {
                 if (line.startsWith('data: ')) {
                     const data = JSON.parse(line.slice(5));
@@ -328,14 +328,14 @@ async function convertWebPToPNG(webpUrl) {
 
         // Wait for image to load
         const loadedImg = await imageLoadPromise;
-        
+
         // Set canvas dimensions to match image
         canvas.width = loadedImg.width;
         canvas.height = loadedImg.height;
-        
+
         // Draw image onto canvas
         ctx.drawImage(loadedImg, 0, 0);
-        
+
         // Convert canvas content to PNG
         return canvas.toDataURL('image/png');
     } catch (error) {
@@ -347,15 +347,15 @@ async function convertWebPToPNG(webpUrl) {
 async function downloadSticker(url, filename) {
     try {
         if (!filename.endsWith('.png')) filename += '.png';
-        
+
         // Convert WebP to PNG
         const pngDataUrl = await convertWebPToPNG(url);
-        
+
         // Create download link
         const link = document.createElement('a');
         link.href = pngDataUrl;
         link.download = filename;
-        
+
         // Trigger download
         document.body.appendChild(link);
         link.click();
@@ -372,12 +372,12 @@ async function downloadAllStickers() {
         const card = stickerCards[i];
         const sticker = card.querySelector('.sticker');
         const backgroundImage = sticker.style.backgroundImage;
-        
+
         if (backgroundImage) {
             try {
                 const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 const filename = `personality-sticker-${i + 1}.png`;
-                
+
                 // Add slight delay between downloads to prevent overwhelming the browser
                 await new Promise(resolve => setTimeout(resolve, 500));
                 await downloadSticker(url, filename);
@@ -386,6 +386,41 @@ async function downloadAllStickers() {
             }
         }
     }
+}
+
+async function updatePersonalityMatrix(answers, matrixData) {
+    const matrixBody = document.querySelector('#personalityMatrix tbody');
+    if (!matrixBody) return;
+
+    matrixBody.innerHTML = '';
+
+    // Create table rows for each answer
+    answers.forEach((answer, index) => {
+        const row = document.createElement('tr');
+
+        // Answer cell
+        const answerCell = document.createElement('td');
+        answerCell.textContent = answer;
+
+        // Trait cells
+        const cells = [
+            matrixData[`cell${index * 4 + 1}`],
+            matrixData[`cell${index * 4 + 2}`],
+            matrixData[`cell${index * 4 + 3}`],
+            matrixData[`cell${index * 4 + 4}`]
+        ];
+
+        row.appendChild(answerCell);
+
+        cells.forEach(cellValue => {
+            const cell = document.createElement('td');
+            cell.textContent = cellValue || '-';
+            cell.innerHTML = cellValue.replace(/High/g, '<strong>High</strong>');
+            row.appendChild(cell);
+        });
+
+        matrixBody.appendChild(row);
+    });
 }
 
 async function displayResult() {
@@ -402,6 +437,28 @@ async function displayResult() {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
             document.getElementById('personality-type').textContent = `Your personality type is: ${prediction.personalityType}`;
+            const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
+
+            if (userAnswers.length > 0) {
+                try {
+                    const response = await fetch('/extra-info', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            answers: userAnswers,
+                            personalityType: prediction.personalityType
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.prediction?.values) {
+                        await updatePersonalityMatrix(userAnswers, data.prediction.values);
+                    }
+                } catch (error) {
+                    console.error('Error loading personality matrix:', error);
+                }
+            }
 
             if (prediction.traits) {
                 updateTraitsDisplay(prediction);

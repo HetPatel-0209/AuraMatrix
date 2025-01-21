@@ -392,6 +392,53 @@
   display: none; /* Initially hidden */
 }
 
+.matrix-section {
+  margin-top: 2rem;
+}
+
+.matrix-table-wrapper {
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+#personalityMatrix {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#personalityMatrix th,
+#personalityMatrix td {
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+#personalityMatrix th {
+  background-color: #4a90e2;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+#personalityMatrix tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+#personalityMatrix td:first-child {
+  text-align: left;
+  min-width: 300px;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+#personalityMatrix td {
+  color: #636e72;
+  font-size: 0.9rem;
+}
+
 
 @media (max-width: 640px) {
   .sticker-grid {

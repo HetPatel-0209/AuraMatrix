@@ -14,6 +14,8 @@ async function handleSubmit(event) {
         answers.push(formData.get(`answer${i}`));
     }
 
+    localStorage.setItem('userAnswers', JSON.stringify(answers));
+
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 40000);
