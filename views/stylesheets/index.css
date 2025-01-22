@@ -109,6 +109,54 @@
             transform: translate(4px, 4px);
         }
 
+        .radio-group {
+            text-align: left;
+            background: #fff;
+            padding: 15px;
+            border: 2px solid var(--main-color);
+            border-radius: var(--border-radius);
+            box-shadow: 4px 4px var(--main-color);
+        }
+        
+        .radio-label {
+            color: var(--main-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .radio-options {
+            display: flex;
+            gap: 20px;
+            justify-content: space-around;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .radio-option input[type="radio"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--main-color);
+            border-radius: 50%;
+            background-clip: content-box;
+            padding: 3px;
+            cursor: pointer;
+        }
+        
+        .radio-option input[type="radio"]:checked {
+            background-color: var(--main-color);
+        }
+        
+        .radio-option label {
+            color: var(--main-color);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         @media (max-width: 480px) {
             .card-switch {
                 width: 320px;

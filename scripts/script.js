@@ -234,7 +234,7 @@ app.post('/extra-info', async (req, res) => {
 
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
-  const { personalityType } = req.body;
+  const { personalityType, gender } = req.body;
 
   try {
     if (!personalityType) {
@@ -244,6 +244,11 @@ app.post('/generate-stickers', async (req, res) => {
     const roleMatch = personalityType.match(/\((.*?)\)/);
     const role = roleMatch ? roleMatch[1] : personalityType;
 
+    const prompt = `${role} personality sticker for ${gender} with black background.`;
+    
+    // Console log the prompt
+    console.log('Dispatching prompt to Gradio:', prompt);
+
     // Set up Server-Sent Events (SSE) for progress updates
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-store');
@@ -252,7 +257,7 @@ app.post('/generate-stickers', async (req, res) => {
 
     // Generate stickers using Gradio API with progress tracking
     await predictWithGradio(
-      `${role} personality sticker in low-poly illustration with black background,`,
+      `${prompt}`,
       (status) => {
         res.write(`data: ${JSON.stringify(status)}\n\n`);
       }

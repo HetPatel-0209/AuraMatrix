@@ -239,14 +239,14 @@ async function generateStickers(personalityType) {
         stickerCards.forEach(card => {
             card.querySelector('.sticker-loader').style.display = 'block';
         });
-
-        // Single API call for all stickers
+        
+        const gender = localStorage.getItem('userGender');
         const response = await fetch(`${baseUrl}/generate-stickers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ personalityType }),
+            body: JSON.stringify({ personalityType, gender }),
         });
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
