@@ -538,14 +538,13 @@ async function displayResult() {
 // Modify your existing displayResult function
 const oldDisplayResult = displayResult;
 displayResult = async function () {
-    oldDisplayResult();
+    await oldDisplayResult();
     const urlParams = new URLSearchParams(window.location.search);
     const predictionStr = urlParams.get('prediction');
     if (predictionStr) {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
             updateSVGCard(prediction);
-            const stickers = await generateStickers(prediction.personalityType);
             if (stickers) {
                 displayStickers(stickers);
             }
