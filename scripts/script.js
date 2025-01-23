@@ -134,7 +134,7 @@ app.post('/extra-info', async (req, res) => {
         {
           role: "user",
           content: `
-          User's personality is ${personalityType}. Analyze user answers to create personality matrix to satisfy 16 Personality System(MBTI).\n
+          User's personality is ${personalityType}. Analyze user answers to create personality matrix to satisfy 16 Personality System(MBTI). Follow example matrix to generate answer.\n
           User's Answer: ${answers}
 
           Matrix layout:
