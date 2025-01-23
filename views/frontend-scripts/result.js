@@ -439,6 +439,7 @@ async function updatePersonalityMatrix(answers, matrixData) {
             });
 
             // Append all cells
+            row.appendChild(answerCell);
             cells.forEach(cell => row.appendChild(cell));
             matrixBody.appendChild(row);
         });
