@@ -239,7 +239,7 @@ async function generateStickers(personalityType) {
         stickerCards.forEach(card => {
             card.querySelector('.sticker-loader').style.display = 'block';
         });
-        
+
         const gender = localStorage.getItem('userGender');
         const response = await fetch(`${baseUrl}/generate-stickers`, {
             method: 'POST',
@@ -418,14 +418,14 @@ async function updatePersonalityMatrix(answers, matrixData) {
             const cells = cellIndices.map(cellIndex => {
                 const cell = document.createElement('td');
                 const cellValue = matrixData[cellIndex];
-                
+
                 if (cellValue) {
-                    if(cellValue == 'None'){
+                    if (cellValue == 'None') {
                         cell.innerHTML = 'None';
                     }
                     // Add visual emphasis for high traits
                     cell.innerHTML = cellValue.replace(
-                        /(High\s+[EINSTFJP])\s*\((.*?)\)/g, 
+                        /(High\s+[EINSTFJP])\s*\((.*?)\)/g,
                         '<strong>$1</strong> ($2)'
                     );
                     // Add class for styling
@@ -434,7 +434,7 @@ async function updatePersonalityMatrix(answers, matrixData) {
                     cell.textContent = '';
                     cell.className = 'empty-trait';
                 }
-                
+
                 return cell;
             });
 
@@ -495,15 +495,28 @@ async function loadMatrixData(prediction, userAnswers) {
 function displayPersonalityDescription(data) {
     const descriptionDiv = document.getElementById('personalityDescription');
     const examplesList = document.getElementById('examplesList');
-    
-    if (data.description) {
-        descriptionDiv.textContent = data.description;
+
+    if (!descriptionDiv || !examplesList) {
+        console.error('Could not find description elements');
+        return;
     }
-    
-    if (data.examples && Array.isArray(data.examples)) {
+
+    // Clear existing content
+    descriptionDiv.innerHTML = '';
+    examplesList.innerHTML = '';
+
+    if (data?.description) {
+        descriptionDiv.textContent = data.description;
+    } else {
+        descriptionDiv.textContent = 'Description not available';
+    }
+
+    if (data?.examples && Array.isArray(data.examples)) {
         examplesList.innerHTML = data.examples
             .map(example => `<li>${example}</li>`)
             .join('');
+    } else {
+        examplesList.innerHTML = '<li>No famous examples available</li>';
     }
 }
 
@@ -513,6 +526,9 @@ async function displayResult() {
     const firstName = localStorage.getItem('userFirstName') || '';
     const lastName = localStorage.getItem('userLastName') || '';
     const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : 'https://auramatrix.onrender.com';
 
     if (firstName || lastName) {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
@@ -544,25 +560,38 @@ async function displayResult() {
                     })
                 });
 
-                if (descResponse.ok) {
-                    const descData = await descResponse.json();
+                if (!descResponse.ok) {
+                    throw new Error(`HTTP error! status: ${descResponse.status}`);
+                }
+                const descData = await descResponse.json();
+                console.log('Description data received:', descData);
+
+                if (descData.prediction) {
                     displayPersonalityDescription(descData.prediction);
+                } else {
+                    console.warn('Unexpected response structure:', descData);
+                    displayPersonalityDescription({});
                 }
             } catch (error) {
                 console.error('Error loading personality description:', error);
+                displayPersonalityDescription({
+                    description: 'Could not load personality description',
+                    examples: []
+                });
             }
-            updateSVGCard(prediction);
-            await generateStickers(prediction.personalityType);
-        } catch (error) {
-            console.error('Error parsing prediction:', error);
-            document.getElementById('personality-type').textContent = "Error displaying results";
-            document.getElementById('description').textContent = "Please try taking the test again.";
-            document.querySelector('.traits-container').innerHTML = '';
-        }
-    } else {
-        document.getElementById('personality-type').textContent = "No prediction available";
+        
+        updateSVGCard(prediction);
+        await generateStickers(prediction.personalityType);
+    } catch (error) {
+        console.error('Error parsing prediction:', error);
+        document.getElementById('personality-type').textContent = "Error displaying results";
         document.getElementById('description').textContent = "Please try taking the test again.";
+        document.querySelector('.traits-container').innerHTML = '';
     }
+} else {
+    document.getElementById('personality-type').textContent = "No prediction available";
+    document.getElementById('description').textContent = "Please try taking the test again.";
+}
 }
 
 // Modify your existing displayResult function
