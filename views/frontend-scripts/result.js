@@ -492,6 +492,21 @@ async function loadMatrixData(prediction, userAnswers) {
     }
 }
 
+function displayPersonalityDescription(data) {
+    const descriptionDiv = document.getElementById('personalityDescription');
+    const examplesList = document.getElementById('examplesList');
+    
+    if (data.description) {
+        descriptionDiv.textContent = data.description;
+    }
+    
+    if (data.examples && Array.isArray(data.examples)) {
+        examplesList.innerHTML = data.examples
+            .map(example => `<li>${example}</li>`)
+            .join('');
+    }
+}
+
 async function displayResult() {
     const urlParams = new URLSearchParams(window.location.search);
     const predictionStr = urlParams.get('prediction');
@@ -517,6 +532,24 @@ async function displayResult() {
                 "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
             if (userAnswers.length > 0) {
                 await loadMatrixData(prediction, userAnswers);
+            }
+            try {
+                const descResponse = await fetch(`${baseUrl}/description`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        personalityType: prediction.personalityType
+                    })
+                });
+
+                if (descResponse.ok) {
+                    const descData = await descResponse.json();
+                    displayPersonalityDescription(descData.prediction);
+                }
+            } catch (error) {
+                console.error('Error loading personality description:', error);
             }
             updateSVGCard(prediction);
             await generateStickers(prediction.personalityType);

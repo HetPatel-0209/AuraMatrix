@@ -233,6 +233,65 @@ app.post('/extra-info', async (req, res) => {
   }
 });
 
+app.post('/description', async (req, res) => {
+  try {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const { personalityType } = req.body;
+
+    if (!personalityType) {
+      return res.status(400).json({
+        error: 'Invalid request data',
+        details: 'personalityType is required'
+      });
+    }
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `
+        You are a Personality Predictor AI trained to analyze user responses and predict personality types.\n
+        Your task is to create a pesonality description according users personality.\n
+        `,
+        },
+        // In the '/description' endpoint's user message content:
+        {
+          role: "user",
+          content: `
+            User's personality is ${personalityType}. Create a personality description using valid JSON syntax (no markdown). Follow this structure:
+            Expected output (ONLY valid JSON):
+            {
+              "description": "ENFJs, known as Protagonists, are charismatic...",
+              "examples": [
+                "Oprah Winfrey",
+                "Barack Obama",
+                "Jennifer Lawrence",
+                "Martin Luther King Jr."
+              ]
+            }
+            `
+        }
+      ],
+      model: "llama3-70b-8192",
+      max_tokens: 700,
+      temperature: 0,
+    });
+    const content = chatCompletion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No prediction received from AI');
+    }
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('Invalid prediction format');
+    }
+    const prediction = JSON.parse(jsonMatch[0]);
+    res.json({ prediction });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to predict personality', details: error.message });
+  }
+});
+
 //for sticker generation
 app.post('/generate-stickers', async (req, res) => {
   const { personalityType, gender } = req.body;
@@ -246,7 +305,7 @@ app.post('/generate-stickers', async (req, res) => {
     const role = roleMatch ? roleMatch[1] : personalityType;
 
     const prompt = `${role} personality sticker for ${gender} with black background.`;
-    
+
     // Console log the prompt
     console.log('Dispatching prompt to Gradio:', prompt);
 

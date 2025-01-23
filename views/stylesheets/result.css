@@ -126,6 +126,41 @@ body {
     display: inline-block;
 }
 
+.description-section {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.personality-description {
+    color: #636e72;
+    line-height: 1.6;
+    margin: 1rem 0;
+    font-size: 1rem;
+}
+
+.examples-container h3 {
+    color: #2d3436;
+    margin-bottom: 1rem;
+}
+
+.examples-list {
+    list-style-type: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.examples-list li {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    color: #2d3436;
+}
+
 
 @media (max-width: 500px) {
     .result-container {
