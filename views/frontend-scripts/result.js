@@ -412,7 +412,6 @@ async function updatePersonalityMatrix(answers, matrixData) {
             // Answer cell
             const answerCell = document.createElement('td');
             answerCell.textContent = answer || '-';
-            answerCell.className = 'answer-cell';
 
             // Trait cells
             const cellIndices = [1, 2, 3, 4].map(n => `cell${index * 4 + n}`);
@@ -421,7 +420,7 @@ async function updatePersonalityMatrix(answers, matrixData) {
                 const cellValue = matrixData[cellIndex];
                 
                 if (cellValue) {
-                    if(cellValue === 'None'){
+                    if(cellValue == 'None'){
                         cell.innerHTML = cellValue.replace('');
                     }
                     // Add visual emphasis for high traits
@@ -440,7 +439,6 @@ async function updatePersonalityMatrix(answers, matrixData) {
             });
 
             // Append all cells
-            row.appendChild(answerCell);
             cells.forEach(cell => row.appendChild(cell));
             matrixBody.appendChild(row);
         });
