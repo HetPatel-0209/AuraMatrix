@@ -412,7 +412,7 @@ async function updatePersonalityMatrix(answers, matrixData) {
             // Answer cell
             const answerCell = document.createElement('td');
             answerCell.textContent = answer || '';
-
+            answerCell.className = 'answer-cell';
             // Trait cells
             const cellIndices = [1, 2, 3, 4].map(n => `cell${index * 4 + n}`);
             const cells = cellIndices.map(cellIndex => {
