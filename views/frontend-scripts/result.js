@@ -418,10 +418,10 @@ async function updatePersonalityMatrix(answers, matrixData) {
             const cells = cellIndices.map(cellIndex => {
                 const cell = document.createElement('td');
                 const cellValue = matrixData[cellIndex];
-
+                
                 if (cellValue) {
-                    if(cellValue === 'None'){
-                        cell.innerHTML = ' ';
+                    if(cellValue == 'None'){
+                        cell.innerHTML = cellValue.replace('');
                     }
                     // Add visual emphasis for high traits
                     cell.innerHTML = cellValue.replace(
@@ -431,7 +431,7 @@ async function updatePersonalityMatrix(answers, matrixData) {
                     // Add class for styling
                     cell.className = cellValue.includes('High') ? 'high-trait' : 'normal-trait';
                 } else {
-                    cell.textContent = '-';
+                    cell.textContent = '';
                     cell.className = 'empty-trait';
                 }
                 
