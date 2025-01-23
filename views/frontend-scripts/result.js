@@ -421,7 +421,7 @@ async function updatePersonalityMatrix(answers, matrixData) {
                 
                 if (cellValue) {
                     if(cellValue == 'None'){
-                        cell.innerHTML = cellValue.replace('');
+                        cell.innerHTML = 'None';
                     }
                     // Add visual emphasis for high traits
                     cell.innerHTML = cellValue.replace(

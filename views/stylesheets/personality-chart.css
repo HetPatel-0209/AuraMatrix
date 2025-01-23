@@ -483,3 +483,48 @@
       aspect-ratio: 3/4;
   }
 }
+
+@media (max-width: 600px) {
+  .matrix-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  #personalityMatrix {
+    min-width: 600px; /* Ensures horizontal scrolling on small screens */
+  }
+
+  #personalityMatrix th,
+  #personalityMatrix td {
+    padding: 0.5rem; /* Reduce padding for smaller screens */
+    font-size: 0.8rem; /* Slightly smaller font */
+  }
+
+  #personalityMatrix td:first-child {
+    min-width: 200px; /* Adjust first column width */
+    font-size: 0.75rem;
+  }
+
+  #personalityMatrix th {
+    font-size: 0.7rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  #personalityMatrix {
+    min-width: 500px; /* Further adjust for very small screens */
+  }
+
+  #personalityMatrix th,
+  #personalityMatrix td {
+    padding: 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  #personalityMatrix td:first-child {
+    min-width: 150px;
+    font-size: 0.65rem;
+  }
+}
