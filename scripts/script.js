@@ -30,8 +30,10 @@ app.post('/predict', async (req, res) => {
         {
           role: "system",
           content: `
-          You are a Personality Predictor AI trained to analyze user responses and predict personality types.\n
-          Your task is to analyze the user's answers to a series of questions and generate their personality type in the specified format.\n
+          You are a highly advanced Personality Predictor AI designed to accurately analyze user responses to personality-related questions and determine their personality type.\n
+          Your analysis is based on the 16-personality system (MBTI), and you are expected to assign percentages to key personality traits for Extraversion/Introversion, Intuition/Sensing, Thinking/Feeling, and Judging/Perceiving.\n
+          Provide concise and accurate predictions even for nuanced or complex responses.\n
+          Use the tone and sentiment of answers alongside inferred behavioral patterns to determine each personality trait's percentage.\n
           `,
         },
         {
@@ -59,6 +61,12 @@ app.post('/predict', async (req, res) => {
              Answer: ${answers[8]}\n
           10. **How do you feel about taking risks?**\n
               Answer: ${answers[9]}\n
+
+
+          Analyze the following:
+          1. Look for specific keywords, behavioral tendencies, and sentiment in each answer to determine the dominant and secondary traits.\n
+          2. Use context and emotional cues to provide an accurate breakdown of the personality traits.\n
+          3. If the input contains random gibberish, nonsensical characters, or unintelligible responses that cannot be interpreted or mapped to a valid personality type, return an 'Unknown' personality type with all traits set to 0%.\n
       
           Task: Predict the personality type and assign percentages to the traits:
           - Extraversion/Introversion
@@ -127,91 +135,102 @@ app.post('/extra-info', async (req, res) => {
         {
           role: "system",
           content: `
-          You are a Personality Predictor AI trained to analyze user responses and predict personality types.\n
-          Your task is to create a pesonality matrix according user answers with 16 Personality System(MBTI).\n
+          You are a highly advanced Personality Predictor AI specializing in mapping user responses to the 16 Personality System (MBTI).\n
+      Your task is to create a Personality Matrix based on the user's responses. The matrix will align with the MBTI framework, including Extraversion (E)/Introversion (I), Sensing (S)/Intuition (N), Thinking (T)/Feeling (F), and Judging (J)/Perceiving (P).\n
+      Analyze each response based on the keywords, tone, and behavioral patterns to determine how strongly it correlates with each MBTI trait.\n
+      Provide accurate and consistent results.\n
           `,
         },
         {
           role: "user",
           content: `
-          User's personality is ${personalityType}. Analyze user answers to create personality matrix to satisfy 16 Personality System(MBTI). Follow example matrix to generate answer.\n
-          User's Answer: ${answers}
+          The user's personality is ${personalityType}. Based on the user's answers, create a Personality Matrix aligned with the 16 Personality System (MBTI).\n
+      User's Answers: ${answers}\n
 
-          Matrix layout:
-          | Answer | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |
-          |--------|-----------------------------------|---------------------------|--------------------------|----------------------------|
-          | ans1   | cell1                             | cell2                     | cell3                    | cell4                      |
-          | ans2   | cell5                             | cell6                     | cell7                    | cell8                      |
-          | ans3   | cell9                             | cell10                    | cell11                   | cell12                     |
-          | ans4   | cell13                            | cell14                    | cell15                   | cell16                     |
-          | ans5   | cell17                            | cell18                    | cell19                   | cell20                     |
-          | ans6   | cell21                            | cell22                    | cell23                   | cell24                     |
-          | ans7   | cell25                            | cell26                    | cell27                   | cell28                     |
-          | ans8   | cell29                            | cell30                    | cell31                   | cell32                     |
-          | ans9   | cell33                            | cell34                    | cell35                   | cell36                     |
-          | ans10  | cell37                            | cell38                    | cell39                   | cell40                     |
+      Matrix layout:\n
+      | Answer | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |\n
+      |--------|-----------------------------------|---------------------------|--------------------------|----------------------------|\n
+      | ans1   | cell1                             | cell2                     | cell3                    | cell4                      |\n
+      | ans2   | cell5                             | cell6                     | cell7                    | cell8                      |\n
+      | ans3   | cell9                             | cell10                    | cell11                   | cell12                     |\n
+      | ans4   | cell13                            | cell14                    | cell15                   | cell16                     |\n
+      | ans5   | cell17                            | cell18                    | cell19                   | cell20                     |\n
+      | ans6   | cell21                            | cell22                    | cell23                   | cell24                     |\n
+      | ans7   | cell25                            | cell26                    | cell27                   | cell28                     |\n
+      | ans8   | cell29                            | cell30                    | cell31                   | cell32                     |\n
+      | ans9   | cell33                            | cell34                    | cell35                   | cell36                     |\n
+      | ans10  | cell37                            | cell38                    | cell39                   | cell40                     |\n
 
-          Example Matrix:
-          | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |
-          |--------------------------------------------|-----------------------------------|---------------------------|--------------------------|----------------------------|
-          | I like trying new things.                  | None                              | High N (Intuition)        | None                     | High P (Perceiving)        |
-          | I usually lead in groups.                  | High E (Extraversion)             | None                      | None                     | None                       |
-          | I take criticism well.                     | None                              | None                      | High T (Thinking)        | None                       |
-          | I plan for the future.                     | None                              | None                      | None                     | High J (Judging)           |
-          | I enjoy helping others.                    | None                              | None                      | High F (Feeling)         | None                       |
-          | I solve problems logically.                | High I (Introversion)             | None                      | High T (Thinking)        | None                       |
-          | I express my opinions clearly.             | High E (Extraversion)             | None                      | None                     | None                       |
-          | I meet deadlines.                          | None                              | None                      | None                     | High J (Judging)           |
-          | I get along with different people.         | None                              | None                      | High F (Feeling)         | None                       |
-          | I take calculated risks.                   | High E (Extraversion)             | High N (Intuition)        | None                     | None                       |
+      Guidelines for assigning cells:\n
+      1. For each answer, assess whether it demonstrates a preference for one trait over another (e.g., high E for extroverted responses, high T for logical responses).\n
+      2. Assign "None" for traits that are not clearly indicated by the answer.\n
+      3. Use patterns from the provided example matrix for consistency in analysis.\n
+      4. Ensure the traits assigned are directly aligned with the context and wording of the answer.\n
+      5. Avoid randomness; consistency and accuracy are top priorities.\n
+      6. Only use "High X" when answer clearly demonstrates that trait\
 
-          Expected output (ONLY a JSON object):
-          {
-            "values": {
-              "cell1": ,
-              "cell2": ,
-              "cell3": ,
-              "cell4": ,
-              "cell5": ,
-              "cell6": ,
-              "cell7": ,
-              "cell8": ,
-              "cell9": ,
-              "cell10": ,
-              "cell11": ,
-              "cell12": ,
-              "cell13": ,
-              "cell14": ,
-              "cell15": ,
-              "cell16": ,
-              "cell17": ,
-              "cell18": ,
-              "cell19": ,
-              "cell20": ,
-              "cell21": ,
-              "cell22": ,
-              "cell23": ,
-              "cell24": ,
-              "cell25": ,
-              "cell26": ,
-              "cell27": ,
-              "cell28": ,
-              "cell29": ,
-              "cell30": ,
-              "cell31": ,
-              "cell32": ,
-              "cell33": ,
-              "cell34": ,
-              "cell35": ,
-              "cell36": ,
-              "cell37": ,
-              "cell38": ,
-              "cell39": ,
-              "cell40": ,
-            }
-          }
-          `,
-        },
+      Example Matrix:\n
+      | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |\n
+      |--------------------------------------------|-----------------------------------|---------------------------|--------------------------|----------------------------|\n
+      | I like trying new things.                  | None                              | High N (Intuition)        | None                     | High P (Perceiving)        |\n
+      | I usually lead in groups.                  | High E (Extraversion)             | None                      | None                     | None                       |\n
+      | I take criticism well.                     | None                              | None                      | High T (Thinking)        | None                       |\n
+      | I plan for the future.                     | None                              | None                      | None                     | High J (Judging)           |\n
+      | I enjoy helping others.                    | None                              | None                      | High F (Feeling)         | None                       |\n
+      | I solve problems logically.                | High I (Introversion)             | None                      | High T (Thinking)        | None                       |\n
+      | I express my opinions clearly.             | High E (Extraversion)             | None                      | None                     | None                       |\n
+      | I meet deadlines.                          | None                              | None                      | None                     | High J (Judging)           |\n
+      | I get along with different people.         | None                              | None                      | High F (Feeling)         | None                       |\n
+      | I take calculated risks.                   | High E (Extraversion)             | High N (Intuition)        | None                     | None                       |\n
+
+      Task: Create the matrix based on the user's answers, ensuring alignment with the above guidelines.
+
+      Expected output (ONLY a JSON object):
+      {
+        "values": {
+          "cell1": ,
+          "cell2": ,
+          "cell3": ,
+          "cell4": ,
+          "cell5": ,
+          "cell6": ,
+          "cell7": ,
+          "cell8": ,
+          "cell9": ,
+          "cell10": ,
+          "cell11": ,
+          "cell12": ,
+          "cell13": ,
+          "cell14": ,
+          "cell15": ,
+          "cell16": ,
+          "cell17": ,
+          "cell18": ,
+          "cell19": ,
+          "cell20": ,
+          "cell21": ,
+          "cell22": ,
+          "cell23": ,
+          "cell24": ,
+          "cell25": ,
+          "cell26": ,
+          "cell27": ,
+          "cell28": ,
+          "cell29": ,
+          "cell30": ,
+          "cell31": ,
+          "cell32": ,
+          "cell33": ,
+          "cell34": ,
+          "cell35": ,
+          "cell36": ,
+          "cell37": ,
+          "cell38": ,
+          "cell39": ,
+          "cell40": ,
+        }
+      }
+      `},
       ],
       model: "llama3-70b-8192",
       max_tokens: 700,
