@@ -411,17 +411,17 @@ async function updatePersonalityMatrix(answers, matrixData) {
 
             // Answer cell
             const answerCell = document.createElement('td');
-            answerCell.textContent = answer || '-';
+            answerCell.textContent = answer || '';
 
             // Trait cells
             const cellIndices = [1, 2, 3, 4].map(n => `cell${index * 4 + n}`);
             const cells = cellIndices.map(cellIndex => {
                 const cell = document.createElement('td');
                 const cellValue = matrixData[cellIndex];
-                
+
                 if (cellValue) {
-                    if(cellValue == 'None'){
-                        cell.innerHTML = cellValue.replace('');
+                    if(cellValue === 'None'){
+                        cell.innerHTML = ' ';
                     }
                     // Add visual emphasis for high traits
                     cell.innerHTML = cellValue.replace(
