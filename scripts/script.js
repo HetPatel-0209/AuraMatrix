@@ -134,7 +134,8 @@ app.post('/extra-info', async (req, res) => {
         {
           role: "user",
           content: `
-          User's personality is ${personalityType}. Create personality matrix to satisfy 16 Personality System(MBTI).\n
+          User's personality is ${personalityType}. Analyze user answers to create personality matrix to satisfy 16 Personality System(MBTI).\n
+          User's Answer: ${answers}
 
           Matrix layout:
           | Answer | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |
@@ -158,7 +159,7 @@ app.post('/extra-info', async (req, res) => {
           | I take criticism well.                     | None                              | None                      | High T (Thinking)        | None                       |
           | I plan for the future.                     | None                              | None                      | None                     | High J (Judging)           |
           | I enjoy helping others.                    | None                              | None                      | High F (Feeling)         | None                       |
-          | I solve problems logically.                | None                              | None                      | High T (Thinking)        | None                       |
+          | I solve problems logically.                | High I (Introversion)             | None                      | High T (Thinking)        | None                       |
           | I express my opinions clearly.             | High E (Extraversion)             | None                      | None                     | None                       |
           | I meet deadlines.                          | None                              | None                      | None                     | High J (Judging)           |
           | I get along with different people.         | None                              | None                      | High F (Feeling)         | None                       |

@@ -480,7 +480,6 @@ async function loadMatrixData(prediction, userAnswers) {
         }
 
         const data = await response.json();
-        console.log('Matrix data received:', data);
         if (data.prediction?.values) {
             await updatePersonalityMatrix(userAnswers, data.prediction.values);
         } else {
