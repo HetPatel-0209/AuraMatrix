@@ -129,7 +129,7 @@ function createTraitCircle(trait, value, index, color) {
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     valueText.setAttribute("x", "60");
-    valueText.setAttribute("y", "55");
+    valueText.setAttribute("y", "65");
     valueText.setAttribute("text-anchor", "middle");
     valueText.setAttribute("font-size", "48");
     valueText.setAttribute("fill", "white");
@@ -139,9 +139,10 @@ function createTraitCircle(trait, value, index, color) {
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     traitText.setAttribute("x", "60");
-    traitText.setAttribute("y", "85");
+    traitText.setAttribute("y", "87");
     traitText.setAttribute("text-anchor", "middle");
     traitText.setAttribute("font-size", "16");
+    traitText.setAttribute("font-weight", "500");
     traitText.setAttribute("fill", "white");
     traitText.textContent = trait;
 
