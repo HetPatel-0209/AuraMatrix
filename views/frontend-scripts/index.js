@@ -10,10 +10,5 @@ form.addEventListener('submit', function (e) {
     localStorage.setItem('userGender', JSON.stringify(gender));
 
     console.log(gender);
-
-    window.config = {
-        BACK_URL: "https://auramatrix.onrender.com",
-        DEV_BACK_URL: "http://localhost:3000"
-    };
     window.location.href = './test.html';
 });
