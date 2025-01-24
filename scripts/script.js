@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 //for llm response and personality evaluation
 app.use(cors({
-  origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500']
+  origin: [process.env.FRONT_URL, process.env.DEV_FRONT_URL]
 }));
 app.use(express.json());
 
@@ -166,8 +166,11 @@ app.post('/extra-info', async (req, res) => {
       2. Assign "None" for traits that are not clearly indicated by the answer.\n
       3. Use patterns from the provided example matrix for consistency in analysis.\n
       4. Ensure the traits assigned are directly aligned with the context and wording of the answer.\n
-      5. Avoid randomness; consistency and accuracy are top priorities.\n
-      6. Only use "High X" when answer clearly demonstrates that trait\
+      5. Only use "High X" when answer clearly demonstrates that trait\
+      6. for Extraversion (E)/Introversion (I) column use : cells [1,5,9,13,17,21,25,29,33,37]
+      7. for Sensing (S)/Intuition (N) column use: cells [2,6,10,14,18,22,26,30,34,38]
+      8. for Thinking (T)/Feeling (F) column use : cells [3,7,11,15,19,23,27,31,35,39]
+      9. for Judging (J)/Perceiving (P) column use : cells [4,8,12,16,20,24,28,32,36,40]
 
       Example Matrix:\n
       | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |\n

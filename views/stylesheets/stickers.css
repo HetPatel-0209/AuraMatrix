@@ -1,0 +1,92 @@
+.sticker-section {
+    margin: 1.2rem auto;
+    max-width: 800px;
+    padding: 0 1rem;
+  }
+  
+  .sticker-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #2d3436;
+  }
+  
+  .sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .sticker-grid>div {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    position: relative;
+}
+  
+  .sticker-card {
+    border: 2px solid #000;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .sticker {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+  }
+  
+  .sticker:hover {
+    transform: scale(1.05);
+  }
+  
+  .download-sticker-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .download-sticker-btn:hover {
+    background-color: #357abd;
+  }
+  
+  .download-all-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .download-all-btn:hover {
+    background-color: #1e2527;
+  }
+  
+  .sticker-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+  }
+  
+  @media (max-width: 640px) {
+    .sticker-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .sticker {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+  }

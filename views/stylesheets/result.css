@@ -79,19 +79,6 @@ body {
     font-weight: bold;
 }
 
-.sticker-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-top: 30px;
-}
-
-.sticker-grid>div {
-    aspect-ratio: 1;
-    border-radius: 10px;
-    position: relative;
-}
-
 .download-sticker-btn {
     --bg: #000;
     --hover-text: #fff;
@@ -125,53 +112,6 @@ body {
     text-decoration: none;
     display: inline-block;
 }
-
-/* Add to existing styles */
-.description-section h2 {
-    color: #2d3436;
-    margin-bottom: 1.5rem;
-}
-
-.personality-description {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #4a5568;
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.examples-container h3 {
-    color: #2d3436;
-    margin-bottom: 1.5rem;
-    font-size: 1.3rem;
-}
-
-.examples-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-    padding: 0;
-    list-style: none;
-}
-
-.examples-list li {
-    padding: 1.2rem;
-    background: #ffffff;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 500;
-    color: #2d3436;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-}
-
-.examples-list li:hover {
-    transform: translateY(-3px);
-}
-
 
 @media (max-width: 500px) {
     .result-container {

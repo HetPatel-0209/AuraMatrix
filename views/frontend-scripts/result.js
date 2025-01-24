@@ -32,6 +32,7 @@ function getAuraDescription(level) {
     if (level >= 90) return 'Legendry Aura';
     if (level >= 80) return 'Exceptional Aura';
     if (level >= 70) return 'Strong Aura';
+    if (level == 69) return 'Infinite Aura';
     if (level >= 60) return 'Balanced Aura';
     if (level >= 50) return 'Developing Aura';
     return 'Emerging Aura';
@@ -232,8 +233,8 @@ async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
     try {
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:3000'
-            : 'https://auramatrix.onrender.com';
+            ? process.env.DEV_BACK_URL
+            : process.env.BACK_URL;
 
         // Show loaders for all cards first
         stickerCards.forEach(card => {
@@ -460,8 +461,8 @@ async function updatePersonalityMatrix(answers, matrixData) {
 async function loadMatrixData(prediction, userAnswers) {
     try {
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:3000'
-            : 'https://auramatrix.onrender.com';
+            ? process.env.DEV_BACK_URL
+            : process.env.BACK_URL;
 
         const response = await fetch(`${baseUrl}/extra-info`, {
             method: 'POST',
@@ -528,8 +529,8 @@ async function displayResult() {
     const lastName = localStorage.getItem('userLastName') || '';
     const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
     const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:3000'
-        : 'https://auramatrix.onrender.com';
+        ? process.env.DEV_BACK_URL
+        : process.env.BACK_URL;
 
     if (firstName || lastName) {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
