@@ -116,7 +116,7 @@ function updateTraitsDisplay(prediction) {
 }
 
 // Aura card
-function createTraitCircle(trait, value, index) {
+function createTraitCircle(trait, value, index, color) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
     circle.setAttribute("transform", `translate(0, ${index * 140})`);
 
@@ -125,7 +125,7 @@ function createTraitCircle(trait, value, index) {
     circleElement.setAttribute("cx", "60");
     circleElement.setAttribute("cy", "60");
     circleElement.setAttribute("r", "60");
-    circleElement.setAttribute("fill", "#febd59");
+    circleElement.setAttribute("fill", color);
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     valueText.setAttribute("x", "60");
@@ -171,20 +171,156 @@ function updateSVGCard(prediction) {
         document.querySelector('#userType').textContent = personalityType;
     }
 
+    // Calculate aura level and description
+    const auraLevel = calculateAuraLevel(prediction.traits);
+    const auraDescription = getAuraDescription(auraLevel);
+
+    // Aura Card Style Configurations
+    const auraStyles = {
+        'Emerging Aura': {
+            decorativeCircle: '#000000',
+            userName: '#000000',
+            userType: '#000000',
+            background: '#f1f1f1',
+            traitCircles: '#000000',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#000000'
+        },
+        'Developing Aura': {
+            decorativeCircle: '#6d6d6d',
+            userName: '#000000',
+            userType: '#000000',
+            background: '#f1f1f1',
+            traitCircles: '#6d6d6d',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#000000'
+        },
+        'Balanced Aura': {
+            decorativeCircle: '#ffcf20',
+            userName: '#584A05',
+            userType: '#584A05',
+            background: '#fffcee',
+            traitCircles: '#ffcf20',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#584A05'
+        },
+        'Infinite Aura': {
+            decorativeCircle: 'url(#infinite-aura-gradient)',
+            userName: '#480405',
+            userType: '#480405',
+            background: '#FFE2E2',
+            traitCircles: '#480405',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#480405'
+        },
+        'Strong Aura': {
+            decorativeCircle: '#0CC0DF',
+            userName: '#052858',
+            userType: '#052858',
+            background: '#EEFBFF',
+            traitCircles: '#0CC0DF',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#052858'
+        },
+        'Exceptional Aura': {
+            decorativeCircle: '#6E1867',
+            userName: '#450558',
+            userType: '#450558',
+            background: '#FCEEFF',
+            traitCircles: '#6E1867',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#450558'
+        },
+        'Legendry Aura': {
+            decorativeCircle: 'url(#legendry-aura-gradient)',
+            userName: '#5E1A7B',
+            userType: '#5E1A7B',
+            background: '#FFEEFD',
+            traitCircles: '#5E1A7B',
+            auraPercentage: '#ffffff',
+            auraDescription: '#ffffff',
+            traitValues: '#ffffff',
+            brand: '#5E1A7B'
+        }
+    };
+
+    const currentStyle = auraStyles[auraDescription] || auraStyles['Developing Aura'];
+
+    // Additional gradient definitions to be added to SVG defs
+    const additionalDefs = `
+    <linearGradient id="legendry-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#DF0C8B"/>
+        <stop offset="100%" stop-color="#570779"/>
+    </linearGradient>
+    <linearGradient id="infinite-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#DF0C10"/>
+        <stop offset="100%" stop-color="#280D07"/>
+    </linearGradient>
+    `;
+
+    // Add additional defs to the SVG if not already present
+    const defsElement = svg.querySelector('defs');
+    if (defsElement) {
+        defsElement.innerHTML += additionalDefs;
+    }
+
+    // Get style for current aura description
+
+
+    // Apply styles
+    const decorativeCircle = svg.querySelector('path[fill^="url"]');
+    if (decorativeCircle) {
+        decorativeCircle.setAttribute('fill', currentStyle.decorativeCircle);
+    }
+
+    const backgroundRect = svg.querySelector('rect');
+    if (backgroundRect) {
+        backgroundRect.setAttribute('fill', currentStyle.background);
+    }
+
+    document.querySelector('#userName').setAttribute('fill', currentStyle.userName);
+    document.querySelector('#userType').setAttribute('fill', currentStyle.userType);
+    document.querySelector('#auraPercentage').setAttribute('fill', currentStyle.auraPercentage);
+    document.querySelector('#auraDescription').setAttribute('fill', currentStyle.auraDescription);
+    document.querySelector('.brand').setAttribute('fill', currentStyle.brand);
+
     // Clear existing trait circles
-    const traitCircles = document.querySelector('#traitCircles');
-    traitCircles.innerHTML = '';
+    const traitCirclesGroup = document.querySelector('#traitCircles');
+    traitCirclesGroup.innerHTML = '';
+
+    // Update trait circles color
+    const traitCircles = svg.querySelectorAll('#traitCircles circle');
+    traitCircles.forEach(circle => {
+        circle.setAttribute('fill', currentStyle.traitCircles);
+    });
+
+    // Update trait texts color
+    const traitTexts = svg.querySelectorAll('#traitCircles text');
+    traitTexts.forEach(text => {
+        text.setAttribute('fill', currentStyle.traitValues);
+    });
 
     // Add new trait circles
     Object.entries(prediction.traits).forEach(([trait, value], index) => {
-        const circle = createTraitCircle(trait, value, index);
-        traitCircles.appendChild(circle);
+        const circle = createTraitCircle(trait, value, index, currentStyle.traitCircles);
+        traitCirclesGroup.appendChild(circle);
     });
 
     // Update aura level
-    const auraLevel = calculateAuraLevel(prediction.traits);
     document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
-    document.querySelector('#auraDescription').textContent = getAuraDescription(auraLevel);
+    document.querySelector('#auraDescription').textContent = auraDescription;
 }
 
 async function downloadAuraCard() {
@@ -581,19 +717,19 @@ async function displayResult() {
                     examples: []
                 });
             }
-        
-        updateSVGCard(prediction);
-        await generateStickers(prediction.personalityType);
-    } catch (error) {
-        console.error('Error parsing prediction:', error);
-        document.getElementById('personality-type').textContent = "Error displaying results";
+
+            updateSVGCard(prediction);
+            await generateStickers(prediction.personalityType);
+        } catch (error) {
+            console.error('Error parsing prediction:', error);
+            document.getElementById('personality-type').textContent = "Error displaying results";
+            document.getElementById('description').textContent = "Please try taking the test again.";
+            document.querySelector('.traits-container').innerHTML = '';
+        }
+    } else {
+        document.getElementById('personality-type').textContent = "No prediction available";
         document.getElementById('description').textContent = "Please try taking the test again.";
-        document.querySelector('.traits-container').innerHTML = '';
     }
-} else {
-    document.getElementById('personality-type').textContent = "No prediction available";
-    document.getElementById('description').textContent = "Please try taking the test again.";
-}
 }
 
 // Modify your existing displayResult function
