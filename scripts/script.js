@@ -4,6 +4,8 @@ import { dirname, join } from 'path';
 import Groq from 'groq-sdk';
 import { predictWithGradio } from './helpers/gradio_helper.js';
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -12,7 +14,7 @@ const port = process.env.PORT || 3000;
 
 //for llm response and personality evaluation
 app.use(cors({
-  origin: [process.env.FRONT_URL, process.env.DEV_FRONT_URL]
+  origin: [env.FRONT_URL, process.env.DEV_FRONT_URL]
 }));
 app.use(express.json());
 

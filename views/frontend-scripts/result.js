@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
