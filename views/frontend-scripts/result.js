@@ -1,7 +1,3 @@
-const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? window.config.DEV_BACK_URL
-  : window.config.BACK_URL;
-
 function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
@@ -236,6 +232,10 @@ async function downloadAuraCard() {
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
     try {
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://auramatrix.onrender.com';
+
         // Show loaders for all cards first
         stickerCards.forEach(card => {
             card.querySelector('.sticker-loader').style.display = 'block';
@@ -460,6 +460,10 @@ async function updatePersonalityMatrix(answers, matrixData) {
 // Add this to your displayResult function
 async function loadMatrixData(prediction, userAnswers) {
     try {
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://auramatrix.onrender.com';
+
         const response = await fetch(`${baseUrl}/extra-info`, {
             method: 'POST',
             headers: {
@@ -524,6 +528,9 @@ async function displayResult() {
     const firstName = localStorage.getItem('userFirstName') || '';
     const lastName = localStorage.getItem('userLastName') || '';
     const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : 'https://auramatrix.onrender.com';
 
     if (firstName || lastName) {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
