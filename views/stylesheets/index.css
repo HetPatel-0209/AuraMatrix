@@ -161,4 +161,8 @@
             .card-switch {
                 width: 320px;
             }
+            .radio-options {
+                gap: 13px;
+                font-size: 0.9rem;
+            }
         }
