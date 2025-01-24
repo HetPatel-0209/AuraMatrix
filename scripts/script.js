@@ -14,7 +14,9 @@ const port = process.env.PORT || 3000;
 
 //for llm response and personality evaluation
 app.use(cors({
-  origin: [process.env.FRONT_URL, process.env.DEV_FRONT_URL]
+  origin: [    "https://aura-matrix.vercel.app",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500"]
 }));
 app.use(express.json());
 
