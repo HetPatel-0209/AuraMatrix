@@ -14,7 +14,7 @@ const port = 3000;
 
 //for llm response and personality evaluation
 app.use(cors({
-  origin: [env.FRONT_URL, process.env.DEV_FRONT_URL]
+  origin: [process.env.FRONT_URL, process.env.DEV_FRONT_URL]
 }));
 app.use(express.json());
 
