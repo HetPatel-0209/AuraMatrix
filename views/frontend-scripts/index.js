@@ -11,5 +11,9 @@ form.addEventListener('submit', function (e) {
 
     console.log(gender);
 
+    window.config = {
+        BACK_URL: "https://auramatrix.onrender.com",
+        DEV_BACK_URL: "http://localhost:3000"
+    };
     window.location.href = './test.html';
 });

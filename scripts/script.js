@@ -4,8 +4,6 @@ import { dirname, join } from 'path';
 import Groq from 'groq-sdk';
 import { predictWithGradio } from './helpers/gradio_helper.js';
 import cors from 'cors';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
