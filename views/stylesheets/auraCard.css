@@ -65,3 +65,12 @@
     border-bottom: 16px solid #fff;
     box-sizing: border-box;
 }
+
+.aura-card svg text {
+    font-family: 'Poppins', sans-serif;
+}
+
+#userName {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+    font-display: swap;
+}
