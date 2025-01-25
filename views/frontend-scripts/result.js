@@ -347,13 +347,6 @@ async function downloadAuraCard() {
             borderRadius: 20,
             useCORS: true,
             onclone: (clonedDoc) => {
-                // Force font-family on cloned elements
-                const nameText = clonedDoc.querySelector('.force-poppins');
-                if (nameText) nameText.style.fontFamily = "'Bricolage Grotesque', sans-serif";
-
-                const regularTexts = clonedDoc.querySelectorAll('.force-poppins');
-                regularTexts.forEach(text => text.style.fontFamily = "'Poppins', sans-serif");
-
                 const cardElement = clonedDoc.querySelector('.aura-card');
                 if (cardElement) {
                     cardElement.style.border = '8px solid #fff';
