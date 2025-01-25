@@ -245,7 +245,7 @@ app.post('/predict', async (req, res) => {
 
 app.post('/extra-info', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: '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' });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { answers, personalityType } = req.body;
 
     if (!Array.isArray(answers) || !personalityType) {
@@ -379,7 +379,7 @@ app.post('/extra-info', async (req, res) => {
 
 app.post('/description', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: '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' });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { personalityType } = req.body;
 
     if (!personalityType) {
