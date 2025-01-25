@@ -47,7 +47,7 @@
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: none;
-    border: 16px solid #fff;
+    border: 16px 22px solid #fff;
     box-sizing: border-box;
     position: relative;
 }
@@ -65,6 +65,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    border: 16px solid #fff;
+    border: 16px 22px solid #fff;
     box-sizing: border-box;
 }
