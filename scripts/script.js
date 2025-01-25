@@ -143,7 +143,7 @@ app.post('/api/generate-stickers', async (req, res) => {
 
 app.post('/predict', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: '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' });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { answers } = req.body;
 
     if (!Array.isArray(answers)) {
