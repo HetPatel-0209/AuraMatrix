@@ -9,7 +9,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS configuration
 app.use(cors({
   origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
@@ -18,11 +17,9 @@ app.use(express.json());
 // Static files
 app.use(express.static("public"));
 
-// NVIDIA API Configuration
 const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
-const NVIDIA_API_KEY = "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";
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
 
-// Image Generation Function
 async function generateImage(prompt, attempt = 0) {
   const payload = {
     height: 1024,
@@ -70,7 +67,6 @@ async function generateImage(prompt, attempt = 0) {
   }
 }
 
-// Sticker Generation Endpoint
 app.post('/api/generate-stickers', async (req, res) => {
   // Log received request details for debugging
   console.log('Received sticker generation request:', req.body);
@@ -87,15 +83,12 @@ app.post('/api/generate-stickers', async (req, res) => {
       });
     }
 
-    // Extract role from personalityType if possible
     const roleMatch = personalityType.match(/\((.*?)\)/);
     const role = roleMatch ? roleMatch[1] : personalityType;
 
-    // Log extracted details
     console.log('Extracted gender:', gender);
     console.log('Extracted role:', role);
 
-    // Unique prompts for 4 different stickers with increasing complexity
     const prompts = [
       `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
       `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
@@ -439,9 +432,6 @@ app.post('/description', async (req, res) => {
     res.status(500).json({ error: 'Failed to predict personality', details: error.message });
   }
 });
-
-//for sticker generation
-
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
