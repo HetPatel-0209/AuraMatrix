@@ -83,12 +83,15 @@ app.post('/api/generate-stickers', async (req, res) => {
       });
     }
 
+    // Extract role from personalityType if possible
     const roleMatch = personalityType.match(/\((.*?)\)/);
     const role = roleMatch ? roleMatch[1] : personalityType;
 
+    // Log extracted details
     console.log('Extracted gender:', gender);
     console.log('Extracted role:', role);
 
+    // Unique prompts for 4 different stickers with increasing complexity
     const prompts = [
       `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
       `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
