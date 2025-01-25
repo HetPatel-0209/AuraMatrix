@@ -1,24 +1,169 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import Groq from 'groq-sdk';
-import { predictWithGradio } from './helpers/gradio_helper.js';
+import { dirname } from 'path';
+import axios from "axios";
 import cors from 'cors';
+import Groq from 'groq-sdk';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
+// CORS configuration
 app.use(cors({
-  origin: [    "https://aura-matrix.vercel.app",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500"]
+  origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 app.use(express.json());
 
+// Static files
+app.use(express.static("public"));
+
+// NVIDIA API Configuration
+const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
+const NVIDIA_API_KEY = "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";
+
+// Image Generation Function
+async function generateImage(prompt, attempt = 0) {
+  const payload = {
+    height: 1024,
+    width: 1024,
+    text_prompts: [{
+      text: prompt,
+      weight: 1.0
+    }],
+    cfg_scale: 5,
+    clip_guidance_preset: "NONE",
+    sampler: "K_DPM_2_ANCESTRAL",
+    samples: 1,
+    seed: 0,
+    steps: 25,
+    style_preset: "none"
+  };
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: NVIDIA_API_URL,
+      headers: {
+        Authorization: `Bearer ${NVIDIA_API_KEY}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      data: payload
+    });
+
+    // Directly return the base64 artifact from the response
+    if (response.data.artifacts && response.data.artifacts.length > 0) {
+      return response.data.artifacts[0].base64;
+    } else {
+      throw new Error('No image data in response');
+    }
+  } catch (error) {
+    console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
+
+    if (attempt < 1) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return generateImage(prompt, attempt + 1);
+    }
+
+    throw error;
+  }
+}
+
+// Sticker Generation Endpoint
+app.post('/api/generate-stickers', async (req, res) => {
+  // Log received request details for debugging
+  console.log('Received sticker generation request:', req.body);
+
+  // Destructure with default values to handle potential undefined
+  const { personalityType, gender = 'neutral' } = req.body;
+
+  try {
+    // Validate personalityType
+    if (!personalityType) {
+      return res.status(400).json({
+        error: 'personalityType is required',
+        details: 'Personality type must be provided to generate stickers'
+      });
+    }
+
+    // Extract role from personalityType if possible
+    const roleMatch = personalityType.match(/\((.*?)\)/);
+    const role = roleMatch ? roleMatch[1] : personalityType;
+
+    // Log extracted details
+    console.log('Extracted gender:', gender);
+    console.log('Extracted role:', role);
+
+    // Unique prompts for 4 different stickers with increasing complexity
+    const prompts = [
+      `"Download ${role}" sticker, ${gender} silhouette tapping cloud icon, 
+      isometric 3D button design, ${role}-themed symbols (badge/shield/star), 
+      gradient colors matching ${gender} preferences, thin white border, 
+      material design aesthetic, app interface style, digital tool sticker`,
+
+      `"${role} Files" sticker, ${gender} avatar holding folder stack, 
+      minimalist flat design, labels with ${role}-specific traits, 
+      color-coded tabs for ${gender} nuances, 1px black outline, 
+      workspace organization aesthetic, UI toolkit style`,
+
+      `"${role} Community" settings sticker, ${gender} profile adjusting gear cluster, 
+      interlocking ${role} symbols (lightbulb/heart/globe), 
+      dynamic perspective showing ${gender} interaction, 
+      corporate blue/white palette, config panel aesthetic, 
+      admin interface sticker with rounded corners`,
+
+      `"${role} Powered" badge sticker, ${gender} developer figure beside terminal window, 
+      ${role}-specific tools floating around, 
+      ${gender}-influenced color accents (soft pastels/ bold primaries), 
+      screen glow effect, open-source project style, 
+      thin border with subtle texture`
+    ];
+    // Generate 4 stickers with rate limiting (2-second delay between requests)
+    const stickerPromises = prompts.map((prompt, index) =>
+      new Promise(resolve => {
+        setTimeout(() => {
+          generateImage(prompt)
+            .then(base64 => resolve(base64))
+            .catch(error => {
+              console.error(`Error generating sticker ${index + 1}:`, error);
+              resolve(null);
+            });
+        }, index * 2000);  // 2-second delay between requests
+      })
+    );
+
+    try {
+      const base64Images = await Promise.all(stickerPromises);
+
+      // Filter out any null images
+      const validImages = base64Images.filter(img => img !== null);
+
+      // Send response with generated images
+      res.json({
+        artifacts: validImages.map(base64 => ({ base64 })),
+        message: "Stickers generated successfully"
+      });
+    } catch (error) {
+      console.error('Error in sticker generation process:', error);
+      res.status(500).json({
+        error: 'Failed to generate stickers',
+        details: error.message
+      });
+    }
+  } catch (error) {
+    console.error('Unexpected error in sticker generation:', error);
+    res.status(500).json({
+      error: 'Unexpected error in sticker generation',
+      details: error.message
+    });
+  }
+});
+
+
 app.post('/predict', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = new Groq({ apiKey: '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' });
     const { answers } = req.body;
 
     if (!Array.isArray(answers)) {
@@ -120,7 +265,7 @@ app.post('/predict', async (req, res) => {
 
 app.post('/extra-info', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = new Groq({ apiKey: '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' });
     const { answers, personalityType } = req.body;
 
     if (!Array.isArray(answers) || !personalityType) {
@@ -166,11 +311,8 @@ app.post('/extra-info', async (req, res) => {
       2. Assign "None" for traits that are not clearly indicated by the answer.\n
       3. Use patterns from the provided example matrix for consistency in analysis.\n
       4. Ensure the traits assigned are directly aligned with the context and wording of the answer.\n
-      5. Only use "High X" when answer clearly demonstrates that trait\
-      6. for Extraversion (E)/Introversion (I) column use : cells [1,5,9,13,17,21,25,29,33,37]
-      7. for Sensing (S)/Intuition (N) column use: cells [2,6,10,14,18,22,26,30,34,38]
-      8. for Thinking (T)/Feeling (F) column use : cells [3,7,11,15,19,23,27,31,35,39]
-      9. for Judging (J)/Perceiving (P) column use : cells [4,8,12,16,20,24,28,32,36,40]
+      5. Avoid randomness; consistency and accuracy are top priorities.\n
+      6. Only use "High X" when answer clearly demonstrates that trait\
 
       Example Matrix:\n
       | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |\n
@@ -257,7 +399,7 @@ app.post('/extra-info', async (req, res) => {
 
 app.post('/description', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groq = new Groq({ apiKey: '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' });
     const { personalityType } = req.body;
 
     if (!personalityType) {
@@ -276,6 +418,7 @@ app.post('/description', async (req, res) => {
         Your task is to create a pesonality description according users personality.\n
         `,
         },
+        // In the '/description' endpoint's user message content:
         {
           role: "user",
           content: `
@@ -313,43 +456,8 @@ app.post('/description', async (req, res) => {
   }
 });
 
-app.post('/generate-stickers', async (req, res) => {
-  const { personalityType, gender } = req.body;
+//for sticker generation
 
-  try {
-    if (!personalityType) {
-      return res.status(400).json({ error: 'personalityType is required' });
-    }
-
-    const roleMatch = personalityType.match(/\((.*?)\)/);
-    const role = roleMatch ? roleMatch[1] : personalityType;
-
-    const prompt = `${role} personality sticker for ${gender} with black background.`;
-
-    console.log('Dispatching prompt to Gradio:', prompt);
-
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('Pragma', 'no-cache');
-
-    await predictWithGradio(
-      `${prompt}`,
-      (status) => {
-        res.write(`data: ${JSON.stringify(status)}\n\n`);
-      }
-    ).then((imageUrls) => {
-      res.write(`data: ${JSON.stringify({ imageUrls })}\n\n`);
-      res.end();
-    }).catch((error) => {
-      res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-      res.end();
-    });
-  } catch (error) {
-    console.error('Error generating stickers:', error);
-    res.status(500).json({ error: 'Failed to generate stickers' });
-  }
-});
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
@@ -358,3 +466,4 @@ app.get('/health', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+

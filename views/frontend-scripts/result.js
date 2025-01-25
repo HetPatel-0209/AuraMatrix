@@ -373,48 +373,42 @@ async function generateStickers(personalityType) {
             ? 'http://localhost:3000'
             : 'https://auramatrix.onrender.com';
 
-        // Show loaders for all cards first
-        stickerCards.forEach(card => {
-            card.querySelector('.sticker-loader').style.display = 'block';
-        });
+        const gender = localStorage.getItem('userGender') || 'neutral';
 
-        const gender = localStorage.getItem('userGender');
-        const response = await fetch(`${baseUrl}/generate-stickers`, {
+        const response = await fetch(`${baseUrl}/api/generate-stickers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ personalityType, gender }),
+            body: JSON.stringify({
+                personalityType,
+                gender
+            }),
         });
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-        const reader = response.body.getReader();
-        let imageUrls = [];
+        const data = await response.json();
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const chunk = new TextDecoder().decode(value);
-            const lines = chunk.split('\n');
-
-            lines.forEach(line => {
-                if (line.startsWith('data: ')) {
-                    const data = JSON.parse(line.slice(5));
-                    if (data.imageUrls) imageUrls = data.imageUrls;
+        // Directly use base64 from artifacts
+        if (data.artifacts && data.artifacts.length > 0) {
+            // Update sticker cards with generated images
+            data.artifacts.forEach((artifact, index) => {
+                if (index < stickerCards.length) {
+                    const imageUrl = `data:image/png;base64,${artifact.base64}`;
+                    displaySticker(stickerCards[index], imageUrl, index);
+                    stickerCards[index].querySelector('.sticker-loader').style.display = 'none';
+                    stickerCards[index].style.display = 'block';
                 }
             });
-        }
 
-        // Update all sticker cards with received URLs
-        stickerCards.forEach((card, index) => {
-            if (imageUrls[index]) {
-                displaySticker(card, imageUrls[index], index);
-            } else {
-                displayStickerError(card);
+            // Hide any extra sticker cards if fewer than 4 are generated
+            for (let i = data.artifacts.length; i < stickerCards.length; i++) {
+                stickerCards[i].style.display = 'none';
             }
-            card.querySelector('.sticker-loader').style.display = 'none';
-        });
+        } else {
+            throw new Error('No artifacts found in response');
+        }
 
     } catch (error) {
         console.error('Error generating stickers:', error);
@@ -486,12 +480,9 @@ async function downloadSticker(url, filename) {
     try {
         if (!filename.endsWith('.png')) filename += '.png';
 
-        // Convert WebP to PNG
-        const pngDataUrl = await convertWebPToPNG(url);
-
         // Create download link
         const link = document.createElement('a');
-        link.href = pngDataUrl;
+        link.href = url;
         link.download = filename;
 
         // Trigger download
@@ -503,6 +494,7 @@ async function downloadSticker(url, filename) {
         alert('Failed to download sticker. Please try again.');
     }
 }
+
 
 async function downloadAllStickers() {
     const stickerCards = document.querySelectorAll('.sticker-card');
@@ -525,7 +517,6 @@ async function downloadAllStickers() {
         }
     }
 }
-
 async function updatePersonalityMatrix(answers, matrixData) {
     const matrixBody = document.querySelector('#personalityMatrix tbody');
     if (!matrixBody) {
