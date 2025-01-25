@@ -97,28 +97,12 @@ app.post('/api/generate-stickers', async (req, res) => {
 
     // Unique prompts for 4 different stickers with increasing complexity
     const prompts = [
-      `"Download ${role}" sticker, ${gender} silhouette tapping cloud icon, 
-      isometric 3D button design, ${role}-themed symbols (badge/shield/star), 
-      gradient colors matching ${gender} preferences, thin white border, 
-      material design aesthetic, app interface style, digital tool sticker`,
-
-      `"${role} Files" sticker, ${gender} avatar holding folder stack, 
-      minimalist flat design, labels with ${role}-specific traits, 
-      color-coded tabs for ${gender} nuances, 1px black outline, 
-      workspace organization aesthetic, UI toolkit style`,
-
-      `"${role} Community" settings sticker, ${gender} profile adjusting gear cluster, 
-      interlocking ${role} symbols (lightbulb/heart/globe), 
-      dynamic perspective showing ${gender} interaction, 
-      corporate blue/white palette, config panel aesthetic, 
-      admin interface sticker with rounded corners`,
-
-      `"${role} Powered" badge sticker, ${gender} developer figure beside terminal window, 
-      ${role}-specific tools floating around, 
-      ${gender}-influenced color accents (soft pastels/ bold primaries), 
-      screen glow effect, open-source project style, 
-      thin border with subtle texture`
+      `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
+      `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
+      `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
+      `Playful personality sticker with white border, ${gender} character, whimsical illustration, pastel colors, soft background, friendly smile, creative interpretation of ${role} personality`
     ];
+
     // Generate 4 stickers with rate limiting (2-second delay between requests)
     const stickerPromises = prompts.map((prompt, index) =>
       new Promise(resolve => {
