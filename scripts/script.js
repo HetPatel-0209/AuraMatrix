@@ -19,25 +19,26 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // NVIDIA API Configuration
-const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
-const NVIDIA_API_KEY = "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";
+const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/briaai/bria-2.3";
+const NVIDIA_API_KEY = "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";
 
+// sdxl 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
+
+//brai // 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
 // Image Generation Function
+
+
 async function generateImage(prompt, attempt = 0) {
   const payload = {
-    height: 1024,
-    width: 1024,
-    text_prompts: [{
-      text: prompt,
-      weight: 1.0
-    }],
-    cfg_scale: 5,
-    clip_guidance_preset: "NONE",
-    sampler: "K_DPM_2_ANCESTRAL",
-    samples: 1,
-    seed: 0,
-    steps: 25,
-    style_preset: "none"
+    prompt: prompt, // BRIA 2.3 uses direct prompt string
+    aspect_ratio: '1:1',
+    mode: 'text-to-image',
+    negative_prompt: 'Avoid overly complex designs, cluttered backgrounds, soft or pastel colors, cartoonish or childlike features, unrealistic proportions, flat or dull textures, lack of symmetry, and excessive accessories. Do not include text, logos, or unrelated objects.',
+    model: 'bria-2.3',
+    seed: '000000', // Better to randomize seed
+    output_format: 'jpeg',
+    cfg_scale: 9,
+    steps: 30
   };
 
   try {
@@ -52,17 +53,23 @@ async function generateImage(prompt, attempt = 0) {
       data: payload
     });
 
-    // Directly return the base64 artifact from the response
-    if (response.data.artifacts && response.data.artifacts.length > 0) {
-      return response.data.artifacts[0].base64;
-    } else {
+    // Handle BRIA 2.3 response format
+    if (response.data.finish_reason === 'CONTENT_FILTERED') {
+      throw new Error('Content filtered by safety system');
+    }
+
+    if (!response.data.image) {
       throw new Error('No image data in response');
     }
+
+    // Return as data URL with correct JPEG MIME type
+    return `data:image/jpeg;base64,${response.data.image}`;
+
   } catch (error) {
     console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
 
-    if (attempt < 1) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    if (attempt < 2) { // Retry up to 3 times
+      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
       return generateImage(prompt, attempt + 1);
     }
 
@@ -70,75 +77,47 @@ async function generateImage(prompt, attempt = 0) {
   }
 }
 
-// Sticker Generation Endpoint
+// Updated Sticker Generation Endpoint
 app.post('/api/generate-stickers', async (req, res) => {
-  // Log received request details for debugging
-  console.log('Received sticker generation request:', req.body);
-
-  // Destructure with default values to handle potential undefined
-  const { personalityType, gender = 'neutral' } = req.body;
-
   try {
-    // Validate personalityType
+    const { personalityType, gender = 'neutral' } = req.body;
+
     if (!personalityType) {
-      return res.status(400).json({
-        error: 'personalityType is required',
-        details: 'Personality type must be provided to generate stickers'
-      });
+      return res.status(400).json({ error: 'personalityType is required' });
     }
 
-    // Extract role from personalityType if possible
     const roleMatch = personalityType.match(/\((.*?)\)/);
-    const role = roleMatch ? roleMatch[1] : personalityType;
+    const role = roleMatch?.[1] || personalityType;
 
-    // Log extracted details
-    console.log('Extracted gender:', gender);
-    console.log('Extracted role:', role);
-
-    // Unique prompts for 4 different stickers with increasing complexity
+    // Enhanced prompts with more variety
     const prompts = [
-      `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
-      `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
-      `Vibrant cartoon-style personality sticker with white border, ${gender} character, minimalist design, black background, professional illustration, clean lines, expressive face, energetic pose, representing ${role} personality type`,
-      `Playful personality sticker with white border, ${gender} character, whimsical illustration, pastel colors, soft background, friendly smile, creative interpretation of ${role} personality`
+      `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
     ];
 
-    // Generate 4 stickers with rate limiting (2-second delay between requests)
+    // Generate stickers with parallel requests (adjust according to rate limits)
     const stickerPromises = prompts.map((prompt, index) =>
-      new Promise(resolve => {
-        setTimeout(() => {
-          generateImage(prompt)
-            .then(base64 => resolve(base64))
-            .catch(error => {
-              console.error(`Error generating sticker ${index + 1}:`, error);
-              resolve(null);
-            });
-        }, index * 2000);  // 2-second delay between requests
+      generateImage(prompt).catch(error => {
+        console.error(`Sticker ${index + 1} failed:`, error);
+        return null;
       })
     );
 
-    try {
-      const base64Images = await Promise.all(stickerPromises);
+    const stickerUrls = await Promise.all(stickerPromises);
+    const validUrls = stickerUrls.filter(url => url !== null);
 
-      // Filter out any null images
-      const validImages = base64Images.filter(img => img !== null);
+    res.json({
+      images: validUrls,
+      generatedCount: validUrls.length,
+      message: validUrls.length === 4 ? 'All stickers generated' : 'Partial generation completed'
+    });
 
-      // Send response with generated images
-      res.json({
-        artifacts: validImages.map(base64 => ({ base64 })),
-        message: "Stickers generated successfully"
-      });
-    } catch (error) {
-      console.error('Error in sticker generation process:', error);
-      res.status(500).json({
-        error: 'Failed to generate stickers',
-        details: error.message
-      });
-    }
   } catch (error) {
-    console.error('Unexpected error in sticker generation:', error);
+    console.error('Sticker generation error:', error);
     res.status(500).json({
-      error: 'Unexpected error in sticker generation',
+      error: 'Sticker generation failed',
       details: error.message
     });
   }
