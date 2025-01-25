@@ -9,8 +9,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
-
-//for llm response and personality evaluation
 app.use(cors({
   origin: [    "https://aura-matrix.vercel.app",
     "http://localhost:5500",
@@ -278,7 +276,6 @@ app.post('/description', async (req, res) => {
         Your task is to create a pesonality description according users personality.\n
         `,
         },
-        // In the '/description' endpoint's user message content:
         {
           role: "user",
           content: `
@@ -316,7 +313,6 @@ app.post('/description', async (req, res) => {
   }
 });
 
-//for sticker generation
 app.post('/generate-stickers', async (req, res) => {
   const { personalityType, gender } = req.body;
 
@@ -330,16 +326,13 @@ app.post('/generate-stickers', async (req, res) => {
 
     const prompt = `${role} personality sticker for ${gender} with black background.`;
 
-    // Console log the prompt
     console.log('Dispatching prompt to Gradio:', prompt);
 
-    // Set up Server-Sent Events (SSE) for progress updates
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('Pragma', 'no-cache');
 
-    // Generate stickers using Gradio API with progress tracking
     await predictWithGradio(
       `${prompt}`,
       (status) => {
@@ -365,4 +358,3 @@ app.get('/health', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
