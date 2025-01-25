@@ -261,13 +261,13 @@ function updateSVGCard(prediction) {
 
     // Additional gradient definitions to be added to SVG defs
     const additionalDefs = `
-    <linearGradient id="legendry-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <radialGradient id="legendry-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#DF0C8B"/>
         <stop offset="100%" stop-color="#570779"/>
-    </linearGradient>
-    <radialGradient id="infinite-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop stop-color="#DF0C10"/>
-        <stop offset="100%" stop-color="#280D07"/>
+    </radialGradient>
+    <radialGradient id="infinite-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(720 600) rotate(90) scale(720 700)">
+        <stop stop-color="#DF0C10"></stop>
+        <stop offset="1" stop-color="#280D07"></stop>
     </radialGradient>
     `;
 
