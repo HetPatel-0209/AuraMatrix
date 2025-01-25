@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
-const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
+const NVIDIA_API_KEY = "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";
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
