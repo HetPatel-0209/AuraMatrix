@@ -265,10 +265,10 @@ function updateSVGCard(prediction) {
         <stop offset="0%" stop-color="#DF0C8B"/>
         <stop offset="100%" stop-color="#570779"/>
     </linearGradient>
-    <linearGradient id="infinite-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#DF0C10"/>
+    <radialGradient id="infinite-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop stop-color="#DF0C10"/>
         <stop offset="100%" stop-color="#280D07"/>
-    </linearGradient>
+    </radialGradient>
     `;
 
     // Add additional defs to the SVG if not already present
@@ -342,7 +342,7 @@ async function downloadAuraCard() {
 
         const canvas = await html2canvas(cardClone, {
             scale: 2,
-            backgroundColor: '#000000',
+            backgroundColor: "#ffffff",
             logging: false,
             borderRadius: 20,
             useCORS: true,
@@ -353,6 +353,13 @@ async function downloadAuraCard() {
 
                 const regularTexts = clonedDoc.querySelectorAll('.force-poppins');
                 regularTexts.forEach(text => text.style.fontFamily = "'Poppins', sans-serif");
+
+                const cardElement = clonedDoc.querySelector('.aura-card');
+                if (cardElement) {
+                    cardElement.style.border = '8px solid #fff';
+                    cardElement.style.borderRadius = '20px';
+                    cardElement.style.boxSizing = 'border-box';
+                }
             }
         });
         hiddenContainer.remove();

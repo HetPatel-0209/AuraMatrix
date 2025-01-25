@@ -42,11 +42,14 @@
 .aura-card {
     width: 600px;
     height: 800px;
-    background: #fff9f0;
+    background: #ffffff;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: none;
+    border: 16px solid #fff;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .aura-card svg {
@@ -56,11 +59,12 @@
 }
 
 .download-wrapper {
-    border-radius: 20px;
     overflow: hidden;
-    width: 600px;
+    width: 1000px;
     height: 800px;
     position: absolute;
     top: 0;
     left: 0;
+    border: 16px solid #fff;
+    box-sizing: border-box;
 }
