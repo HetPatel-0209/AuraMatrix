@@ -128,7 +128,6 @@ function createTraitCircle(trait, value, index, color) {
     circleElement.setAttribute("fill", color);
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    valueText.setAttribute('font-family', 'Poppins');
     valueText.setAttribute("x", "60");
     valueText.setAttribute("y", "65");
     valueText.setAttribute("text-anchor", "middle");
@@ -139,7 +138,6 @@ function createTraitCircle(trait, value, index, color) {
 
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    traitText.setAttribute('font-family', 'Poppins');
     traitText.setAttribute("x", "60");
     traitText.setAttribute("y", "87");
     traitText.setAttribute("text-anchor", "middle");
@@ -158,12 +156,6 @@ function createTraitCircle(trait, value, index, color) {
 function updateSVGCard(prediction) {
     const svg = document.querySelector('#auraCard svg');
     if (!svg) return;
-
-    document.querySelector('#userName').setAttribute('font-family', 'Bricolage Grotesque');
-    document.querySelector('#userType').setAttribute('font-family', 'Poppins');
-    document.querySelector('#auraPercentage').setAttribute('font-family', 'Poppins');
-    document.querySelector('#auraDescription').setAttribute('font-family', 'Poppins');
-    document.querySelector('.brand').setAttribute('font-family', 'Poppins');
 
     // Update name and type
     const firstName = localStorage.getItem('userFirstName') || 'User';
@@ -270,8 +262,8 @@ function updateSVGCard(prediction) {
     // Additional gradient definitions to be added to SVG defs
     const additionalDefs = `
     <radialGradient id="legendry-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(530 500) rotate(90) scale(510 520)">
-        <stop stop-color="#DF0C8B"/>
-        <stop offset="1" stop-color="#570779"/>
+        <stop offset="0%" stop-color="#DF0C8B"/>
+        <stop offset="100%" stop-color="#570779"/>
     </radialGradient>
     <radialGradient id="infinite-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(530 500) rotate(90) scale(510 520)">
         <stop stop-color="#DF0C10"></stop>
@@ -323,8 +315,6 @@ function updateSVGCard(prediction) {
 
     // Add new trait circles
     Object.entries(prediction.traits).forEach(([trait, value], index) => {
-        valueText.setAttribute('font-family', 'Poppins');
-        traitText.setAttribute('font-family', 'Poppins');
         const circle = createTraitCircle(trait, value, index, currentStyle.traitCircles);
         traitCirclesGroup.appendChild(circle);
     });
@@ -336,13 +326,8 @@ function updateSVGCard(prediction) {
 
 async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
-    const fontLoader = document.createElement('div');
-    fontLoader.style.fontFamily = 'Bricolage Grotesque, Poppins';
-    fontLoader.style.position = 'absolute';
-    fontLoader.style.left = '-9999px';
-    document.body.appendChild(fontLoader);
+
     try {
-        await document.fonts.ready;
         // Create a hidden container
         const hiddenContainer = document.createElement('div');
         hiddenContainer.style.position = 'absolute';
@@ -358,14 +343,16 @@ async function downloadAuraCard() {
         const canvas = await html2canvas(cardClone, {
             scale: 2,
             backgroundColor: "#ffffff",
-            logging: true,
-            fontFamily: 'Bricolage Grotesque, Poppins',
+            logging: false,
+            borderRadius: 20,
             useCORS: true,
             onclone: (clonedDoc) => {
                 const cardElement = clonedDoc.querySelector('.aura-card');
-                const preloader = clonedDoc.createElement('div');
-                preloader.style.fontFamily = 'Bricolage Grotesque, Poppins';
-                clonedDoc.body.appendChild(preloader);
+                if (cardElement) {
+                    cardElement.style.border = '8px solid #fff';
+                    cardElement.style.borderRadius = '20px';
+                    cardElement.style.boxSizing = 'border-box';
+                }
             }
         });
         hiddenContainer.remove();
@@ -376,8 +363,6 @@ async function downloadAuraCard() {
         link.click();
     } catch (error) {
         console.error('Error generating card:', error);
-    } finally{
-        document.body.removeChild(fontLoader);
     }
 }
 
