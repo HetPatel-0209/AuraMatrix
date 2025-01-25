@@ -67,7 +67,8 @@
 }
 
 .aura-card svg text {
-    font-family: 'Poppins', sans-serif;
+    font-display: swap;
+    font-family: 'Poppins', sans-serif !important;
 }
 
 #userName {

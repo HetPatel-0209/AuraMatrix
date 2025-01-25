@@ -128,7 +128,7 @@ function createTraitCircle(trait, value, index, color) {
     circleElement.setAttribute("fill", color);
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    valueText.setAttribute('style', 'font-family: Poppins, sans-serif');
+    valueText.setAttribute('font-family', 'Poppins');
     valueText.setAttribute("x", "60");
     valueText.setAttribute("y", "65");
     valueText.setAttribute("text-anchor", "middle");
@@ -139,7 +139,7 @@ function createTraitCircle(trait, value, index, color) {
 
     // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    traitText.setAttribute('style', 'font-family: Poppins, sans-serif');
+    traitText.setAttribute('font-family', 'Poppins');
     traitText.setAttribute("x", "60");
     traitText.setAttribute("y", "87");
     traitText.setAttribute("text-anchor", "middle");
@@ -159,6 +159,12 @@ function updateSVGCard(prediction) {
     const svg = document.querySelector('#auraCard svg');
     if (!svg) return;
 
+    document.querySelector('#userName').setAttribute('font-family', 'Bricolage Grotesque');
+    document.querySelector('#userType').setAttribute('font-family', 'Poppins');
+    document.querySelector('#auraPercentage').setAttribute('font-family', 'Poppins');
+    document.querySelector('#auraDescription').setAttribute('font-family', 'Poppins');
+    document.querySelector('.brand').setAttribute('font-family', 'Poppins');
+
     // Update name and type
     const firstName = localStorage.getItem('userFirstName') || 'User';
     const lastName = localStorage.getItem('userLastName') || '';
@@ -173,12 +179,6 @@ function updateSVGCard(prediction) {
     } else {
         document.querySelector('#userType').textContent = personalityType;
     }
-
-    document.querySelector('#userName').setAttribute('font-family', 'Bricolage Grotesque');
-    document.querySelector('#userType').setAttribute('font-family', 'Poppins');
-    document.querySelector('#auraPercentage').setAttribute('font-family', 'Poppins');
-    document.querySelector('#auraDescription').setAttribute('font-family', 'Poppins');
-    document.querySelector('.brand').setAttribute('font-family', 'Poppins');
 
     // Calculate aura level and description
     const auraLevel = calculateAuraLevel(prediction.traits);
@@ -342,6 +342,7 @@ async function downloadAuraCard() {
     fontLoader.style.left = '-9999px';
     document.body.appendChild(fontLoader);
     try {
+        await document.fonts.ready;
         // Create a hidden container
         const hiddenContainer = document.createElement('div');
         hiddenContainer.style.position = 'absolute';
@@ -365,11 +366,6 @@ async function downloadAuraCard() {
                 const preloader = clonedDoc.createElement('div');
                 preloader.style.fontFamily = 'Bricolage Grotesque, Poppins';
                 clonedDoc.body.appendChild(preloader);
-                if (cardElement) {
-                    cardElement.style.border = '8px solid #fff';
-                    cardElement.style.borderRadius = '20px';
-                    cardElement.style.boxSizing = 'border-box';
-                }
             }
         });
         hiddenContainer.remove();
