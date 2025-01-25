@@ -265,7 +265,7 @@ function updateSVGCard(prediction) {
         <stop offset="0%" stop-color="#DF0C8B"/>
         <stop offset="100%" stop-color="#570779"/>
     </radialGradient>
-    <radialGradient id="infinite-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(720 600) rotate(90) scale(720 700)">
+    <radialGradient id="infinite-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(530 500) rotate(90) scale(510 520)">
         <stop stop-color="#DF0C10"></stop>
         <stop offset="1" stop-color="#280D07"></stop>
     </radialGradient>
