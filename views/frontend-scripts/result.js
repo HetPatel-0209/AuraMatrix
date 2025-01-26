@@ -261,13 +261,13 @@ function updateSVGCard(prediction) {
 
     // Additional gradient definitions to be added to SVG defs
     const additionalDefs = `
-    <linearGradient id="legendry-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <radialGradient id="legendry-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(530 500) rotate(90) scale(510 520)">
         <stop offset="0%" stop-color="#DF0C8B"/>
         <stop offset="100%" stop-color="#570779"/>
-    </linearGradient>
-    <radialGradient id="infinite-aura-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop stop-color="#DF0C10"/>
-        <stop offset="100%" stop-color="#280D07"/>
+    </radialGradient>
+    <radialGradient id="infinite-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(530 500) rotate(90) scale(510 520)">
+        <stop stop-color="#DF0C10"></stop>
+        <stop offset="1" stop-color="#280D07"></stop>
     </radialGradient>
     `;
 
@@ -347,13 +347,6 @@ async function downloadAuraCard() {
             borderRadius: 20,
             useCORS: true,
             onclone: (clonedDoc) => {
-                // Force font-family on cloned elements
-                const nameText = clonedDoc.querySelector('.force-poppins');
-                if (nameText) nameText.style.fontFamily = "'Bricolage Grotesque', sans-serif";
-
-                const regularTexts = clonedDoc.querySelectorAll('.force-poppins');
-                regularTexts.forEach(text => text.style.fontFamily = "'Poppins', sans-serif");
-
                 const cardElement = clonedDoc.querySelector('.aura-card');
                 if (cardElement) {
                     cardElement.style.border = '8px solid #fff';
@@ -376,13 +369,21 @@ async function downloadAuraCard() {
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
     try {
-        const baseUrl = 'http://localhost:3000';
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://auramatrix.onrender.com';
+
         const gender = localStorage.getItem('userGender') || 'neutral';
 
         const response = await fetch(`${baseUrl}/api/generate-stickers`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ personalityType, gender }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                personalityType,
+                gender
+            }),
         });
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -412,7 +413,7 @@ function displaySticker(card, stickerUrl, index) {
     const downloadBtn = card.querySelector('.download-sticker-btn');
 
     sticker.style.backgroundImage = `url(${stickerUrl})`;
-    downloadBtn.onclick = () => downloadSticker(stickerUrl, `sticker-${index + 1}.jpeg`);
+    downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}`);
 }
 
 function displayStickerError(card) {
@@ -722,9 +723,6 @@ displayResult = async function () {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
             updateSVGCard(prediction);
-            if (stickers) {
-                displayStickers(stickers);
-            }
         } catch (error) {
             console.error('Error creating aura card or stickers:', error);
         }

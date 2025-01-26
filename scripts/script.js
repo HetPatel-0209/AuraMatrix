@@ -9,7 +9,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS configuration
 app.use(cors({
   origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
@@ -18,15 +17,8 @@ app.use(express.json());
 // Static files
 app.use(express.static("public"));
 
-// NVIDIA API Configuration
 const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/briaai/bria-2.3";
-const NVIDIA_API_KEY = "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";
-
-// sdxl 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
-
-//brai // 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
-// Image Generation Function
-
+const NVIDIA_API_KEY = process.env.NVIDIA;
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
@@ -77,19 +69,19 @@ async function generateImage(prompt, attempt = 0) {
   }
 }
 
-// Updated Sticker Generation Endpoint
 app.post('/api/generate-stickers', async (req, res) => {
   try {
     const { personalityType, gender = 'neutral' } = req.body;
-
     if (!personalityType) {
-      return res.status(400).json({ error: 'personalityType is required' });
+      return res.status(400).json({
+        error: 'personalityType is required',
+        details: 'Personality type must be provided to generate stickers'
+      });
     }
 
     const roleMatch = personalityType.match(/\((.*?)\)/);
-    const role = roleMatch?.[1] || personalityType;
+    const role = roleMatch ? roleMatch[1] : personalityType;
 
-    // Enhanced prompts with more variety
     const prompts = [
       `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
       `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
@@ -97,7 +89,6 @@ app.post('/api/generate-stickers', async (req, res) => {
       `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
     ];
 
-    // Generate stickers with parallel requests (adjust according to rate limits)
     const stickerPromises = prompts.map((prompt, index) =>
       generateImage(prompt).catch(error => {
         console.error(`Sticker ${index + 1} failed:`, error);
@@ -113,11 +104,11 @@ app.post('/api/generate-stickers', async (req, res) => {
       generatedCount: validUrls.length,
       message: validUrls.length === 4 ? 'All stickers generated' : 'Partial generation completed'
     });
-
-  } catch (error) {
-    console.error('Sticker generation error:', error);
+  }
+  catch (error) {
+    console.error('Unexpected error in sticker generation:', error);
     res.status(500).json({
-      error: 'Sticker generation failed',
+      error: 'Unexpected error in sticker generation',
       details: error.message
     });
   }
@@ -126,7 +117,7 @@ app.post('/api/generate-stickers', async (req, res) => {
 
 app.post('/predict', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: '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' });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { answers } = req.body;
 
     if (!Array.isArray(answers)) {
@@ -228,7 +219,7 @@ app.post('/predict', async (req, res) => {
 
 app.post('/extra-info', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: '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' });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { answers, personalityType } = req.body;
 
     if (!Array.isArray(answers) || !personalityType) {
@@ -362,7 +353,7 @@ app.post('/extra-info', async (req, res) => {
 
 app.post('/description', async (req, res) => {
   try {
-    const groq = new Groq({ apiKey: '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' });
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { personalityType } = req.body;
 
     if (!personalityType) {
@@ -419,9 +410,6 @@ app.post('/description', async (req, res) => {
   }
 });
 
-//for sticker generation
-
-
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
@@ -429,4 +417,3 @@ app.get('/health', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
