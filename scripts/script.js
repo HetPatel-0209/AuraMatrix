@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/briaai/bria-2.3";
-const NVIDIA_API_KEY = process.env.NVIDIA;
+const NVIDIA_API_KEY = "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";
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
