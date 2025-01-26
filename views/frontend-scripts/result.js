@@ -723,9 +723,6 @@ displayResult = async function () {
         try {
             const prediction = JSON.parse(decodeURIComponent(predictionStr));
             updateSVGCard(prediction);
-            if (stickers) {
-                displayStickers(stickers);
-            }
         } catch (error) {
             console.error('Error creating aura card or stickers:', error);
         }
