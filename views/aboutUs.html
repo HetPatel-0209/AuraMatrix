@@ -141,22 +141,6 @@
         </div>
     </div>
     <a href="./result.html" class="back-button">Back to results</a>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const backButton = document.querySelector('.back-button');
-            if (backButton) {
-                backButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const currentParams = new URLSearchParams(window.location.search);
-                    const prediction = currentParams.get('returnData');
-
-                    // Return to results with the preserved data
-                    window.location.href = `./result.html${prediction ? `?prediction=${prediction}` : ''}`;
-                });
-            }
-        });
-    </script>
 </body>
 
 </html>

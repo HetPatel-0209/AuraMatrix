@@ -684,7 +684,6 @@ async function displayResult() {
                     throw new Error(`HTTP error! status: ${descResponse.status}`);
                 }
                 const descData = await descResponse.json();
-                console.log('Description data received:', descData);
 
                 if (descData.prediction) {
                     displayPersonalityDescription(descData.prediction);
@@ -740,14 +739,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadAllButton = document.querySelector('.download-all-btn');
     if (downloadAllButton) {
         downloadAllButton.addEventListener('click', downloadAllStickers);
-    }
-    const aboutUsLink = document.querySelector('.about-button');
-    if (aboutUsLink) {
-        aboutUsLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            const currentParams = new URLSearchParams(window.location.search);
-            const prediction = currentParams.get('prediction');
-            navigateToAboutUs(prediction);
-        });
     }
 });
