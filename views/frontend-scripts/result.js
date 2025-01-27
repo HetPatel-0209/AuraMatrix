@@ -730,6 +730,11 @@ displayResult = async function () {
 
 // Add event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    const applyGradient = localStorage.getItem('lgbtqGradient') === 'true';
+    console.log('Apply Gradient:', applyGradient);
+    if (applyGradient) {
+        document.body.classList.add('lgbtq-gradient');
+    }
     displayResult();
     const downloadButton = document.getElementById('downloadCard');
     if (downloadButton) {

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraMatrix</title>
     <link rel="stylesheet" href="./stylesheets/test.css">
+    <link rel="stylesheet" href="./stylesheets/lgbtq-gradient.css">
 </head>
 
 <body>
@@ -73,7 +74,8 @@
                 <div class="navigation-buttons">
                     <button type="button" class="button" id="prevBtn" onclick="previousQuestion()"
                         disabled>Previous</button>
-  <button type="button" class="button" id="nextBtn" style="padding: 0.8em 2.7em;" onclick="nextQuestion()">Next</button>
+                    <button type="button" class="button" id="nextBtn" style="padding: 0.8em 2.7em;"
+                        onclick="nextQuestion()">Next</button>
                 </div>
                 <button type="submit" class="button" id="submitBtn" style="display: none;">Predict Personality</button>
             </form>
@@ -98,6 +100,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             let currentQuestion = 0;
             const totalQuestions = 10;
+
+            const applyGradient = localStorage.getItem('lgbtqGradient') === 'true';
+            console.log('Apply Gradient:', applyGradient);
+            if (applyGradient) {
+                document.body.classList.add('lgbtq-gradient');
+            }
 
             gujQue = [
                 "તમે નવા અને અસામાન્ય કાર્યો કરવા અંગે શુ અનુભવો છો ?",
