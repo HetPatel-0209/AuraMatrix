@@ -740,4 +740,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (downloadAllButton) {
         downloadAllButton.addEventListener('click', downloadAllStickers);
     }
+    const aboutUsLink = document.querySelector('.about-button');
+    if (aboutUsLink) {
+        aboutUsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const currentParams = new URLSearchParams(window.location.search);
+            const prediction = currentParams.get('prediction');
+            
+            const aboutUsUrl = `./aboutUs.html${prediction ? `?returnData=${prediction}` : ''}`;
+            window.location.href = aboutUsUrl;
+        });
+    }
 });
