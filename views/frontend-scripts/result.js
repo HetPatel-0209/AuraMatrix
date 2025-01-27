@@ -640,8 +640,6 @@ function displayPersonalityDescription(data) {
     }
 }
 
-
-
 async function displayResult() {
     const urlParams = new URLSearchParams(window.location.search);
     const predictionStr = urlParams.get('prediction');
