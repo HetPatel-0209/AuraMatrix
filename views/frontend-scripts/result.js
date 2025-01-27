@@ -1,3 +1,4 @@
+import { navigateToAboutUs } from './nav.js';
 function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
@@ -793,9 +794,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const currentParams = new URLSearchParams(window.location.search);
             const prediction = currentParams.get('prediction');
-            
-            const aboutUsUrl = `./aboutUs.html${prediction ? `?returnData=${prediction}` : ''}`;
-            window.location.href = aboutUsUrl;
+            navigateToAboutUs(prediction);
         });
     }
 });
