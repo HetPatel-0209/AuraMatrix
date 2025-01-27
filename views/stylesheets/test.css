@@ -381,9 +381,13 @@ body {
   .brutalist-input {
     padding: 8px;
     font-size: 14px;
+    margin-top: 3rem;
   }
 
   .brutalist-label {
     font-size: 12px;
+    position: absolute;
+    left: -3px;
+    top: -3px;
   }
 }
