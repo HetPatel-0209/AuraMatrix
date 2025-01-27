@@ -69,50 +69,50 @@ async function generateImage(prompt, attempt = 0) {
   }
 }
 
-app.post('/api/generate-stickers', async (req, res) => {
-  try {
-    const { personalityType, gender = 'neutral' } = req.body;
-    if (!personalityType) {
-      return res.status(400).json({
-        error: 'personalityType is required',
-        details: 'Personality type must be provided to generate stickers'
-      });
-    }
+// app.post('/api/generate-stickers', async (req, res) => {
+//   try {
+//     const { personalityType, gender = 'neutral' } = req.body;
+//     if (!personalityType) {
+//       return res.status(400).json({
+//         error: 'personalityType is required',
+//         details: 'Personality type must be provided to generate stickers'
+//       });
+//     }
 
-    const roleMatch = personalityType.match(/\((.*?)\)/);
-    const role = roleMatch ? roleMatch[1] : personalityType;
+//     const roleMatch = personalityType.match(/\((.*?)\)/);
+//     const role = roleMatch ? roleMatch[1] : personalityType;
 
-    const prompts = [
-      `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-    ];
+//     const prompts = [
+//       `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+//       `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+//       `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+//       `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+//     ];
 
-    const stickerPromises = prompts.map((prompt, index) =>
-      generateImage(prompt).catch(error => {
-        console.error(`Sticker ${index + 1} failed:`, error);
-        return null;
-      })
-    );
+//     const stickerPromises = prompts.map((prompt, index) =>
+//       generateImage(prompt).catch(error => {
+//         console.error(`Sticker ${index + 1} failed:`, error);
+//         return null;
+//       })
+//     );
 
-    const stickerUrls = await Promise.all(stickerPromises);
-    const validUrls = stickerUrls.filter(url => url !== null);
+//     const stickerUrls = await Promise.all(stickerPromises);
+//     const validUrls = stickerUrls.filter(url => url !== null);
 
-    res.json({
-      images: validUrls,
-      generatedCount: validUrls.length,
-      message: validUrls.length === 4 ? 'All stickers generated' : 'Partial generation completed'
-    });
-  }
-  catch (error) {
-    console.error('Unexpected error in sticker generation:', error);
-    res.status(500).json({
-      error: 'Unexpected error in sticker generation',
-      details: error.message
-    });
-  }
-});
+//     res.json({
+//       images: validUrls,
+//       generatedCount: validUrls.length,
+//       message: validUrls.length === 4 ? 'All stickers generated' : 'Partial generation completed'
+//     });
+//   }
+//   catch (error) {
+//     console.error('Unexpected error in sticker generation:', error);
+//     res.status(500).json({
+//       error: 'Unexpected error in sticker generation',
+//       details: error.message
+//     });
+//   }
+// });
 
 
 app.post('/predict', async (req, res) => {
