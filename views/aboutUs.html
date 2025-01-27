@@ -140,16 +140,19 @@
             </div>
         </div>
     </div>
-    <script src="./frontend-scripts/nav.js"></script>
     <a href="./result.html" class="back-button">Back to results</a>
+    <script src="./frontend-scripts/nav.js"></script>
     <script>
-        import { navigateToResults } from './nav.js';
         document.addEventListener('DOMContentLoaded', () => {
             const backButton = document.querySelector('.back-button');
             if (backButton) {
                 backButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    navigateToResults();
+                    const currentParams = new URLSearchParams(window.location.search);
+                    const prediction = currentParams.get('returnData');
+
+                    // Return to results with the preserved data
+                    window.location.href = `./result.html${prediction ? `?prediction=${prediction}` : ''}`;
                 });
             }
         });
