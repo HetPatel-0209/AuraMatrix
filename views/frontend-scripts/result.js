@@ -640,52 +640,7 @@ function displayPersonalityDescription(data) {
     }
 }
 
-function saveResults(prediction) {
-    localStorage.setItem('personalityPrediction', JSON.stringify(prediction));
-}
 
-// Modify the displayResult function to check both URL and localStorage
-async function displayResult() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let predictionStr = urlParams.get('prediction');
-    
-    // If no URL params, check localStorage
-    if (!predictionStr) {
-        predictionStr = localStorage.getItem('personalityPrediction');
-    }
-    
-    const firstName = localStorage.getItem('userFirstName') || '';
-    const lastName = localStorage.getItem('userLastName') || '';
-    const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
-    
-    if (firstName || lastName) {
-        document.getElementById('user-name').textContent = `${firstName} ${lastName}`;
-    }
-
-    if (predictionStr) {
-        try {
-            const prediction = typeof predictionStr === 'string' ? 
-                JSON.parse(decodeURIComponent(predictionStr)) : predictionStr;
-            
-            saveResults(prediction);
-            
-            document.getElementById('personality-type').textContent = 
-                `Your personality type is: ${prediction.personalityType}`;
-
-            if (prediction.traits) {
-                updateTraitsDisplay(prediction);
-            }
-        } catch (error) {
-            console.error('Error parsing prediction:', error);
-            document.getElementById('personality-type').textContent = "Error displaying results";
-            document.getElementById('description').textContent = "Please try taking the test again.";
-            document.querySelector('.traits-container').innerHTML = '';
-        }
-    } else {
-        document.getElementById('personality-type').textContent = "No prediction available";
-        document.getElementById('description').textContent = "Please try taking the test again.";
-    }
-}
 
 async function displayResult() {
     const urlParams = new URLSearchParams(window.location.search);
