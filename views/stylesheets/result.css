@@ -67,6 +67,26 @@ body {
     display: inline-block;
 }
 
+.about-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    --bg: #000;
+    --hover-text: #fff;
+    background: var(--bg);
+    color: white;
+    width: 100%;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+}
+
+.about-button:hover {
+    background-color: #1e90ff;
+}
+
 .back-button:hover {
     color: var(--hover-text);
     transform: translateY(-2px);
