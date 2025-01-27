@@ -1,21 +1,3 @@
-function encodeParam(data) {
-    try {
-        return encodeURIComponent(JSON.stringify(data));
-    } catch (error) {
-        console.error('Error encoding data:', error);
-        return '';
-    }
-}
-
-function decodeParam(param) {
-    try {
-        return param ? JSON.parse(decodeURIComponent(param)) : null;
-    } catch (error) {
-        console.error('Error decoding parameter:', error);
-        return null;
-    }
-}
-
 function navigateToPage(destination, data, paramName) {
     const queryString = data ? `?${paramName}=${encodeParam(data)}` : '';
     
