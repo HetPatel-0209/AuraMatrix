@@ -328,86 +328,39 @@ function updateSVGCard(prediction) {
 
 async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
+    if (!card) {
+        console.error('Card element not found');
+        return;
+    }
 
     try {
-        await Promise.all([
-            document.fonts.load('700 64px "Bricolage Grotesque"'),
-            document.fonts.load('500 32px "Bricolage Grotesque"'),
-            document.fonts.load('700 96px Poppins'),
-            document.fonts.load('700 32px Poppins'),
-            document.fonts.load('500 16px Poppins')
-        ]);
-        // Create a hidden container
-        const hiddenContainer = document.createElement('div');
-        hiddenContainer.style.position = 'absolute';
-        document.body.appendChild(hiddenContainer);
+        // Wait for basic font loading
+        await document.fonts.ready;
 
-                // Clone the card and append to hidden container
-        const cardClone = card.cloneNode(true);
-        cardClone.style.display = 'block';
-        hiddenContainer.appendChild(cardClone);
-
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = `
-            @font-face {
-                font-family: 'Bricolage Grotesque';
-                src: url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-                font-display: swap;
-            }
-            @font-face {
-                font-family: 'Poppins';
-                src: url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap');
-                font-display: swap;
-            }
-        `;
-        hiddenContainer.appendChild(styleSheet);
-
-        const canvas = await html2canvas(cardClone, {
+        // Create the canvas with default scaling
+        const canvas = await html2canvas(card, {
             scale: 2,
-            backgroundColor: "#ffffff",
+            backgroundColor: '#ffffff',
             logging: false,
-            borderRadius: 20,
             useCORS: true,
             onclone: (clonedDoc) => {
-                // Apply fonts to all text elements
-                const texts = clonedDoc.querySelectorAll('text');
-                texts.forEach(text => {
-                    if (text.classList.contains('name-text')) {
-                        text.style.fontFamily = 'Bricolage Grotesque';
-                    } else {
-                        text.style.fontFamily = 'Poppins';
-                    }
-                });
-
-                // Ensure SVG preserves font styles
-                const svg = clonedDoc.querySelector('#auraCard svg');
-                if (svg) {
-                    svg.style.fontFamily = 'Poppins, Bricolage Grotesque';
-                }
-
-                const cardElement = clonedDoc.querySelector('.aura-card');
+                const cardElement = clonedDoc.querySelector('#auraCard');
                 if (cardElement) {
-                    cardElement.style.border = '8px solid #fff';
-                    cardElement.style.borderRadius = '20px';
-                    cardElement.style.boxSizing = 'border-box';
+                    // Ensure the card is visible and sized properly
+                    cardElement.style.display = 'block';
+                    cardElement.style.width = '100%';
+                    cardElement.style.height = '100%';
                 }
-            },
-            onrendered: (canvas) => {
-                // Force text rendering after canvas creation
-                const ctx = canvas.getContext('2d');
-                ctx.textRendering = 'geometricPrecision';
-                ctx.textBaseline = 'middle';
             }
         });
-
-        // Clean up
-        hiddenContainer.remove();
 
         // Download the image
         const link = document.createElement('a');
         link.download = 'AuraMatrix-Card.png';
         link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     } catch (error) {
         console.error('Error generating card:', error);
     }
