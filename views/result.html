@@ -14,22 +14,23 @@
     <link rel="stylesheet" href="./stylesheets/lgbtq-gradient.css">
 
     <link rel="icon" href="./images/Group 10.svg" type="image/x-icon">
-
+    <style>
+        @font-face {
+            font-family: 'Bricolage Grotesque';
+            src: url('./fonts/BricolageGrotesque.ttf') format('woff2'),
+                url('./fonts/BricolageGrotesque.ttf') format('woff');
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Poppins';
+            src: url('./fonts/Poppins.ttf') format('woff2'),
+                url('./fonts/Poppins.ttf') format('woff');
+            font-style: normal;
+            font-display: swap;
+        }
+    </style>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet" crossorigin="anonymous">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet" crossorigin="anonymous">
-
-    <link rel="preload"
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"
-        as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap"
-        as="style">
 </head>
 
 <body>
@@ -81,11 +82,11 @@
                     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
                     .name-text {
-                        font-family: 'Bricolage Grotesque'!important;
+                        font-family: 'Bricolage Grotesque' !important;
                     }
 
                     .regular-text {
-                        font-family: 'Poppins'!important;
+                        font-family: 'Poppins' !important;
                     }
                 </style>
                 <!-- Background with rounded corners -->
@@ -117,9 +118,10 @@
                 <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
-                    <text id="userName" class="name-text" x="50" y="87" font-size="64" font-weight="700" fill="#5d4017"></text>
-                    <text id="userType" class="regular-text" x="50" y="132" font-size="32" font-weight="500" fill="#5d4017"
-                        opacity="0.8"></text>
+                    <text id="userName" class="name-text" x="50" y="87" font-size="64" font-weight="700"
+                        fill="#5d4017"></text>
+                    <text id="userType" class="regular-text" x="50" y="132" font-size="32" font-weight="500"
+                        fill="#5d4017" opacity="0.8"></text>
 
                     <!-- Trait Circles -->
                     <g id="traitCircles" transform="translate(50, 200)">
@@ -128,10 +130,10 @@
 
                     <!-- Aura Level -->
                     <g id="auraLevel" transform="translate(400, 400)">
-                        <text id="auraPercentage" class="regular-text" x="70" y="0" font-size="96" font-weight="700" fill="#ffffff"
-                            text-anchor="middle"></text>
-                        <text id="auraDescription" class="regular-text" x="60" y="50" font-size="32" font-weight="700" fill="#ffffff"
-                            text-anchor="middle"></text>
+                        <text id="auraPercentage" class="regular-text" x="70" y="0" font-size="96" font-weight="700"
+                            fill="#ffffff" text-anchor="middle"></text>
+                        <text id="auraDescription" class="regular-text" x="60" y="50" font-size="32" font-weight="700"
+                            fill="#ffffff" text-anchor="middle"></text>
                     </g>
 
                     <!-- Brand -->

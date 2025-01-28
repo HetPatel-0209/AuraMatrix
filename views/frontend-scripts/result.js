@@ -328,39 +328,51 @@ function updateSVGCard(prediction) {
 
 async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
-    if (!card) {
-        console.error('Card element not found');
-        return;
-    }
 
     try {
-        // Wait for basic font loading
         await document.fonts.ready;
+        // Create a hidden container
+        const hiddenContainer = document.createElement('div');
+        hiddenContainer.style.position = 'absolute';
+        document.body.appendChild(hiddenContainer);
 
-        // Create the canvas with default scaling
-        const canvas = await html2canvas(card, {
+        // Clone the card and append to hidden container
+        const cardClone = card.cloneNode(true);
+        cardClone.style.display = 'block';
+        hiddenContainer.appendChild(cardClone);
+
+        const canvas = await html2canvas(cardClone, {
             scale: 2,
-            backgroundColor: '#ffffff',
+            backgroundColor: "#ffffff",
             logging: false,
+            borderRadius: 20,
             useCORS: true,
             onclone: (clonedDoc) => {
-                const cardElement = clonedDoc.querySelector('#auraCard');
+                const styles = document.querySelectorAll('style');
+                styles.forEach(style => {
+                    clonedDoc.head.appendChild(style.cloneNode(true));
+                });
+
+                // Ensure SVG font references are maintained
+                const svg = clonedDoc.querySelector('#auraCard svg');
+                if (svg) {
+                    svg.setAttribute('style', 'font-family: Poppins');
+                }
+
+                const cardElement = clonedDoc.querySelector('.aura-card');
                 if (cardElement) {
-                    // Ensure the card is visible and sized properly
-                    cardElement.style.display = 'block';
-                    cardElement.style.width = '100%';
-                    cardElement.style.height = '100%';
+                    cardElement.style.border = '8px solid #fff';
+                    cardElement.style.borderRadius = '20px';
+                    cardElement.style.boxSizing = 'border-box';
                 }
             }
         });
-
+        hiddenContainer.remove();
         // Download the image
         const link = document.createElement('a');
         link.download = 'AuraMatrix-Card.png';
         link.href = canvas.toDataURL('image/png');
-        document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
     } catch (error) {
         console.error('Error generating card:', error);
     }
