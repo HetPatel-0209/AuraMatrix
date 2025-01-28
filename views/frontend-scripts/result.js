@@ -134,6 +134,7 @@ function createTraitCircle(trait, value, index, color) {
     valueText.setAttribute("font-size", "48");
     valueText.setAttribute("fill", "white");
     valueText.setAttribute("font-weight", "bold");
+    valueText.setAttribute("font-family", "Poppins");
     valueText.textContent = Math.round(value);
 
     // Create trait name text
@@ -144,6 +145,7 @@ function createTraitCircle(trait, value, index, color) {
     traitText.setAttribute("font-size", "16");
     traitText.setAttribute("font-weight", "500");
     traitText.setAttribute("fill", "white");
+    traitText.setAttribute("font-family", "Poppins");
     traitText.textContent = trait;
 
     circle.appendChild(circleElement);
@@ -328,17 +330,37 @@ async function downloadAuraCard() {
     const card = document.getElementById('auraCard');
 
     try {
+        await Promise.all([
+            document.fonts.load('700 64px "Bricolage Grotesque"'),
+            document.fonts.load('500 32px "Bricolage Grotesque"'),
+            document.fonts.load('700 96px Poppins'),
+            document.fonts.load('700 32px Poppins'),
+            document.fonts.load('500 16px Poppins')
+        ]);
         // Create a hidden container
         const hiddenContainer = document.createElement('div');
         hiddenContainer.style.position = 'absolute';
-        hiddenContainer.style.left = '-9999px';
-        hiddenContainer.style.top = '-9999px';
         document.body.appendChild(hiddenContainer);
 
-        // Clone the card and append to hidden container
+                // Clone the card and append to hidden container
         const cardClone = card.cloneNode(true);
         cardClone.style.display = 'block';
         hiddenContainer.appendChild(cardClone);
+
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @font-face {
+                font-family: 'Bricolage Grotesque';
+                src: url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+                font-display: swap;
+            }
+            @font-face {
+                font-family: 'Poppins';
+                src: url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap');
+                font-display: swap;
+            }
+        `;
+        hiddenContainer.appendChild(styleSheet);
 
         const canvas = await html2canvas(cardClone, {
             scale: 2,
@@ -347,15 +369,40 @@ async function downloadAuraCard() {
             borderRadius: 20,
             useCORS: true,
             onclone: (clonedDoc) => {
+                // Apply fonts to all text elements
+                const texts = clonedDoc.querySelectorAll('text');
+                texts.forEach(text => {
+                    if (text.classList.contains('name-text')) {
+                        text.style.fontFamily = 'Bricolage Grotesque';
+                    } else {
+                        text.style.fontFamily = 'Poppins';
+                    }
+                });
+
+                // Ensure SVG preserves font styles
+                const svg = clonedDoc.querySelector('#auraCard svg');
+                if (svg) {
+                    svg.style.fontFamily = 'Poppins, Bricolage Grotesque';
+                }
+
                 const cardElement = clonedDoc.querySelector('.aura-card');
                 if (cardElement) {
                     cardElement.style.border = '8px solid #fff';
                     cardElement.style.borderRadius = '20px';
                     cardElement.style.boxSizing = 'border-box';
                 }
+            },
+            onrendered: (canvas) => {
+                // Force text rendering after canvas creation
+                const ctx = canvas.getContext('2d');
+                ctx.textRendering = 'geometricPrecision';
+                ctx.textBaseline = 'middle';
             }
         });
+
+        // Clean up
         hiddenContainer.remove();
+
         // Download the image
         const link = document.createElement('a');
         link.download = 'AuraMatrix-Card.png';

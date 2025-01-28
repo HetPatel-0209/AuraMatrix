@@ -74,10 +74,19 @@
     <div class="aura-card-section">
         <button id="downloadCard" class="download-button">Download AuraCard</button>
 
-        <div id="auraCard" class="aura-card" style="display: none;">
+        <div id="auraCard" class="aura-card">
             <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <style>
-                    
+                    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+                    .name-text {
+                        font-family: 'Bricolage Grotesque'!important;
+                    }
+
+                    .regular-text {
+                        font-family: 'Poppins'!important;
+                    }
                 </style>
                 <!-- Background with rounded corners -->
                 <rect width="600" height="800" rx="20" ry="20" fill="#fffdee" />
@@ -108,10 +117,9 @@
                 <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
-                    <text id="userName" x="50" y="87" font-size="64" font-weight="700"
-                        fill="#5d4017"></text>
-                    <text id="userType" x="50" y="132" font-size="32" font-weight="500"
-                        fill="#5d4017" opacity="0.8"></text>
+                    <text id="userName" class="name-text" x="50" y="87" font-size="64" font-weight="700" fill="#5d4017"></text>
+                    <text id="userType" class="regular-text" x="50" y="132" font-size="32" font-weight="500" fill="#5d4017"
+                        opacity="0.8"></text>
 
                     <!-- Trait Circles -->
                     <g id="traitCircles" transform="translate(50, 200)">
@@ -120,13 +128,15 @@
 
                     <!-- Aura Level -->
                     <g id="auraLevel" transform="translate(400, 400)">
-                        <text id="auraPercentage" x="70" y="0" font-size="96" font-weight="700" fill="#ffffff" text-anchor="middle"></text>
-                        <text id="auraDescription" x="60" y="50" font-size="32" font-weight="700" fill="#ffffff" text-anchor="middle"></text>
+                        <text id="auraPercentage" class="regular-text" x="70" y="0" font-size="96" font-weight="700" fill="#ffffff"
+                            text-anchor="middle"></text>
+                        <text id="auraDescription" class="regular-text" x="60" y="50" font-size="32" font-weight="700" fill="#ffffff"
+                            text-anchor="middle"></text>
                     </g>
 
                     <!-- Brand -->
-                    <text class="brand" x="550" y="770" font-size="32" font-weight="700"
-                        fill="#5d4017" text-anchor="end">AuraMatrix</text>
+                    <text class="brand" x="550" y="770" font-size="32" font-weight="700" fill="#5d4017"
+                        text-anchor="end">AuraMatrix</text>
                 </g>
             </svg>
         </div>

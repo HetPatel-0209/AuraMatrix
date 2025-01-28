@@ -37,7 +37,6 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: none;
     border-left: 24px solid #fff;  /* Increased side borders */
     border-right: 24px solid #fff;
     border-top: 16px solid #fff;    /* Original top/bottom */
