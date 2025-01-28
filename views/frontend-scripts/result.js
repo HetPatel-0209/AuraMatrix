@@ -161,11 +161,36 @@ function updateSVGCard(prediction) {
     const firstName = localStorage.getItem('userFirstName') || 'User';
     const lastName = localStorage.getItem('userLastName') || '';
     const fullName = `${firstName}\n ${lastName}`.trim();
+
+    // Add font styles to SVG
+    const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+    styleElement.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap');
+    
+    #userName {
+        font-family: 'Dancing Script', cursive;
+    }
+    
+    #userType, #auraDescription, #auraPercentage, .brand {
+        font-family: 'Bricolage Grotesque', 'Poppins', sans-serif;
+    }
+`;
+    const defsElement = svg.querySelector('defs');
+    if (defsElement) {
+
+        const existingStyles = defsElement.querySelectorAll('style');
+        existingStyles.forEach(style => style.remove());
+
+        defsElement.appendChild(styleElement);
+    }
+
     document.querySelector('#userName').textContent = fullName;
 
     // Update personality type with format: "ENFJ (Protagonist)"
     const personalityType = prediction.personalityType;
-    const matches = personalityType.match(/([A-Z]{4})\s*$$([^)]+)$$/);
+    const matches = personalityType.match(/([A-Z]{4})\s*([^)]+)$/);
     if (matches) {
         document.querySelector('#userType').textContent = `${matches[1]} (${matches[2]})`;
     } else {
@@ -259,7 +284,7 @@ function updateSVGCard(prediction) {
 
     const currentStyle = auraStyles[auraDescription] || auraStyles['Developing Aura'];
 
-    // Additional gradient definitions to be added to SVG defs
+    // Additional gradient definitions
     const additionalDefs = `
     <radialGradient id="legendry-aura-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(530 500) rotate(90) scale(510 520)">
         <stop offset="0%" stop-color="#DF0C8B"/>
@@ -271,14 +296,10 @@ function updateSVGCard(prediction) {
     </radialGradient>
     `;
 
-    // Add additional defs to the SVG if not already present
-    const defsElement = svg.querySelector('defs');
+    // Add additional defs to SVG
     if (defsElement) {
         defsElement.innerHTML += additionalDefs;
     }
-
-    // Get style for current aura description
-
 
     // Apply styles
     const decorativeCircle = svg.querySelector('path[fill^="url"]');
@@ -291,27 +312,15 @@ function updateSVGCard(prediction) {
         backgroundRect.setAttribute('fill', currentStyle.background);
     }
 
-    document.querySelector('#userName').setAttribute('fill', currentStyle.userName);
+    document.querySelector('#userName').setAttribute('fill', currentStyle.userName, 'font-family', 'Dancing Script, cursive');
     document.querySelector('#userType').setAttribute('fill', currentStyle.userType);
     document.querySelector('#auraPercentage').setAttribute('fill', currentStyle.auraPercentage);
     document.querySelector('#auraDescription').setAttribute('fill', currentStyle.auraDescription);
     document.querySelector('.brand').setAttribute('fill', currentStyle.brand);
 
-    // Clear existing trait circles
+    // Clear and update trait circles
     const traitCirclesGroup = document.querySelector('#traitCircles');
     traitCirclesGroup.innerHTML = '';
-
-    // Update trait circles color
-    const traitCircles = svg.querySelectorAll('#traitCircles circle');
-    traitCircles.forEach(circle => {
-        circle.setAttribute('fill', currentStyle.traitCircles);
-    });
-
-    // Update trait texts color
-    const traitTexts = svg.querySelectorAll('#traitCircles text');
-    traitTexts.forEach(text => {
-        text.setAttribute('fill', currentStyle.traitValues);
-    });
 
     // Add new trait circles
     Object.entries(prediction.traits).forEach(([trait, value], index) => {
@@ -319,52 +328,81 @@ function updateSVGCard(prediction) {
         traitCirclesGroup.appendChild(circle);
     });
 
-    // Update aura level
+    // Update aura level and description
     document.querySelector('#auraPercentage').textContent = `${auraLevel}%`;
     document.querySelector('#auraDescription').textContent = auraDescription;
 }
 
 async function downloadAuraCard() {
-    const card = document.getElementById('auraCard');
+    const svg = document.querySelector('#auraCard svg');
+    if (!svg) return;
 
     try {
-        // Create a hidden container
-        const hiddenContainer = document.createElement('div');
-        hiddenContainer.style.position = 'absolute';
-        hiddenContainer.style.left = '-9999px';
-        hiddenContainer.style.top = '-9999px';
-        document.body.appendChild(hiddenContainer);
+        // Get the SVG data with embedded fonts
+        const svgData = new XMLSerializer().serializeToString(svg);
 
-        // Clone the card and append to hidden container
-        const cardClone = card.cloneNode(true);
-        cardClone.style.display = 'block';
-        hiddenContainer.appendChild(cardClone);
+        // Create a Blob with the SVG data and embedded fonts
+        const svgBlob = new Blob([`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <style type="text/css">
+                    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&amp;display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&amp;display=swap');
+                </style>
+            </defs>
+            ${svgData}
+            </svg>`], { type: 'image/svg+xml;charset=utf-8' });
 
-        const canvas = await html2canvas(cardClone, {
-            scale: 2,
-            backgroundColor: "#ffffff",
-            logging: false,
-            borderRadius: 20,
-            useCORS: true,
-            onclone: (clonedDoc) => {
-                const cardElement = clonedDoc.querySelector('.aura-card');
-                if (cardElement) {
-                    cardElement.style.border = '8px solid #fff';
-                    cardElement.style.borderRadius = '20px';
-                    cardElement.style.boxSizing = 'border-box';
-                }
-            }
+        // Create URL for the Blob
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        // Create Image object
+        const img = new Image();
+        img.src = svgUrl;
+
+        // Wait for image to load
+        await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
         });
-        hiddenContainer.remove();
-        // Download the image
+
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions
+        canvas.width = svg.getAttribute('width');
+        canvas.height = svg.getAttribute('height');
+
+        // Draw image to canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+        // Create download link
+        const downloadUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
+        link.href = downloadUrl;
         link.download = 'AuraMatrix-Card.png';
-        link.href = canvas.toDataURL('image/png');
+
+        // Trigger download
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+
+        // Cleanup
+        URL.revokeObjectURL(svgUrl);
+        URL.revokeObjectURL(downloadUrl);
     } catch (error) {
         console.error('Error generating card:', error);
     }
 }
+
+// Add event listener to download button
+document.getElementById('downloadCard').addEventListener('click', downloadAuraCard);
 
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
@@ -745,3 +783,9 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadAllButton.addEventListener('click', downloadAllStickers);
     }
 });
+
+
+
+
+
+
