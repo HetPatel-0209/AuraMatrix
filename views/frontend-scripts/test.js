@@ -61,5 +61,3 @@ async function handleSubmit(event) {
         submitButton.disabled = false;
     }
 }
-
-// Add this function to check server health before form submission

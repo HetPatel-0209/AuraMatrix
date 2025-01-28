@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraMatrix</title>
     <link rel="stylesheet" href="./stylesheets/test.css">
+    <link rel="icon" href="./images/Group 10.svg" type="image/x-icon">
+    <link rel="stylesheet" href="./stylesheets/lgbtq-gradient.css">
 </head>
 
 <body>
@@ -73,61 +75,186 @@
                 <div class="navigation-buttons">
                     <button type="button" class="button" id="prevBtn" onclick="previousQuestion()"
                         disabled>Previous</button>
-                    <button type="button" class="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+                    <button type="button" class="button" id="nextBtn" style="padding: 0.8em 2.7em;"
+                        onclick="nextQuestion()">Next</button>
                 </div>
                 <button type="submit" class="button" id="submitBtn" style="display: none;">Predict Personality</button>
             </form>
         </div>
     </center>
 
-    <script>
-        let currentQuestion = 0;
-        const totalQuestions = 10;
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Question Translations</h3>
+                <button class="close-popup">X</button>
+            </div>
+            <div id="translationsContent">
+                <p class="translation-item"><strong>Gujarati:</strong> <span id="gujTranslation"></span></p>
+                <p class="translation-item"><strong>Hindi:</strong> <span id="hinTranslation"></span></p>
+                <p class="translation-item"><strong>Hinglish:</strong> <span id="hinEnTranslation"></span></p>
+            </div>
+        </div>
+    </div>
 
-        function showQuestion(questionNumber) {
-            // Hide all questions
-            document.querySelectorAll('.brutalist-container, .brutalist-container-end').forEach(container => {
-                container.classList.remove('active');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentQuestion = 0;
+            const totalQuestions = 10;
+
+            const applyGradient = localStorage.getItem('lgbtqGradient') === 'true';
+            console.log('Apply Gradient:', applyGradient);
+            if (applyGradient) {
+                document.body.classList.add('lgbtq-gradient');
+            }
+
+            gujQue = [
+                "તમે નવા અને અસામાન્ય કાર્યો કરવા અંગે શુ અનુભવો છો ?",
+                "જૂથમાં તમે કેવી રીતે વર્તો છો ?",
+                "તમે ટીકાને કેવી રીતે હેન્ડલ કરો છો ?",
+                "તમે ભવિષ્ય માટેની યોજના કેવી રીતે બનાવો છો ?",
+                "તમે અન્ય લોકોને મદદ કરવા વિશે કેવી રીતે અનુભવો છો ?",
+                "મુશ્કેલ ઘટના નો સામનો કરતી વખતે તમે શુ અનુભવો છો ?",
+                "જૂથમાં તમારી વાત પ્રસ્તુત કરવાની વાત હોય ત્યારે તમે કેવી રીતે અનુભવો છો ?",
+                "તમે સમયમર્યાદાઓ કેવી રીતે હેન્ડલ કરો છો ?",
+                "એવા લોકો વિશે તમે કેવી રીતે અનુભવ કરો છો જે તમારા કરતાં ખુબ જુદા છે ?",
+                "ખતરા લેવા અંગે તમારું શું મંતવ્ય છે ? "
+            ]
+
+            hinQue = [
+                "आप नए और असामान्य कार्य करने के बारे में कैसा महसूस करते हैं?",
+                "जब आप किसी समूह में होते हैं, तो आप आमतौर पर कैसे व्यवहार करते हैं?",
+                "आप आलोचना को कैसे संभालते हैं?",
+                "भविष्य की योजना बनाते समय आप क्या दृष्टिकोण अपनाते हैं?",
+                "दूसरों की मदद करने के बारे में आप कैसा महसूस करते हैं?",
+                "जब आपको किसी चुनौतीपूर्ण समस्या का सामना करना पड़ता है, तो आप कैसे प्रतिक्रिया देते हैं?",
+                "समूह में अपनी राय व्यक्त करने के बारे में आप कैसा महसूस करते हैं?",
+                "आप समय-सीमाओं को कैसे संभालते हैं?",
+                "जो लोग आपसे बहुत अलग हैं, उनके बारे में आप कैसा महसूस करते हैं?",
+                "जोखिम लेने के बारे में आपका क्या दृष्टिकोण है?"
+            ]
+
+            hinEnQue = [
+                "Aap naye aur asamaanya activities try karne ke baare mein kaisa feel karte ho?",
+                "Jab aap group mein hote ho, to aap kaise behave karte ho?",
+                "Aap criticism kaise handle karte ho?",
+                "Future planning ke liye aap kaise approach karte ho?",
+                "Dusron ki madad karne ke baare mein aap kaisa feel karte ho?",
+                "Jab aapko ek challenging problem ka samna karna padta hai, to aap kaise react karte ho?",
+                "Group mein apne opinions express karne ke baare mein aap kaisa feel karte ho?",
+                "Aap deadlines ko kaise handle karte ho?",
+                "Jo log aapse bohot alag hote hain, unke baare mein aap kaisa feel karte ho?",
+                "Risks lene ke baare mein aapka kya soch hai?"
+            ]
+
+            document.querySelectorAll('.brutalist-label').forEach((label, index) => {
+                const helpIcon = document.createElement('span');
+                helpIcon.className = 'help-icon';
+                helpIcon.textContent = '?';
+                helpIcon.addEventListener('click', () => showTranslations(index));
+                label.appendChild(helpIcon);
             });
 
-            // Show current question
-            const currentContainer = document.querySelector(`[data-question="${questionNumber}"]`);
-            if (currentContainer) {
-                currentContainer.classList.add('active');
+            function showTranslations(index) {
+                document.getElementById("gujTranslation").textContent = gujQue[index]
+                document.getElementById("hinTranslation").textContent = hinQue[index]
+                document.getElementById("hinEnTranslation").textContent = hinEnQue[index]
+                togglePopup(true)
             }
 
-            // Update button states
-            document.getElementById('prevBtn').disabled = questionNumber === 0;
-            document.getElementById('nextBtn').style.display = questionNumber === totalQuestions - 1 ? 'none' : 'inline-block';
-            document.getElementById('submitBtn').style.display = questionNumber === totalQuestions - 1 ? 'inline-block' : 'none';
-
-            // Focus on the current input
-            const currentInput = currentContainer.querySelector('input');
-            if (currentInput) {
-                currentInput.focus();
+            function togglePopup(show) {
+                const popup = document.getElementById('popupOverlay');
+                popup.classList.toggle('active', show);
+                document.body.style.overflow = show ? 'hidden' : '';
             }
-        }
 
-        function nextQuestion() {
-            const currentInput = document.querySelector(`[data-question="${currentQuestion}"] input`);
-            if (currentInput && currentInput.value.trim() === '') {
-                alert('Please answer the current question before proceeding.');
-                return;
-            }
-            if (currentQuestion < totalQuestions - 1) {
-                currentQuestion++;
-                showQuestion(currentQuestion);
-            }
-        }
+            document.querySelector(".close-popup").addEventListener("click", () => {
+                togglePopup(false)
+            })
 
-        function previousQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                showQuestion(currentQuestion);
-            }
-        }
-        showQuestion(0);
+            document.getElementById("popupOverlay").addEventListener("click", (e) => {
+                if (e.target === document.getElementById("popupOverlay")) {
+                    togglePopup(false)
+                }
+            })
 
+            function showTranslations(index) {
+                document.getElementById('gujTranslation').textContent = gujQue[index];
+                document.getElementById('hinTranslation').textContent = hinQue[index];
+                document.getElementById('hinEnTranslation').textContent = hinEnQue[index];
+                document.getElementById('popupOverlay').style.display = 'flex';
+                const popup = document.getElementById('popupOverlay');
+                popup.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('popupOverlay').classList.add('active');
+            }
+
+            document.querySelector('.close-popup').addEventListener('click', () => {
+                document.getElementById('popupOverlay').classList.remove('active');
+            });
+
+            document.getElementById('popupOverlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('popupOverlay')) {
+                    document.getElementById('popupOverlay').classList.remove('active');
+                }
+
+                document.querySelector('.popup-content').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('popupOverlay').classList.contains('active')) {
+                    togglePopup(false);
+                }
+            });
+
+            function showQuestion(questionNumber) {
+                // Hide all questions
+                document.querySelectorAll('.brutalist-container, .brutalist-container-end').forEach(container => {
+                    container.classList.remove('active');
+                });
+
+                // Show current question
+                const currentContainer = document.querySelector(`[data-question="${questionNumber}"]`);
+                if (currentContainer) {
+                    currentContainer.classList.add('active');
+                }
+
+                // Update button states
+                document.getElementById('prevBtn').disabled = questionNumber === 0;
+                document.getElementById('nextBtn').style.display = questionNumber === totalQuestions - 1 ? 'none' : 'inline-block';
+                document.getElementById('submitBtn').style.display = questionNumber === totalQuestions - 1 ? 'inline-block' : 'none';
+
+                // Focus on the current input
+                const currentInput = currentContainer.querySelector('input');
+                if (currentInput) {
+                    currentInput.focus();
+                }
+            }
+
+            function nextQuestion() {
+                const currentInput = document.querySelector(`[data-question="${currentQuestion}"] input`);
+                if (currentInput && currentInput.value.trim() === '') {
+                    alert('Please answer the current question before proceeding.');
+                    return;
+                }
+                if (currentQuestion < totalQuestions - 1) {
+                    currentQuestion++;
+                    showQuestion(currentQuestion);
+                }
+            }
+
+            function previousQuestion() {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    showQuestion(currentQuestion);
+                }
+            }
+            showQuestion(0);
+            document.getElementById('prevBtn').addEventListener('click', previousQuestion);
+            document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        });
     </script>
     <script src="./frontend-scripts/test.js"></script>
 </body>

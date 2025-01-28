@@ -683,7 +683,6 @@ async function displayResult() {
                     throw new Error(`HTTP error! status: ${descResponse.status}`);
                 }
                 const descData = await descResponse.json();
-                console.log('Description data received:', descData);
 
                 if (descData.prediction) {
                     displayPersonalityDescription(descData.prediction);
@@ -731,6 +730,11 @@ displayResult = async function () {
 
 // Add event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    const applyGradient = localStorage.getItem('lgbtqGradient') === 'true';
+    console.log('Apply Gradient:', applyGradient);
+    if (applyGradient) {
+        document.body.classList.add('lgbtq-gradient');
+    }
     displayResult();
     const downloadButton = document.getElementById('downloadCard');
     if (downloadButton) {

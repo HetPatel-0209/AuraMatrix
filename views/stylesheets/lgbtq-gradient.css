@@ -1,0 +1,24 @@
+.lgbtq-gradient {
+    background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff) !important;
+    animation: gradient 15s ease infinite !important;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.lgbtq-gradient .logo h2,
+.lgbtq-gradient .logo span {
+  color: #000;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}

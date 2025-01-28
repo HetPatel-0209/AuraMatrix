@@ -9,6 +9,11 @@ form.addEventListener('submit', function (e) {
     localStorage.setItem('userLastName', lastName);
     localStorage.setItem('userGender', JSON.stringify(gender));
 
-    console.log(gender);
+    if (gender === "trans") {
+        localStorage.setItem("lgbtqGradient", "true")
+    } else {
+        localStorage.removeItem("lgbtqGradient")
+    }
+
     window.location.href = './test.html';
 });
