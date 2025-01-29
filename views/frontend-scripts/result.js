@@ -167,16 +167,15 @@ function updateSVGCard(prediction) {
     // Add font styles to SVG
     const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
     styleElement.textContent = `
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap');
     
     #userName {
-        font-family: 'Dancing Script', cursive;
+        font-family: 'Bricolage Grotesque';
     }
     
     #userType, #auraDescription, #auraPercentage, .brand {
-        font-family: 'Bricolage Grotesque', 'Poppins', sans-serif;
+        font-family: 'Poppins';
     }
 `;
     const defsElement = svg.querySelector('defs');
@@ -340,35 +339,51 @@ async function downloadAuraCard() {
     if (!svg) return;
 
     try {
-        // Create a hidden container
-        const hiddenContainer = document.createElement('div');
-        hiddenContainer.style.position = 'absolute';
-        hiddenContainer.style.left = '-9999px';
-        hiddenContainer.style.top = '-9999px';
-        document.body.appendChild(hiddenContainer);
+        // Get the SVG data with embedded fonts
+        const svgData = new XMLSerializer().serializeToString(svg);
 
-        // Clone the card and append to hidden container
-        const cardClone = card.cloneNode(true);
-        cardClone.style.display = 'block';
-        hiddenContainer.appendChild(cardClone);
+        // Create a Blob with the SVG data and embedded fonts
+        const svgBlob = new Blob([`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <style type="text/css">
+                    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;display=swap');
+                    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&amp;display=swap');
+                </style>
+            </defs>
+            ${svgData}
+            </svg>`], { type: 'image/svg+xml;charset=utf-8' });
 
-        const canvas = await html2canvas(cardClone, {
-            scale: 2,
-            backgroundColor: "#ffffff",
-            logging: false,
-            borderRadius: 20,
-            useCORS: true,
-            onclone: (clonedDoc) => {
-                const cardElement = clonedDoc.querySelector('.aura-card');
-                if (cardElement) {
-                    cardElement.style.border = '8px solid #fff';
-                    cardElement.style.borderRadius = '20px';
-                    cardElement.style.boxSizing = 'border-box';
-                }
-            }
+        // Create URL for the Blob
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        // Create Image object
+        const img = new Image();
+        img.src = svgUrl;
+
+        // Wait for image to load
+        await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
         });
-        hiddenContainer.remove();
-        // Download the image
+
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions
+        canvas.width = svg.getAttribute('width');
+        canvas.height = svg.getAttribute('height');
+
+        // Draw image to canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+        // Create download link
+        const downloadUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = downloadUrl;
         link.download = 'AuraMatrix-Card.png';
@@ -386,7 +401,7 @@ async function downloadAuraCard() {
     }
 }
 
-// Add event listener to download button
+//Add event listener to download button
 document.getElementById('downloadCard').addEventListener('click', downloadAuraCard);
 
 async function generateStickers(personalityType) {
@@ -768,9 +783,3 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadAllButton.addEventListener('click', downloadAllStickers);
     }
 });
-
-
-
-
-
-

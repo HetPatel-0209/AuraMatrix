@@ -57,6 +57,12 @@ body {
   z-index: 2;
 }
 
+.dynamic-input-container:focus-within + .brutalist-label {
+  z-index: 2;
+  transform: rotate(0deg) scale(1.05);
+  background-color: #4a90e2;
+}
+
 .brutalist-input {
   width: 100%;
   padding: 15px;
@@ -142,8 +148,7 @@ body {
 }
 
 .brutalist-input:focus {
-  animation: focus-pulse 4s cubic-bezier(0.25, 0.8, 0.25, 1) infinite,
-    glitch 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+  animation: focus-pulse 4s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
   outline: none;
   border-color: #4a90e2;
 }
@@ -172,52 +177,6 @@ body {
   animation: glitch-slice 4s steps(2, end) infinite;
 }
 
-@keyframes glitch-slice {
-  0% {
-    clip-path: inset(0 100% 0 0);
-  }
-
-  10% {
-    clip-path: inset(0 5% 0 0);
-  }
-
-  20% {
-    clip-path: inset(0 80% 0 0);
-  }
-
-  30% {
-    clip-path: inset(0 10% 0 0);
-  }
-
-  40% {
-    clip-path: inset(0 50% 0 0);
-  }
-
-  50% {
-    clip-path: inset(0 30% 0 0);
-  }
-
-  60% {
-    clip-path: inset(0 70% 0 0);
-  }
-
-  70% {
-    clip-path: inset(0 15% 0 0);
-  }
-
-  80% {
-    clip-path: inset(0 90% 0 0);
-  }
-
-  90% {
-    clip-path: inset(0 5% 0 0);
-  }
-
-  100% {
-    clip-path: inset(0 100% 0 0);
-  }
-}
-
 .brutalist-label {
   position: absolute;
   left: -3px;
@@ -231,7 +190,7 @@ body {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.brutalist-input:focus+.brutalist-label {
+.brutalist-input:focus + .brutalist-label {
   transform: rotate(0deg) scale(1.05);
   background-color: #4a90e2;
 }
@@ -359,6 +318,7 @@ body {
   .brutalist-input {
     padding: 12px;
     font-size: 14px;
+    width: 95%;
   }
 
   .option {
@@ -390,6 +350,7 @@ body {
     padding: 10px;
     font-size: 13px;
     border-width: 3px;
+    margin-top: 7vw;
   }
 
   .option {
@@ -398,9 +359,12 @@ body {
   }
 
   .brutalist-label {
+    position: absolute;
     font-size: 12px;
     top: -25px;
+    margin-top: 3vw;
     padding: 4px 8px;
+    z-index: 100;
   }
 
   .dropdown-options {
@@ -408,4 +372,101 @@ body {
     border-width: 3px;
     box-shadow: 2px 2px 0 #000, 4px 4px 0 #4a90e2;
   }
+}
+
+.help-icon {
+  display: inline-block !important;
+  margin-left: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #4a90e2;
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.help-icon:hover {
+  transform: scale(1.1);
+}
+
+
+.help-icon {
+  display: inline-block;
+  margin-left: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.help-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.0s ease, visibility 0.0s ease;
+}
+
+.help-dialog-content {
+  width: 90%;
+  max-width: 500px;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+  background-color: #fff;
+  border: 4px solid #000;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 5px 5px 0 #000, 10px 10px 0 #4a90e2;
+  text-align: left;
+}
+
+.help-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.help-dialog-header h3 {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.close-help {
+  font-size: 26px;
+  padding: 0 10px;
+  line-height: 1;
+  border: solid 1px #000;
+  background-color: #000;
+  color: #fff;
+}
+
+.help-dialog-body {
+  font-size: 1em;
+  line-height: 1.5;
+  color: #333;
+  font-family: Poppins;
+}
+
+.brutalist-input:focus + .help-icon {
+  background-color: #000;
 }

@@ -1,9 +1,48 @@
 let currentQuestion = 0;
 let totalQuestions = 0;
+gujQue = [
+    "તમે નવા અને અસામાન્ય કાર્યો કરવા અંગે શુ અનુભવો છો ?",
+    "જૂથમાં તમે કેવી રીતે વર્તો છો ?",
+    "તમે ટીકાને કેવી રીતે હેન્ડલ કરો છો ?",
+    "તમે ભવિષ્ય માટેની યોજના કેવી રીતે બનાવો છો ?",
+    "તમે અન્ય લોકોને મદદ કરવા વિશે કેવી રીતે અનુભવો છો ?",
+    "મુશ્કેલ ઘટના નો સામનો કરતી વખતે તમે શુ અનુભવો છો ?",
+    "જૂથમાં તમારી વાત પ્રસ્તુત કરવાની વાત હોય ત્યારે તમે કેવી રીતે અનુભવો છો ?",
+    "તમે સમયમર્યાદાઓ કેવી રીતે હેન્ડલ કરો છો ?",
+    "એવા લોકો વિશે તમે કેવી રીતે અનુભવ કરો છો જે તમારા કરતાં ખુબ જુદા છે ?",
+    "ખતરા લેવા અંગે તમારું શું મંતવ્ય છે ? "
+]
+
+hinQue = [
+    "आप नए और असामान्य कार्य करने के बारे में कैसा महसूस करते हैं?",
+    "जब आप किसी समूह में होते हैं, तो आप आमतौर पर कैसे व्यवहार करते हैं?",
+    "आप आलोचना को कैसे संभालते हैं?",
+    "भविष्य की योजना बनाते समय आप क्या दृष्टिकोण अपनाते हैं?",
+    "दूसरों की मदद करने के बारे में आप कैसा महसूस करते हैं?",
+    "जब आपको किसी चुनौतीपूर्ण समस्या का सामना करना पड़ता है, तो आप कैसे प्रतिक्रिया देते हैं?",
+    "समूह में अपनी राय व्यक्त करने के बारे में आप कैसा महसूस करते हैं?",
+    "आप समय-सीमाओं को कैसे संभालते हैं?",
+    "जो लोग आपसे बहुत अलग हैं, उनके बारे में आप कैसा महसूस करते हैं?",
+    "जोखिम लेने के बारे में आपका क्या दृष्टिकोण है?"
+]
+
+hinEnQue = [
+    "Aap naye aur asamaanya activities try karne ke baare mein kaisa feel karte ho?",
+    "Jab aap group mein hote ho, to aap kaise behave karte ho?",
+    "Aap criticism kaise handle karte ho?",
+    "Future planning ke liye aap kaise approach karte ho?",
+    "Dusron ki madad karne ke baare mein aap kaisa feel karte ho?",
+    "Jab aapko ek challenging problem ka samna karna padta hai, to aap kaise react karte ho?",
+    "Group mein apne opinions express karne ke baare mein aap kaisa feel karte ho?",
+    "Aap deadlines ko kaise handle karte ho?",
+    "Jo log aapse bohot alag hote hain, unke baare mein aap kaisa feel karte ho?",
+    "Risks lene ke baare mein aapka kya soch hai?"
+]
 const questions = [
     {
         id: 0,
         question: "How do you feel about trying new and unconventional activities?",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[0]}<br><br><strong>Hindi : </strong>${hinQue[0]}<br><br><strong>Hinglish : </strong>${hinEnQue[0]}<br><br>`,
         options: [
             { value: "A", text: "I'm always excited to try new things and embrace challenges." },
             { value: "B", text: "I'm open to trying new activities, but I like to plan ahead." },
@@ -14,6 +53,7 @@ const questions = [
     {
         id: 1,
         question: "When you're in a group, how do you usually behave?",
+        helpText: "Reflect on your typical behavior in group settings, such as meetings, social gatherings, or team projects. Consider your natural tendencies in these situations.",
         options: [
             { value: "A", text: "I take the lead and guide the group when necessary." },
             { value: "B", text: "I contribute ideas and participate actively." },
@@ -24,6 +64,7 @@ const questions = [
     {
         id: 2,
         question: "How do you handle criticism?",
+        helpText: "Think about past situations where you received feedback or criticism. Consider your initial reaction and how you processed the feedback afterward.",
         options: [
             { value: "A", text: "I welcome criticism as a way to grow and improve." },
             { value: "B", text: "I try to reflect on it and make changes if needed." },
@@ -34,6 +75,7 @@ const questions = [
     {
         id: 3,
         question: "How do you approach planning for the future?",
+        helpText: "Consider how you typically organize your life goals and make decisions about your future. Think about both short-term and long-term planning.",
         options: [
             { value: "A", text: "I set long-term goals and create detailed plans." },
             { value: "B", text: "I make flexible plans and adjust as I go." },
@@ -44,6 +86,7 @@ const questions = [
     {
         id: 4,
         question: "How do you feel about helping others?",
+        helpText: "Think about situations where you've had the opportunity to help others. Consider your natural inclination to offer assistance and how you feel when helping.",
         options: [
             { value: "A", text: "I enjoy helping others whenever I can." },
             { value: "B", text: "I help when I'm asked or see a clear need." },
@@ -54,6 +97,7 @@ const questions = [
     {
         id: 5,
         question: "How do you react when faced with a challenging problem?",
+        helpText: "Reflect on past situations where you encountered difficult problems. Think about your typical approach to solving complex challenges.",
         options: [
             { value: "A", text: "I enjoy tackling challenges and finding solutions." },
             { value: "B", text: "I approach it logically and seek help if needed." },
@@ -64,6 +108,7 @@ const questions = [
     {
         id: 6,
         question: "How do you feel about expressing your opinions in a group?",
+        helpText: "Think about situations where you've had the opportunity to share your thoughts in group settings. Consider your comfort level with speaking up.",
         options: [
             { value: "A", text: "I confidently express my thoughts and ideas." },
             { value: "B", text: "I share my opinions when asked or necessary." },
@@ -74,6 +119,7 @@ const questions = [
     {
         id: 7,
         question: "How do you handle deadlines?",
+        helpText: "Consider your typical approach to managing tasks with deadlines. Think about how you organize your time and prioritize work.",
         options: [
             { value: "A", text: "I complete my tasks well ahead of deadlines." },
             { value: "B", text: "I prioritize and meet deadlines efficiently." },
@@ -84,6 +130,7 @@ const questions = [
     {
         id: 8,
         question: "How do you feel about people who are very different from you?",
+        helpText: "Think about your interactions with people who have different backgrounds, beliefs, or perspectives. Consider your typical reaction to diversity.",
         options: [
             { value: "A", text: "I'm curious and enjoy learning from them." },
             { value: "B", text: "I respect their differences but find it hard to connect sometimes." },
@@ -94,6 +141,7 @@ const questions = [
     {
         id: 9,
         question: "How do you feel about taking risks?",
+        helpText: "Reflect on situations where you've had to make decisions involving uncertainty or potential risks. Consider your typical approach to such situations.",
         options: [
             { value: "A", text: "I'm enthusiastic about taking calculated risks." },
             { value: "B", text: "I take risks after considering all possible outcomes." },
@@ -115,8 +163,8 @@ function renderQuestion(questionNumber) {
                 <input type="text" 
                        name="answer${questionNumber}" 
                        class="brutalist-input smooth-type dynamic-input" 
-                       placeholder="Select or type your answer" 
-                       autocomplete="off" 
+                       placeholder="Select or type your answer (we suggest that you write your own answer)" 
+                       autocomplete="on" 
                        required />
                 <div class="dropdown-options">
                     ${question.options.map((option) => `
@@ -124,13 +172,50 @@ function renderQuestion(questionNumber) {
                     `).join("")}
                 </div>
             </div>
-            <label class="brutalist-label">${question.question}</label>
+            <label class="brutalist-label">
+                ${question.question}
+                <span class="help-icon" onclick="showHelp(${questionNumber})">?</span>
+            </label>
         </div>
     `;
 
     questionContainer.innerHTML = questionHTML;
     setupDynamicInputs();
 }
+
+// Add this function to show the help dialog
+function showHelp(questionNumber) {
+    const question = questions[questionNumber];
+    const helpDialog = document.createElement('div');
+    helpDialog.className = 'help-dialog';
+    helpDialog.innerHTML = `
+        <div class="help-dialog-content">
+            <div class="help-dialog-header">
+                <h3 style="font-family: 'Poppins'">Question Translations</h3>
+                <button class="close-help" onclick="closeHelp()">×</button>
+            </div>
+            <div class="help-dialog-body">
+                <p>${question.helpText}</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(helpDialog);
+
+    helpDialog.addEventListener('click', (e) => {
+        if (e.target === helpDialog) {
+            closeHelp();
+        }
+    });
+}
+
+// Add this function to close the help dialog
+function closeHelp() {
+    const helpDialog = document.querySelector('.help-dialog');
+    if (helpDialog) {
+        helpDialog.remove();
+    }
+}
+
 
 function showQuestion(questionNumber) {
     document.querySelectorAll(".brutalist-container").forEach((container) => {
