@@ -264,24 +264,52 @@ function setupDynamicInputs() {
     dynamicInputs.forEach((input) => {
         const container = input.closest(".dynamic-input-container");
         const dropdownOptions = container.querySelector(".dropdown-options");
+        const navigationButtons = document.querySelector(".navigation-buttons");
+        let isInputFocused = false;
 
-        input.addEventListener("click", () => {
-            dropdownOptions.classList.add("show");
+        // Show dropdown and adjust buttons when input is inactive
+        const showDropdownAndAdjustButtons = () => {
+            if (!isInputFocused) {
+                dropdownOptions.classList.add("show");
+                navigationButtons.classList.add("buttons-with-dropdown");
+            }
+        };
+
+        // Hide dropdown and adjust buttons when input is active
+        const hideDropdownAndAdjustButtons = () => {
+            dropdownOptions.classList.remove("show");
+            navigationButtons.classList.remove("buttons-with-dropdown");
+        };
+
+        // Initially show dropdown when input is inactive
+        showDropdownAndAdjustButtons();
+
+        // Hide dropdown when input gets focus
+        input.addEventListener('focus', () => {
+            isInputFocused = true;
+            hideDropdownAndAdjustButtons();
         });
 
-        input.addEventListener("focus", () => {
-            dropdownOptions.classList.add("show");
-        });
-
-        input.addEventListener("blur", (e) => {
-            setTimeout(() => {
-                if (!container.contains(document.activeElement)) {
-                    dropdownOptions.classList.remove("show");
-                }
-            }, 200);
+        // Show dropdown when input loses focus
+        input.addEventListener('blur', (e) => {
+            isInputFocused = false;
+            // Only show dropdown if we're not clicking on an option
+            const relatedTarget = e.relatedTarget;
+            if (!relatedTarget || !relatedTarget.classList.contains('option')) {
+                setTimeout(() => {
+                    if (!isInputFocused) {
+                        showDropdownAndAdjustButtons();
+                    }
+                }, 100);
+            }
         });
 
         input.addEventListener("input", () => {
+            if (isInputFocused) {
+                hideDropdownAndAdjustButtons();
+                return;
+            }
+
             const value = input.value.toLowerCase().trim();
             const options = dropdownOptions.querySelectorAll(".option");
             let hasVisibleOptions = false;
@@ -295,23 +323,27 @@ function setupDynamicInputs() {
                     option.style.display = "none";
                 }
             });
-
-            if (hasVisibleOptions) {
-                dropdownOptions.classList.add("show");
-            } else {
-                dropdownOptions.classList.remove("show");
-            }
         });
 
         const options = dropdownOptions.querySelectorAll(".option");
         options.forEach((option) => {
-            option.addEventListener("click", () => {
+            option.addEventListener("mousedown", (e) => {
+                e.preventDefault(); // Prevent the input from losing focus
                 input.value = option.textContent;
-                input.focus();
-                dropdownOptions.classList.remove("show");
+                hideDropdownAndAdjustButtons();
+            });
+            
+            option.addEventListener("click", () => {
+                input.blur(); // Now explicitly blur the input after setting its value
+                setTimeout(() => {
+                    if (!isInputFocused) {
+                        showDropdownAndAdjustButtons();
+                    }
+                }, 100);
             });
         });
 
+        // Handle keyboard navigation
         input.addEventListener("keydown", (e) => {
             const options = Array.from(dropdownOptions.querySelectorAll(".option:not([style*='display: none'])"));
             if (!options.length) return;
@@ -340,9 +372,23 @@ function setupDynamicInputs() {
                 case "Enter":
                     e.preventDefault();
                     if (currentIndex >= 0) {
-                        options[currentIndex].click();
+                        input.value = options[currentIndex].textContent;
+                        hideDropdownAndAdjustButtons();
+                        input.blur();
+                        setTimeout(() => {
+                            if (!isInputFocused) {
+                                showDropdownAndAdjustButtons();
+                            }
+                        }, 100);
                     }
                     break;
+            }
+        });
+
+        // Handle clicks outside the container
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target) && !isInputFocused) {
+                showDropdownAndAdjustButtons();
             }
         });
     });

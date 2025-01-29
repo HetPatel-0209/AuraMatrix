@@ -10,6 +10,7 @@ html,
 body {
   height: 100%;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .welcome {
@@ -49,8 +50,6 @@ body {
 
 .dynamic-input-container {
   position: relative;
-  width: 100%;
-  z-index: 1;
 }
 
 .dynamic-input-container:focus-within {
@@ -90,7 +89,7 @@ body {
   border: 4px solid #000;
   box-shadow: 5px 5px 0 #000, 10px 10px 0 #4a90e2;
   z-index: 1000;
-  max-height: 250px;
+  max-height: 150px;
   overflow-y: auto;
   text-align: left;
 }
@@ -100,7 +99,7 @@ body {
 }
 
 .option {
-  padding: 12px 15px;
+  padding: 8px 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-size: 16px;
@@ -179,13 +178,13 @@ body {
 
 .brutalist-label {
   position: absolute;
-  left: -3px;
+  left: 17px;
   top: -35px;
   font-size: 14px;
   font-weight: bold;
   color: #fff;
   background-color: #000;
-  padding: 5px 10px;
+  padding: 5px;
   z-index: 1;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
@@ -193,29 +192,6 @@ body {
 .brutalist-input:focus + .brutalist-label {
   transform: rotate(0deg) scale(1.05);
   background-color: #4a90e2;
-}
-
-.smooth-type {
-  position: relative;
-  overflow: hidden;
-}
-
-.smooth-type::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.smooth-type:focus::before {
-  opacity: 1;
-  animation: type-gradient 2s linear infinite;
 }
 
 @keyframes type-gradient {
@@ -288,8 +264,10 @@ body {
 }
 
 .navigation-buttons {
-  margin-top: 2vw;
-  margin-bottom: 2vw;
+  margin-top: 20px;
+  z-index: 1;
+  position: relative;
+  transition: margin-top 0.3s ease;
 }
 
 .dropdown-options::-webkit-scrollbar {
@@ -350,7 +328,7 @@ body {
     padding: 10px;
     font-size: 13px;
     border-width: 3px;
-    margin-top: 7vw;
+    margin-top: 7.8vw;
   }
 
   .option {
@@ -361,9 +339,10 @@ body {
   .brutalist-label {
     position: absolute;
     font-size: 12px;
+    left: 10px;
     top: -25px;
+    width: 95%;
     margin-top: 3vw;
-    padding: 4px 8px;
     z-index: 100;
   }
 
@@ -373,25 +352,6 @@ body {
     box-shadow: 2px 2px 0 #000, 4px 4px 0 #4a90e2;
   }
 }
-
-.help-icon {
-  display: inline-block !important;
-  margin-left: 8px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: #4a90e2;
-  color: white;
-  text-align: center;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.help-icon:hover {
-  transform: scale(1.1);
-}
-
 
 .help-icon {
   display: inline-block;
@@ -467,6 +427,15 @@ body {
   font-family: Poppins;
 }
 
-.brutalist-input:focus + .help-icon {
+/* New Things */
+.dynamic-input-container:focus-within + .brutalist-label .help-icon {
   background-color: #000;
+}
+
+.navigation-buttons.buttons-with-dropdown {
+  margin-top: 160px; /* Adjust this value based on your dropdown height */
+}
+
+.dynamic-input:focus + .dropdown-options {
+  display: none;
 }
