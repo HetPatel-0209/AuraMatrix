@@ -1,5 +1,6 @@
 let currentQuestion = 0;
 let totalQuestions = 0;
+let userAnswers = new Array(10).fill('');
 gujQue = [
     "તમે નવા અને અસામાન્ય કાર્યો કરવા અંગે શુ અનુભવો છો ?",
     "જૂથમાં તમે કેવી રીતે વર્તો છો ?",
@@ -161,6 +162,7 @@ function renderQuestion(questionNumber) {
         <div class="brutalist-container ${questionNumber === currentQuestion ? "active" : ""}" data-question="${questionNumber}">
             <div class="dynamic-input-container">
                 <input type="text" 
+                       value="${userAnswers[questionNumber] || ''}"
                        name="answer${questionNumber}" 
                        class="brutalist-input smooth-type dynamic-input" 
                        placeholder="Select or type your answer (we suggest that you write your own answer)" 
@@ -183,7 +185,6 @@ function renderQuestion(questionNumber) {
     setupDynamicInputs();
 }
 
-// Add this function to show the help dialog
 function showHelp(questionNumber) {
     const question = questions[questionNumber];
     const helpDialog = document.createElement('div');
@@ -208,14 +209,12 @@ function showHelp(questionNumber) {
     });
 }
 
-// Add this function to close the help dialog
 function closeHelp() {
     const helpDialog = document.querySelector('.help-dialog');
     if (helpDialog) {
         helpDialog.remove();
     }
 }
-
 
 function showQuestion(questionNumber) {
     document.querySelectorAll(".brutalist-container").forEach((container) => {
@@ -239,9 +238,8 @@ function showQuestion(questionNumber) {
 
 function nextQuestion() {
     const currentInput = document.querySelector(`[data-question="${currentQuestion}"] .dynamic-input`);
-    if (currentInput && currentInput.value.trim() === "") {
-        alert("Please answer the current question before proceeding.");
-        return;
+    if (currentInput) {
+        userAnswers[currentQuestion] = currentInput.value.trim();
     }
     if (currentQuestion < totalQuestions - 1) {
         currentQuestion++;
@@ -251,6 +249,10 @@ function nextQuestion() {
 }
 
 function previousQuestion() {
+    const currentInput = document.querySelector(`[data-question="${currentQuestion}"] .dynamic-input`);
+    if (currentInput) {
+        userAnswers[currentQuestion] = currentInput.value.trim();
+    }
     if (currentQuestion > 0) {
         currentQuestion--;
         renderQuestion(currentQuestion);
@@ -267,7 +269,6 @@ function setupDynamicInputs() {
         const navigationButtons = document.querySelector(".navigation-buttons");
         let isInputFocused = false;
 
-        // Show dropdown and adjust buttons when input is inactive
         const showDropdownAndAdjustButtons = () => {
             if (!isInputFocused) {
                 dropdownOptions.classList.add("show");
@@ -275,25 +276,20 @@ function setupDynamicInputs() {
             }
         };
 
-        // Hide dropdown and adjust buttons when input is active
         const hideDropdownAndAdjustButtons = () => {
             dropdownOptions.classList.remove("show");
             navigationButtons.classList.remove("buttons-with-dropdown");
         };
 
-        // Initially show dropdown when input is inactive
         showDropdownAndAdjustButtons();
 
-        // Hide dropdown when input gets focus
         input.addEventListener('focus', () => {
             isInputFocused = true;
             hideDropdownAndAdjustButtons();
         });
 
-        // Show dropdown when input loses focus
         input.addEventListener('blur', (e) => {
             isInputFocused = false;
-            // Only show dropdown if we're not clicking on an option
             const relatedTarget = e.relatedTarget;
             if (!relatedTarget || !relatedTarget.classList.contains('option')) {
                 setTimeout(() => {
@@ -304,7 +300,8 @@ function setupDynamicInputs() {
             }
         });
 
-        input.addEventListener("input", () => {
+        input.addEventListener("input", (e) => {
+            userAnswers[currentQuestion] = e.target.value.trim();
             if (isInputFocused) {
                 hideDropdownAndAdjustButtons();
                 return;
@@ -328,13 +325,17 @@ function setupDynamicInputs() {
         const options = dropdownOptions.querySelectorAll(".option");
         options.forEach((option) => {
             option.addEventListener("mousedown", (e) => {
-                e.preventDefault(); // Prevent the input from losing focus
+                e.preventDefault();
                 input.value = option.textContent;
+                userAnswers[currentQuestion] = option.textContent;
                 hideDropdownAndAdjustButtons();
+
+                const inputEvent = new Event('input', { bubbles: true });
+                input.dispatchEvent(inputEvent);
             });
-            
+
             option.addEventListener("click", () => {
-                input.blur(); // Now explicitly blur the input after setting its value
+                input.blur();
                 setTimeout(() => {
                     if (!isInputFocused) {
                         showDropdownAndAdjustButtons();
@@ -343,7 +344,6 @@ function setupDynamicInputs() {
             });
         });
 
-        // Handle keyboard navigation
         input.addEventListener("keydown", (e) => {
             const options = Array.from(dropdownOptions.querySelectorAll(".option:not([style*='display: none'])"));
             if (!options.length) return;
@@ -373,6 +373,7 @@ function setupDynamicInputs() {
                     e.preventDefault();
                     if (currentIndex >= 0) {
                         input.value = options[currentIndex].textContent;
+                        userAnswers[currentQuestion] = options[currentIndex].textContent;
                         hideDropdownAndAdjustButtons();
                         input.blur();
                         setTimeout(() => {
@@ -385,7 +386,6 @@ function setupDynamicInputs() {
             }
         });
 
-        // Handle clicks outside the container
         document.addEventListener('click', (e) => {
             if (!container.contains(e.target) && !isInputFocused) {
                 showDropdownAndAdjustButtons();
@@ -402,12 +402,14 @@ async function handleSubmit(event) {
     submitButton.textContent = "Processing...";
     submitButton.disabled = true;
 
-    const form = event.target;
-    const formData = new FormData(form);
-    const answers = [];
+    // Use the stored answers array
+    const answers = userAnswers.map(answer => answer.trim());
 
-    for (let i = 0; i < totalQuestions; i++) {
-        answers.push(formData.get(`answer${i}`));
+    if (answers.length !== totalQuestions || answers.some(answer => !answer)) {
+        alert("Please answer all questions before submitting.");
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+        return;
     }
 
     localStorage.setItem("userAnswers", JSON.stringify(answers));
@@ -458,6 +460,5 @@ async function handleSubmit(event) {
     }
 }
 
-// Initialize the form
 renderQuestion(currentQuestion);
 showQuestion(currentQuestion);
