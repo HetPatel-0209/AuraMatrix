@@ -462,7 +462,7 @@ document.getElementById('downloadCard').addEventListener('click', downloadAuraCa
 
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
-
+    
     // Show loading state for all cards
     stickerCards.forEach(card => {
         card.querySelector('.sticker-loader').style.display = 'block';
@@ -535,23 +535,23 @@ function displaySticker(card, stickerUrl, index) {
 
     // Clear any existing error messages
     sticker.innerHTML = '';
-
+    
     // Create a new Image object to verify the image loads correctly
     const img = new Image();
-
+    
     img.onload = () => {
-        sticker.style.backgroundImage = url("${stickerUrl}");
+        sticker.style.backgroundImage = `url("${stickerUrl}")`;
         sticker.style.backgroundSize = 'contain';
         sticker.style.backgroundPosition = 'center';
         sticker.style.backgroundRepeat = 'no-repeat';
         sticker.style.display = 'block';
-
+        
         if (downloadBtn) {
             downloadBtn.style.display = 'block';
             downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
         }
     };
-
+    
     img.onerror = () => {
         console.error('Failed to load sticker:', stickerUrl);
         displayStickerError(card, 'Failed to load sticker image.');
