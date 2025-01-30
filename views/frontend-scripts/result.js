@@ -1,4 +1,5 @@
 const BACK = process.env.BACK_END;
+console.log(BACK);
 function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
