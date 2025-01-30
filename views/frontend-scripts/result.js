@@ -403,13 +403,44 @@ async function downloadAuraCard() {
 
         // Create a copy of the SVG with embedded fonts
         const svgCopy = svg.cloneNode(true);
+        
+        // Set the original dimensions
+        const width = parseInt(svg.getAttribute('width'));
+        const height = parseInt(svg.getAttribute('height'));
+        
+        // Create a new wrapper SVG that includes the border
+        const wrapperSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        
+        // Add padding for borders (24px on sides, 16px top/bottom)
+        wrapperSvg.setAttribute('width', width + 48); // 24px * 2 for left and right borders
+        wrapperSvg.setAttribute('height', height + 32); // 16px * 2 for top and bottom borders
+        wrapperSvg.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+        
+        // Create a white background rectangle that serves as the border
+        const borderRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        borderRect.setAttribute('width', width + 48);
+        borderRect.setAttribute('height', height + 32);
+        borderRect.setAttribute('fill', '#ffffff');
+        
+        // Create a group to position the original SVG content
+        const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        contentGroup.setAttribute('transform', `translate(24, 16)`); // Position content inside borders
+        
+        // Add the original SVG content to the group
+        contentGroup.appendChild(svgCopy);
+        
+        // Add everything to the wrapper SVG
+        wrapperSvg.appendChild(borderRect);
+        wrapperSvg.appendChild(contentGroup);
+
+        // Add embedded fonts
         const defs = svgCopy.querySelector('defs');
         const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
         styleElement.textContent = createFontStyles();
         defs.prepend(styleElement);
 
         // Convert to string with proper XML declaration
-        const svgString = new XMLSerializer().serializeToString(svgCopy);
+        const svgString = new XMLSerializer().serializeToString(wrapperSvg);
         const svgBlob = new Blob([
             '<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
             '<!DOCTYPE svg PUBLIC "-//W3//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
@@ -420,10 +451,10 @@ async function downloadAuraCard() {
         const url = URL.createObjectURL(svgBlob);
         const img = new Image();
 
-        // Set up canvas
+        // Set up canvas with new dimensions including borders
         const canvas = document.createElement('canvas');
-        canvas.width = svg.getAttribute('width');
-        canvas.height = svg.getAttribute('height');
+        canvas.width = width + 48; // Include border width
+        canvas.height = height + 32; // Include border height
         const ctx = canvas.getContext('2d');
 
         // Wait for image to load
@@ -572,7 +603,7 @@ function displayStickerError(card, message = 'Error loading sticker') {
         </div>
     `;
     
-    sticker.style.color = "red";
+    sticker.style.color = "red"
 
     if (downloadBtn) {
         downloadBtn.style.display = 'none';
