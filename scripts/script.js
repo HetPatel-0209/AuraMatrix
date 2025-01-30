@@ -98,6 +98,7 @@ app.post('/api/generate-stickers', async (req, res) => {
     // Generate multiple stickers concurrently
     const prompts = [
       `Low poly art Sticker for ${role} personality with a clean black background for ${gender}.`,
+      `Low poly art Sticker for ${role} personality with a clean black background for ${gender}.`,
     ];
 
     const results = await Promise.allSettled(prompts.map(prompt => generateImage(prompt)));
