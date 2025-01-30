@@ -430,6 +430,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+app.get('/wakeup', (req, res) => {
+  res.status(200).json({ message: 'Server is awake and running!' });
+});
+
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 
