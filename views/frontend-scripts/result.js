@@ -641,29 +641,27 @@ async function downloadSticker(url, filename) {
     }
 }
 
-
 async function downloadAllStickers() {
     const stickerCards = document.querySelectorAll('.sticker-card');
     for (let i = 0; i < stickerCards.length; i++) {
-      const card = stickerCards[i];
-      const sticker = card.querySelector('.sticker');
-      const backgroundImage = sticker.style.backgroundImage;
-  
-      if (backgroundImage) {
-        try {
-          // Extract the base64 data from the background-image URL
-          const imageData = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-          const filename = `personality-sticker-${i + 1}.png`;
-  
-          // Add slight delay between downloads to prevent overwhelming the browser
-          await new Promise(resolve => setTimeout(resolve, 500));
-          await downloadSticker(imageData, filename);
-        } catch (error) {
-          console.error(`Error downloading sticker ${i + 1}:`, error);
+        const card = stickerCards[i];
+        const sticker = card.querySelector('.sticker');
+        const backgroundImage = sticker.style.backgroundImage;
+
+        if (backgroundImage) {
+            try {
+                const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                const filename = `personality-sticker-${i + 1}.png`;
+
+                // Add slight delay between downloads to prevent overwhelming the browser
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await downloadSticker(url, filename);
+            } catch (error) {
+                console.error(`Error downloading sticker ${i + 1}:, error`);
+            }
         }
-      }
     }
-  }
+}
 
 async function updatePersonalityMatrix(answers, matrixData) {
     const matrixBody = document.querySelector('#personalityMatrix tbody');

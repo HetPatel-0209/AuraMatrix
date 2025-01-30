@@ -4,8 +4,6 @@ import { dirname } from 'path';
 import axios from "axios";
 import cors from 'cors';
 import Groq from 'groq-sdk';
-import { v4 as uuidv4 } from 'uuid';
-import { text } from 'stream/consumers';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -23,22 +21,24 @@ app.use(express.static("public"));
 const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
 const NVIDIA_API_KEY = process.env.NVIDIA;
 
-async function generateImage(prompt, attempt = 0) {
+async function generateImage(prompt, attempt = 0, maxAttempts = 3) {
   const payload = {
     height: 1024,
     width: 1024,
     text_prompts: [{
       text: prompt,
-      weight: 1
-    },
-  ],
-    cfg_scale: 5,
-    clip_guidance_preset: 'NONE',
-    sampler: 'K_DPM_2_ANCESTRAL',
+      weight: 1.0
+    }, {
+      text: 'Do not make background cluttered. Do not include text from prompt or unrelated objects. Do not give blank images',
+      weight: -1.0
+    }],
+    cfg_scale: 7,
+    clip_guidance_preset: "NONE",
+    sampler: "K_EULER_ANCESTRAL",
     samples: 1,
-    seed: Math.floor(Math.random() * 1000000), // Random seed for variety
+    seed: Math.floor(Math.random() * 10000),
     steps: 25,
-    style_preset: 'none'
+    style_preset: "none"
   };
 
   try {
@@ -50,25 +50,35 @@ async function generateImage(prompt, attempt = 0) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      data: payload
+      data: payload,
+      timeout: 30000 // 30 second timeout
     });
 
-    if (!response.data.output || !response.data.output[0]) {
+    if (!response.data || !response.data.artifacts || !response.data.artifacts.length) {
       throw new Error('No image data in response');
     }
 
-    // Return base64 image data
-    return `data:image/jpeg;base64,${response.data.output[0]}`;
-
-  } catch (error) {
-    console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
-
-    if (attempt < 2) {
-      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
-      return generateImage(prompt, attempt + 1);
+    const base64Data = response.data.artifacts[0].base64;
+    if (!base64Data) {
+      throw new Error('Invalid base64 data received');
     }
 
-    throw error;
+    return base64Data;
+
+  } catch (error) {
+    console.error(`Error generating image (attempt ${attempt + 1}/${maxAttempts}):`, 
+      error.response?.data || error.message);
+
+    // Implement exponential backoff
+    const backoffDelay = Math.min(1000 * Math.pow(2, attempt), 8000); // Max 8 second delay
+
+    if (attempt < maxAttempts - 1) {
+      console.log(`Retrying after ${backoffDelay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, backoffDelay));
+      return generateImage(prompt, attempt + 1, maxAttempts);
+    }
+
+    throw new Error(`Failed to generate image after ${maxAttempts} attempts`);
   }
 }
 
@@ -85,95 +95,34 @@ app.post('/api/generate-stickers', async (req, res) => {
     const roleMatch = personalityType.match(/\((.*?)\)/);
     const role = roleMatch ? roleMatch[1] : personalityType;
 
-    // Generate one prompt at a time instead of all at once
-    const results = [];
-    for (let i = 0; i < 2; i++) {
-      try {
-        const prompt = `A detailed, minimalist-style sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender}`;
-        const imageData = await generateImage(prompt);
-        const imageId = uuidv4();
+    // Generate multiple stickers concurrently
+    const prompts = [
+      `Low poly art Sticker for ${role} personality with a clean black background for ${gender}.`,
+    ];
 
-        // Store in cache with chunked data
-        const chunks = chunkString(imageData, 5000); // Break into smaller chunks
-        chunks.forEach((chunk, index) => {
-          imageCache.set(`${imageId}_${index}`, chunk);
-        });
-        // Store chunk count
-        imageCache.set(`${imageId}_count`, chunks.length);
+    const results = await Promise.allSettled(prompts.map(prompt => generateImage(prompt)));
+    
+    const validUrls = results
+      .filter(result => result.status === 'fulfilled')
+      .map(result => result.value);
 
-        setTimeout(() => {
-          // Cleanup all chunks
-          const chunkCount = imageCache.get(`${imageId}_count`);
-          for (let j = 0; j < chunkCount; j++) {
-            imageCache.delete(`${imageId}_${j}`);
-          }
-          imageCache.delete(`${imageId}_count`);
-        }, 3600000);
-
-        results.push(imageId);
-      } catch (error) {
-        console.error('Error generating individual sticker:', error);
-      }
+    if (validUrls.length === 0) {
+      throw new Error('Failed to generate any stickers');
     }
 
     res.json({
-      imageIds: results,
-      generatedCount: results.length,
-      message: results.length === 4 ? 'All stickers generated' : 'Partial generation completed'
+      images: validUrls,
+      generatedCount: validUrls.length,
+      message: validUrls.length === prompts.length ? 'All stickers generated' : 'Partial generation completed'
     });
   } catch (error) {
-    console.error('Unexpected error in sticker generation:', error);
+    console.error('Error in sticker generation:', error);
     res.status(500).json({
-      error: 'Unexpected error in sticker generation',
+      error: 'Error in sticker generation',
       details: error.message
     });
   }
 });
-
-// Modify the image endpoint to handle chunked data
-app.get('/api/image/:id', async (req, res) => {
-  const imageId = req.params.id;
-
-  // Get chunk count
-  const chunkCount = imageCache.get(`${imageId}_count`);
-  if (!chunkCount) {
-    return res.status(404).json({
-      error: 'Image not found',
-      details: 'The requested image ID does not exist or has expired'
-    });
-  }
-
-  try {
-    // Reconstruct image from chunks
-    let imageData = '';
-    for (let i = 0; i < chunkCount; i++) {
-      const chunk = imageCache.get(`${imageId}_${i}`);
-      if (!chunk) {
-        throw new Error('Incomplete image data');
-      }
-      imageData += chunk;
-    }
-
-    res.json({
-      image: `data:image/jpeg;base64,${imageData}`
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Error retrieving image',
-      details: error.message
-    });
-  }
-});
-
-// Helper function to chunk string data
-function chunkString(str, length) {
-  const chunks = [];
-  for (let i = 0; i < str.length; i += length) {
-    chunks.push(str.slice(i, i + length));
-  }
-  return chunks;
-}
-
 
 app.post('/predict', async (req, res) => {
   try {
@@ -288,6 +237,9 @@ app.post('/extra-info', async (req, res) => {
         details: 'Both answers array and personalityType are required'
       });
     }
+
+    const roleMatch = personalityType.match(/\((.*?)\)/);
+    const role = roleMatch ? roleMatch[1] : personalityType;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [
@@ -422,6 +374,9 @@ app.post('/description', async (req, res) => {
         details: 'personalityType is required'
       });
     }
+
+    const roleMatch = personalityType.match(/\((.*?)\)/);
+    const role = roleMatch ? roleMatch[1] : personalityType;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [
