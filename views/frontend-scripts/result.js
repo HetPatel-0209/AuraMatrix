@@ -115,7 +115,6 @@ function updateTraitsDisplay(prediction) {
     });
 }
 
-// Aura card
 function createTraitCircle(trait, value, index, color) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
     circle.setAttribute("transform", `translate(0, ${index * 140})`);
@@ -126,6 +125,7 @@ function createTraitCircle(trait, value, index, color) {
     circleElement.setAttribute("cy", "60");
     circleElement.setAttribute("r", "60");
     circleElement.setAttribute("fill", color);
+
     // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     valueText.setAttribute("x", "60");
@@ -133,7 +133,7 @@ function createTraitCircle(trait, value, index, color) {
     valueText.setAttribute("text-anchor", "middle");
     valueText.setAttribute("font-size", "48");
     valueText.setAttribute("fill", "white");
-    valueText.setAttribute("font-weight", "bold");
+    valueText.setAttribute("font-weight", "700");
     valueText.setAttribute("font-family", "Poppins");
     valueText.textContent = Math.round(value);
 
@@ -143,7 +143,7 @@ function createTraitCircle(trait, value, index, color) {
     traitText.setAttribute("y", "87");
     traitText.setAttribute("text-anchor", "middle");
     traitText.setAttribute("font-size", "16");
-    traitText.setAttribute("font-weight", "500");
+    traitText.setAttribute("font-weight", "700");
     traitText.setAttribute("fill", "white");
     traitText.setAttribute("font-family", "Poppins");
     traitText.textContent = trait;
@@ -155,37 +155,94 @@ function createTraitCircle(trait, value, index, color) {
     return circle;
 }
 
+let fontCache = {
+    bricolage: null,
+    poppins: null,
+    poppins1: null
+};
+
+async function loadAndCacheFonts() {
+    try {
+        const [bricolageBlob, poppinsBlob] = await Promise.all([
+            fontLoader.bricolage,
+            fontLoader.poppins
+        ]);
+
+        fontCache.bricolage = await blobToBase64(bricolageBlob);
+        fontCache.poppins = await blobToBase64(poppinsBlob);
+    } catch (error) {
+        console.error('Error loading fonts:', error);
+    }
+}
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+function createFontStyles() {
+    if (!fontCache.bricolage || !fontCache.poppins) {
+        return '';
+    }
+
+    return `
+        @font-face {
+            font-family: 'BricolageGrotesque';
+            src: url('${fontCache.bricolage}') format('truetype');
+            font-weight: 200 800;
+        }
+        
+        @font-face {
+            font-family: 'Poppins';
+            src: url('${fontCache.poppins}') format('truetype');
+            font-weight: 300 700;
+        }
+        @font-face {
+        font-family: 'Poppins1';
+        src: url('${fontCache.poppins1}') format('truetype');
+        font-weight: 300 ;
+}
+
+        #userName { 
+            font-family: 'BricolageGrotesque', sans-serif;
+            font-weight: 700;
+        }
+        #userType{
+            font-family: 'Poppins1', sans-serif;
+            font-weight: 300;
+            
+        }
+        
+        #auraDescription, #auraPercentage, .brand {
+            font-family: 'Poppins';
+            font-weight: 700;
+        }
+    `;
+}
+
 function updateSVGCard(prediction) {
     const svg = document.querySelector('#auraCard svg');
     if (!svg) return;
+
+    // Update font styles
+    const defsElement = svg.querySelector('defs');
+    const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+    styleElement.textContent = createFontStyles();
+
+    // Clear existing font styles
+    const existingStyles = defsElement.querySelectorAll('style');
+    existingStyles.forEach(style => style.remove());
+
+    defsElement.prepend(styleElement);
 
     // Update name and type
     const firstName = localStorage.getItem('userFirstName') || 'User';
     const lastName = localStorage.getItem('userLastName') || '';
     const fullName = `${firstName}\n ${lastName}`.trim();
-
-    // Add font styles to SVG
-    const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
-    styleElement.textContent = `
-    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap');
-    
-    #userName {
-        font-family: 'Bricolage Grotesque';
-    }
-    
-    #userType, #auraDescription, #auraPercentage, .brand {
-        font-family: 'Poppins';
-    }
-`;
-    const defsElement = svg.querySelector('defs');
-    if (defsElement) {
-
-        const existingStyles = defsElement.querySelectorAll('style');
-        existingStyles.forEach(style => style.remove());
-
-        defsElement.appendChild(styleElement);
-    }
 
     document.querySelector('#userName').textContent = fullName;
 
@@ -313,7 +370,7 @@ function updateSVGCard(prediction) {
         backgroundRect.setAttribute('fill', currentStyle.background);
     }
 
-    document.querySelector('#userName').setAttribute('fill', currentStyle.userName, 'font-family', 'Dancing Script, cursive');
+    document.querySelector('#userName').setAttribute('fill', currentStyle.userName);
     document.querySelector('#userType').setAttribute('fill', currentStyle.userType);
     document.querySelector('#auraPercentage').setAttribute('fill', currentStyle.auraPercentage);
     document.querySelector('#auraDescription').setAttribute('fill', currentStyle.auraDescription);
@@ -335,77 +392,84 @@ function updateSVGCard(prediction) {
 }
 
 async function downloadAuraCard() {
-    const svg = document.querySelector('#auraCard svg');
-    if (!svg) return;
-
     try {
-        // Get the SVG data with embedded fonts
-        const svgData = new XMLSerializer().serializeToString(svg);
+        const svg = document.querySelector('#auraCard svg');
+        if (!svg) return;
 
-        // Create a Blob with the SVG data and embedded fonts
-        const svgBlob = new Blob([`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-            <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <defs>
-                <style type="text/css">
-                    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;display=swap');
-                    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&amp;display=swap');
-                </style>
-            </defs>
-            ${svgData}
-            </svg>`], { type: 'image/svg+xml;charset=utf-8' });
+        // Ensure fonts are loaded
+        if (!fontCache.bricolage || !fontCache.poppins) {
+            await loadAndCacheFonts();
+        }
 
-        // Create URL for the Blob
-        const svgUrl = URL.createObjectURL(svgBlob);
+        // Create a copy of the SVG with embedded fonts
+        const svgCopy = svg.cloneNode(true);
+        const defs = svgCopy.querySelector('defs');
+        const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+        styleElement.textContent = createFontStyles();
+        defs.prepend(styleElement);
 
-        // Create Image object
+        // Convert to string with proper XML declaration
+        const svgString = new XMLSerializer().serializeToString(svgCopy);
+        const svgBlob = new Blob([
+            '<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
+            '<!DOCTYPE svg PUBLIC "-//W3//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
+            svgString
+        ], { type: 'image/svg+xml;charset=utf-8' });
+
+        // Create URL and image
+        const url = URL.createObjectURL(svgBlob);
         const img = new Image();
-        img.src = svgUrl;
+
+        // Set up canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = svg.getAttribute('width');
+        canvas.height = svg.getAttribute('height');
+        const ctx = canvas.getContext('2d');
 
         // Wait for image to load
         await new Promise((resolve, reject) => {
             img.onload = resolve;
             img.onerror = reject;
+            img.src = url;
         });
 
-        // Create canvas
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        // Set canvas dimensions
-        canvas.width = svg.getAttribute('width');
-        canvas.height = svg.getAttribute('height');
-
-        // Draw image to canvas
+        // Draw and convert to PNG
         ctx.drawImage(img, 0, 0);
+        const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
-        // Convert canvas to blob
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-
-        // Create download link
-        const downloadUrl = URL.createObjectURL(blob);
+        // Download
+        const downloadUrl = URL.createObjectURL(pngBlob);
         const link = document.createElement('a');
         link.href = downloadUrl;
         link.download = 'AuraMatrix-Card.png';
-
-        // Trigger download
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
         // Cleanup
-        URL.revokeObjectURL(svgUrl);
+        URL.revokeObjectURL(url);
         URL.revokeObjectURL(downloadUrl);
     } catch (error) {
         console.error('Error generating card:', error);
+        alert('Failed to generate card. Please try again.');
     }
 }
 
-//Add event listener to download button
+// Add event listener to download button
 document.getElementById('downloadCard').addEventListener('click', downloadAuraCard);
+
+
 
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
+
+    // Show loading state for all cards
+    stickerCards.forEach(card => {
+        card.querySelector('.sticker-loader').style.display = 'block';
+        card.querySelector('.sticker').style.backgroundImage = '';
+        card.style.display = 'block';
+    });
+
     try {
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3000'
@@ -424,25 +488,44 @@ async function generateStickers(personalityType) {
             }),
         });
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
 
-        const { images } = await response.json();
+        const data = await response.json();
 
-        // Update UI with generated images
-        stickerCards.forEach((card, index) => {
-            const imageUrl = images[index];
-            if (imageUrl) {
-                displaySticker(card, imageUrl, index);
-                card.querySelector('.sticker-loader').style.display = 'none';
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
+        // Check for images array in the response
+        if (!data.images || data.images.length === 0) {
+            throw new Error('No stickers were generated');
+        }
+
+        // Process each image
+        data.images.forEach((base64Image, index) => {
+            if (index < stickerCards.length) {
+                if (!base64Image) {
+                    displayStickerError(stickerCards[index], 'Invalid sticker data received.');
+                } else {
+                    // Remove the "data:image/..." prefix if it exists in the base64 string
+                    const base64Data = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    displaySticker(stickerCards[index], imageUrl, index);
+                }
+                stickerCards[index].querySelector('.sticker-loader').style.display = 'none';
             }
         });
 
+        // Handle any remaining cards
+        for (let i = data.images.length; i < stickerCards.length; i++) {
+            displayStickerError(stickerCards[i], 'No sticker data available.');
+            stickerCards[i].querySelector('.sticker-loader').style.display = 'none';
+        }
+
     } catch (error) {
         console.error('Error generating stickers:', error);
-        handleGenerationError(stickerCards);
+        stickerCards.forEach(card => {
+            displayStickerError(card, 'Failed to generate sticker. Please try again.');
+            card.querySelector('.sticker-loader').style.display = 'none';
+        });
     }
 }
 
@@ -450,23 +533,59 @@ function displaySticker(card, stickerUrl, index) {
     const sticker = card.querySelector('.sticker');
     const downloadBtn = card.querySelector('.download-sticker-btn');
 
-    sticker.style.backgroundImage = `url(${stickerUrl})`;
-    downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}`);
+    // Clear any existing error messages
+    sticker.innerHTML = '';
+
+    // Create a new Image object to verify the image loads correctly
+    const img = new Image();
+
+    img.onload = () => {
+        sticker.style.backgroundImage = `url("${stickerUrl}")`;
+        sticker.style.backgroundSize = 'contain';
+        sticker.style.backgroundPosition = 'center';
+        sticker.style.backgroundRepeat = 'no-repeat';
+        sticker.style.display = 'block';
+
+        if (downloadBtn) {
+            downloadBtn.style.display = 'block';
+            downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
+        }
+    };
+
+    img.onerror = () => {
+        console.error('Failed to load sticker:', stickerUrl);
+        displayStickerError(card, 'Failed to load sticker image.');
+    };
+
+    img.src = stickerUrl;
 }
 
-function displayStickerError(card) {
+function displayStickerError(card, message = 'Error loading sticker') {
     const sticker = card.querySelector('.sticker');
+    const downloadBtn = card.querySelector('.download-sticker-btn');
+
+    sticker.style.backgroundImage = 'none';
     sticker.innerHTML = `
-        <p>Sorry, we couldn't generate this sticker.</p>
-        <p>Please try refreshing the page.</p>
+        <div class="sticker-error">
+            <p>${message}</p>
+            <p>Please try refreshing the page.</p>
+        </div>
     `;
     sticker.style.display = 'flex';
     sticker.style.flexDirection = 'column';
     sticker.style.justifyContent = 'center';
     sticker.style.alignItems = 'center';
     sticker.style.textAlign = 'center';
-    sticker.style.color = '#ff0000';
+    sticker.style.padding = '20px';
+    sticker.style.backgroundColor = '#fff5f5';
+    sticker.style.border = '1px solid #feb2b2';
+    sticker.style.borderRadius = '8px';
+    sticker.style.color = '#c53030';
     sticker.style.fontSize = '14px';
+
+    if (downloadBtn) {
+        downloadBtn.style.display = 'none';
+    }
 }
 
 async function convertWebPToPNG(webpUrl) {
@@ -539,7 +658,7 @@ async function downloadAllStickers() {
                 await new Promise(resolve => setTimeout(resolve, 500));
                 await downloadSticker(url, filename);
             } catch (error) {
-                console.error(`Error downloading sticker ${i + 1}:`, error);
+                console.error(`Error downloading sticker ${i + 1}:, error`);
             }
         }
     }

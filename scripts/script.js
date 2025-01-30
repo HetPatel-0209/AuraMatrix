@@ -4,17 +4,19 @@ import { dirname } from 'path';
 import axios from "axios";
 import cors from 'cors';
 import Groq from 'groq-sdk';
+import { v4 as uuidv4 } from 'uuid';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
+// In-memory cache for images
+const imageCache = new Map();
+
 app.use(cors({
   origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 app.use(express.json());
-
-// Static files
 app.use(express.static("public"));
 
 const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
@@ -22,12 +24,12 @@ const NVIDIA_API_KEY = process.env.NVIDIA;
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
-    prompt: prompt, // BRIA 2.3 uses direct prompt string
+    prompt: prompt,
     aspect_ratio: '1:1',
     mode: 'text-to-image',
-    negative_prompt: 'Avoid overly complex designs, cluttered backgrounds, soft or pastel colors, cartoonish or childlike features, unrealistic proportions, flat or dull textures, lack of symmetry, and excessive accessories. Do not include text, logos, or unrelated objects.',
+    negative_prompt: 'Avoid overly complex designs, cluttered backgrounds, soft or pastel colors, cartoonish or childlike features, unrealistic proportions, flat or dull textures, lack of symmetry, and excessive accessories. Do not include text, logos, or unrelated objects.',
     model: 'bria-2.3',
-    seed: '000000', // Better to randomize seed
+    seed: Math.floor(Math.random() * 1000000).toString(),
     output_format: 'jpeg',
     cfg_scale: 9,
     steps: 30
@@ -45,7 +47,6 @@ async function generateImage(prompt, attempt = 0) {
       data: payload
     });
 
-    // Handle BRIA 2.3 response format
     if (response.data.finish_reason === 'CONTENT_FILTERED') {
       throw new Error('Content filtered by safety system');
     }
@@ -54,13 +55,11 @@ async function generateImage(prompt, attempt = 0) {
       throw new Error('No image data in response');
     }
 
-    // Return as data URL with correct JPEG MIME type
-    return `data:image/jpeg;base64,${response.data.image}`;
-
+    return response.data.image;
   } catch (error) {
     console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
 
-    if (attempt < 2) { // Retry up to 3 times
+    if (attempt < 2) {
       await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
       return generateImage(prompt, attempt + 1);
     }
@@ -82,30 +81,43 @@ app.post('/api/generate-stickers', async (req, res) => {
     const roleMatch = personalityType.match(/\((.*?)\)/);
     const role = roleMatch ? roleMatch[1] : personalityType;
 
-    const prompts = [
-      `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-    ];
+    // Generate one prompt at a time instead of all at once
+    const results = [];
+    for (let i = 0; i < 4; i++) {
+      try {
+        const prompt = `A detailed, minimalist-style sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender}`;
+        const imageData = await generateImage(prompt);
+        const imageId = uuidv4();
 
-    const stickerPromises = prompts.map((prompt, index) =>
-      generateImage(prompt).catch(error => {
-        console.error(`Sticker ${index + 1} failed:`, error);
-        return null;
-      })
-    );
+        // Store in cache with chunked data
+        const chunks = chunkString(imageData, 5000); // Break into smaller chunks
+        chunks.forEach((chunk, index) => {
+          imageCache.set(`${imageId}_${index}`, chunk);
+        });
+        // Store chunk count
+        imageCache.set(`${imageId}_count`, chunks.length);
 
-    const stickerUrls = await Promise.all(stickerPromises);
-    const validUrls = stickerUrls.filter(url => url !== null);
+        setTimeout(() => {
+          // Cleanup all chunks
+          const chunkCount = imageCache.get(`${imageId}_count`);
+          for (let j = 0; j < chunkCount; j++) {
+            imageCache.delete(`${imageId}_${j}`);
+          }
+          imageCache.delete(`${imageId}_count`);
+        }, 3600000);
+
+        results.push(imageId);
+      } catch (error) {
+        console.error('Error generating individual sticker:', error);
+      }
+    }
 
     res.json({
-      images: validUrls,
-      generatedCount: validUrls.length,
-      message: validUrls.length === 4 ? 'All stickers generated' : 'Partial generation completed'
+      imageIds: results,
+      generatedCount: results.length,
+      message: results.length === 4 ? 'All stickers generated' : 'Partial generation completed'
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Unexpected error in sticker generation:', error);
     res.status(500).json({
       error: 'Unexpected error in sticker generation',
@@ -113,6 +125,50 @@ app.post('/api/generate-stickers', async (req, res) => {
     });
   }
 });
+
+// Modify the image endpoint to handle chunked data
+app.get('/api/image/:id', async (req, res) => {
+  const imageId = req.params.id;
+
+  // Get chunk count
+  const chunkCount = imageCache.get(`${imageId}_count`);
+  if (!chunkCount) {
+    return res.status(404).json({
+      error: 'Image not found',
+      details: 'The requested image ID does not exist or has expired'
+    });
+  }
+
+  try {
+    // Reconstruct image from chunks
+    let imageData = '';
+    for (let i = 0; i < chunkCount; i++) {
+      const chunk = imageCache.get(`${imageId}_${i}`);
+      if (!chunk) {
+        throw new Error('Incomplete image data');
+      }
+      imageData += chunk;
+    }
+
+    res.json({
+      image: `data:image/jpeg;base64,${imageData}`
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Error retrieving image',
+      details: error.message
+    });
+  }
+});
+
+// Helper function to chunk string data
+function chunkString(str, length) {
+  const chunks = [];
+  for (let i = 0; i < str.length; i += length) {
+    chunks.push(str.slice(i, i + length));
+  }
+  return chunks;
+}
 
 
 app.post('/predict', async (req, res) => {
@@ -243,7 +299,7 @@ app.post('/extra-info', async (req, res) => {
         {
           role: "user",
           content: `
-          The user's personality is ${personalityType}. Based on the user's answers, create a Personality Matrix aligned with the 16 Personality System (MBTI).\n
+          The user's personality is ${role}. Based on the user's answers, create a Personality Matrix aligned with the 16 Personality System (MBTI).\n
       User's Answers: ${answers}\n
 
       Matrix layout:\n
@@ -376,7 +432,7 @@ app.post('/description', async (req, res) => {
         {
           role: "user",
           content: `
-            User's personality is ${personalityType}. Create a personality description using valid JSON syntax (no markdown). Follow this structure:
+            User's personality is ${role}. Create a personality description using valid JSON syntax (no markdown). Follow this structure:
             Expected output (ONLY valid JSON):
             {
               "description": "ENFJs, known as Protagonists, are charismatic...",
