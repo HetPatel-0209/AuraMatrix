@@ -462,7 +462,7 @@ document.getElementById('downloadCard').addEventListener('click', downloadAuraCa
 
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
-
+    
     // Show loading state for all cards
     stickerCards.forEach(card => {
         card.querySelector('.sticker-loader').style.display = 'block';
@@ -535,23 +535,23 @@ function displaySticker(card, stickerUrl, index) {
 
     // Clear any existing error messages
     sticker.innerHTML = '';
-
+    
     // Create a new Image object to verify the image loads correctly
     const img = new Image();
-
+    
     img.onload = () => {
         sticker.style.backgroundImage = `url("${stickerUrl}")`;
         sticker.style.backgroundSize = 'contain';
         sticker.style.backgroundPosition = 'center';
         sticker.style.backgroundRepeat = 'no-repeat';
         sticker.style.display = 'block';
-
+        
         if (downloadBtn) {
             downloadBtn.style.display = 'block';
             downloadBtn.onclick = () => downloadSticker(stickerUrl, `personality-sticker-${index + 1}.png`);
         }
     };
-
+    
     img.onerror = () => {
         console.error('Failed to load sticker:', stickerUrl);
         displayStickerError(card, 'Failed to load sticker image.');
@@ -645,24 +645,26 @@ async function downloadSticker(url, filename) {
 async function downloadAllStickers() {
     const stickerCards = document.querySelectorAll('.sticker-card');
     for (let i = 0; i < stickerCards.length; i++) {
-        const card = stickerCards[i];
-        const sticker = card.querySelector('.sticker');
-        const backgroundImage = sticker.style.backgroundImage;
-
-        if (backgroundImage) {
-            try {
-                const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-                const filename = `personality-sticker-${i + 1}.png`;
-
-                // Add slight delay between downloads to prevent overwhelming the browser
-                await new Promise(resolve => setTimeout(resolve, 500));
-                await downloadSticker(url, filename);
-            } catch (error) {
-                console.error(`Error downloading sticker ${i + 1}:, error`);
-            }
+      const card = stickerCards[i];
+      const sticker = card.querySelector('.sticker');
+      const backgroundImage = sticker.style.backgroundImage;
+  
+      if (backgroundImage) {
+        try {
+          // Extract the base64 data from the background-image URL
+          const imageData = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+          const filename = `personality-sticker-${i + 1}.png`;
+  
+          // Add slight delay between downloads to prevent overwhelming the browser
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await downloadSticker(imageData, filename);
+        } catch (error) {
+          console.error(`Error downloading sticker ${i + 1}:`, error);
         }
+      }
     }
-}
+  }
+
 async function updatePersonalityMatrix(answers, matrixData) {
     const matrixBody = document.querySelector('#personalityMatrix tbody');
     if (!matrixBody) {

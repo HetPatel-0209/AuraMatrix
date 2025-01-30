@@ -5,6 +5,7 @@ import axios from "axios";
 import cors from 'cors';
 import Groq from 'groq-sdk';
 import { v4 as uuidv4 } from 'uuid';
+import { text } from 'stream/consumers';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -24,15 +25,20 @@ const NVIDIA_API_KEY = process.env.NVIDIA;
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
-    prompt: prompt,
-    aspect_ratio: '1:1',
-    mode: 'text-to-image',
-    negative_prompt: 'Avoid overly complex designs, cluttered backgrounds, soft or pastel colors, cartoonish or childlike features, unrealistic proportions, flat or dull textures, lack of symmetry, and excessive accessories. Do not include text, logos, or unrelated objects.',
-    model: 'bria-2.3',
-    seed: Math.floor(Math.random() * 1000000).toString(),
-    output_format: 'jpeg',
-    cfg_scale: 9,
-    steps: 30
+    height: 1024,
+    width: 1024,
+    text_prompts: [{
+      text: prompt,
+      weight: 1
+    },
+  ],
+    cfg_scale: 5,
+    clip_guidance_preset: 'NONE',
+    sampler: 'K_DPM_2_ANCESTRAL',
+    samples: 1,
+    seed: Math.floor(Math.random() * 1000000), // Random seed for variety
+    steps: 25,
+    style_preset: 'none'
   };
 
   try {
@@ -47,15 +53,13 @@ async function generateImage(prompt, attempt = 0) {
       data: payload
     });
 
-    if (response.data.finish_reason === 'CONTENT_FILTERED') {
-      throw new Error('Content filtered by safety system');
-    }
-
-    if (!response.data.image) {
+    if (!response.data.output || !response.data.output[0]) {
       throw new Error('No image data in response');
     }
 
-    return response.data.image;
+    // Return base64 image data
+    return `data:image/jpeg;base64,${response.data.output[0]}`;
+
   } catch (error) {
     console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
 
@@ -83,7 +87,7 @@ app.post('/api/generate-stickers', async (req, res) => {
 
     // Generate one prompt at a time instead of all at once
     const results = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       try {
         const prompt = `A detailed, minimalist-style sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender}`;
         const imageData = await generateImage(prompt);
