@@ -17,7 +17,7 @@ app.use(express.json());
 // Static files
 app.use(express.static("public"));
 
-const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/briaai/bria-2.3";
+const NVIDIA_API_URL = "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl";
 const NVIDIA_API_KEY = process.env.NVIDIA;
 
 async function generateImage(prompt, attempt = 0) {
