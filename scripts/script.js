@@ -87,7 +87,7 @@ app.post('/api/generate-stickers', async (req, res) => {
       `A detailed, Pop art/Comic sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
       `A detailed, Boho sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
       `A detailed, Vintage sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style with white border stroke sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, Anime with white border stroke sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
     ];
 
     const stickerPromises = prompts.map((prompt, index) =>
