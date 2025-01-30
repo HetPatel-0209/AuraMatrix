@@ -21,18 +21,22 @@
 
 
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet" crossorigin="anonymous">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet" crossorigin="anonymous">
 
-    <link rel="preload"
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"
-        as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap"
-        as="style">
+
+    <link rel="preload" href="./fonts/BricolageGrotesque.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="./fonts/Poppins-Bold.ttf" as="font" type="font/ttf" crossorigin>
+
+    <!-- Font loading script -->
+    <script>
+        // Initialize font loading early
+        const fontLoader = {
+            bricolage: fetch('./fonts/BricolageGrotesque.ttf').then(r => r.blob()),
+            poppins: fetch('./fonts/Poppins-Bold.ttf').then(r => r.blob()),
+            poppins1: fetch('./fonts/Poppins.ttf').then(r => r.blob())
+        };
+    </script>
+
+
 </head>
 
 <body>
@@ -74,18 +78,15 @@
             </div>
         </div>
     </div>
+
+
     <div class="aura-card-section">
         <button id="downloadCard" class="download-button">Download AuraCard</button>
 
         <div id="auraCard" class="aura-card" style="display: none;">
             <svg width="600" height="800" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
 
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-                    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,900&display=swap');
-                </style>
-
-                <!-- Background with rounded corners -->
+                <style id="fontStyles"></style>
                 <rect width="600" height="800" rx="20" ry="20" fill="#fffdee" />
                 <!-- Decorative Circle -->
                 <svg y="40" width="600" height="700" viewBox="0 0 1 994" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -114,10 +115,10 @@
                 <!-- Dynamic Content -->
                 <g id="cardContent">
                     <!-- Name and Type -->
-                    <text id="userName" x="50" y="87" font-size="64" font-weight="700" font-family="Bricolage Grotesque"
+                    <text id="userName" x="50" y="87" font-size="64" font-weight="700" font-family="BricolageGrotesque"
                         fill="#5d4017"></text>
-                    <text id="userType" x="50" y="132" font-size="32" font-weight="500" font-family="Poppins"
-                        fill="#5d4017" opacity="0.8"></text>
+                    <text id="userType" x="50" y="132" font-size="32" font-family="Poppins" fill="#5d4017"
+                        opacity="0.8"></text>
 
                     <!-- Trait Circles -->
                     <g id="traitCircles" transform="translate(50, 200)">
@@ -126,13 +127,15 @@
 
                     <!-- Aura Level -->
                     <g id="auraLevel" transform="translate(400, 400)">
-                        <text id="auraPercentage" x="70" y="0" font-size="96" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="Poppins"></text>
-                        <text id="auraDescription" x="60" y="50" font-size="32" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="Poppins"></text>
+                        <text id="auraPercentage" x="70" y="0" font-size="96" font-weight="700" fill="#ffffff"
+                            text-anchor="middle" font-family="Poppins"></text>
+                        <text id="auraDescription" x="60" y="50" font-size="32" font-weight="700" fill="#ffffff"
+                            text-anchor="middle" font-family="Poppins"></text>
                     </g>
 
                     <!-- Brand -->
-                    <text class="brand" x="550" y="770" font-size="32" font-weight="700" fill="#5d4017" font-family="Poppins"
-                        text-anchor="end">AuraMatrix</text>
+                    <text class="brand" x="550" y="770" font-size="32" font-weight="700" fill="#5d4017"
+                        font-family="Poppins" text-anchor="end">AuraMatrix</text>
                 </g>
             </svg>
         </div>
@@ -154,6 +157,8 @@
             </tbody>
         </table>
     </div>
+
+
 
     <div class="description-section result-container">
         <h2 class="sticker-title">Your Personality Profile</h2>

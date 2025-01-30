@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 body {
     margin: 0;
     padding: 0;
@@ -122,12 +123,13 @@ body {
     --bg: #000;
     --hover-text: #fff;
     background: var(--bg);
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
     color: white;
     border: 1px solid var(--bg);
     padding: 0.8rem 2rem;
     border-radius: 50px;
     font-size: 1rem;
-    font-weight: 500;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     animation: fadeIn 1s ease-in;
