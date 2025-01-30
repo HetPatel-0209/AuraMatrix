@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 const imageCache = new Map();
 
 app.use(cors({
-  origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
+  origin: ['https://auramatrix-px4p.onrender.com','https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 app.use(express.json());
 app.use(express.static("public"));
