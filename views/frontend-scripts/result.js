@@ -571,17 +571,8 @@ function displayStickerError(card, message = 'Error loading sticker') {
             <p>Please try refreshing the page.</p>
         </div>
     `;
-    sticker.style.display = 'flex';
-    sticker.style.flexDirection = 'column';
-    sticker.style.justifyContent = 'center';
-    sticker.style.alignItems = 'center';
-    sticker.style.textAlign = 'center';
-    sticker.style.padding = '20px';
-    sticker.style.backgroundColor = '#fff5f5';
-    sticker.style.border = '1px solid #feb2b2';
-    sticker.style.borderRadius = '8px';
-    sticker.style.color = '#c53030';
-    sticker.style.fontSize = '14px';
+    
+    sticker.style.color = "red";
 
     if (downloadBtn) {
         downloadBtn.style.display = 'none';
