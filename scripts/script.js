@@ -8,10 +8,9 @@ import Groq from 'groq-sdk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
-const FORNT = process.env.FRONT_END;
 
 app.use(cors({
-  origin: [FORNT, 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
+  origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 app.use(express.json());
 
@@ -23,15 +22,23 @@ const NVIDIA_API_KEY = process.env.NVIDIA;
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
-    prompt: prompt, // BRIA 2.3 uses direct prompt string
-    aspect_ratio: '1:1',
-    mode: 'text-to-image',
-    negative_prompt: 'Avoid overly complex designs, cluttered backgrounds, soft or pastel colors, cartoonish or childlike features, unrealistic proportions, flat or dull textures, lack of symmetry, and excessive accessories. Do not include text, logos, or unrelated objects.',
-    model: 'bria-2.3',
-    seed: '000000', // Better to randomize seed
-    output_format: 'jpeg',
-    cfg_scale: 9,
-    steps: 30
+    height: 1024,
+    width: 1024,
+    text_prompts: [{
+      text: prompt,
+      weight: 1.0
+    }, {
+      text: 'Do not make background cluttered. Do not include text from prompt or unrelated objects. Do not give blank images',
+      weight: -1.0
+    }
+    ],
+    cfg_scale: 7,
+    clip_guidance_preset: "NONE",
+    sampler: "K_EULER_ANCESTRAL",
+    samples: 1,
+    seed: Math.floor(Math.random() * 10000),
+    steps: 25,
+    style_preset: "none"
   };
 
   try {
@@ -46,30 +53,24 @@ async function generateImage(prompt, attempt = 0) {
       data: payload
     });
 
-    // Handle BRIA 2.3 response format
-    if (response.data.finish_reason === 'CONTENT_FILTERED') {
-      throw new Error('Content filtered by safety system');
-    }
-
-    if (!response.data.image) {
+    // Directly return the base64 artifact from the response
+    if (response.data.artifacts && response.data.artifacts.length > 0) {
+      return response.data.artifacts[0].base64;
+    } else {
       throw new Error('No image data in response');
     }
-
-    // Return as data URL with correct JPEG MIME type
-    return `data:image/jpeg;base64,${response.data.image}`;
-
   } catch (error) {
-    console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
+    console.error(`Error generating image (attempt ${attempt}):, 
+    error.response?.data || error.message`);
 
-    if (attempt < 2) { // Retry up to 3 times
-      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
+    if (attempt < 1) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
       return generateImage(prompt, attempt + 1);
     }
 
     throw error;
   }
 }
-
 app.post('/api/generate-stickers', async (req, res) => {
   try {
     const { personalityType, gender = 'neutral' } = req.body;
@@ -84,15 +85,15 @@ app.post('/api/generate-stickers', async (req, res) => {
     const role = roleMatch ? roleMatch[1] : personalityType;
 
     const prompts = [
-      `A detailed, Pop art/Comic sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, Boho sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, Vintage sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, Anime with white border stroke sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
+      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
+      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
+      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
     ];
 
     const stickerPromises = prompts.map((prompt, index) =>
       generateImage(prompt).catch(error => {
-        console.error(`Sticker ${index + 1} failed:`, error);
+        console.error(`Sticker ${index + 1} failed:, error`);
         return null;
       })
     );
@@ -419,5 +420,4 @@ app.get('/health', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-
 });
