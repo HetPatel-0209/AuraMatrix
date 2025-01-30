@@ -9,9 +9,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
-// In-memory cache for images
-const imageCache = new Map();
-
 app.use(cors({
   origin: ['https://auramatrix-px4p.onrender.com','https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
