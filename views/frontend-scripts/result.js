@@ -1,3 +1,4 @@
+const BACK = process.env.BACK_END;
 function formatTraitValue(value) {
     return typeof value === 'number' && !isNaN(value) ? `${Math.round(value)}%` : '0%';
 }
@@ -409,7 +410,7 @@ async function generateStickers(personalityType) {
     try {
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3000'
-            : 'https://auramatrix.onrender.com';
+            : BACK;
 
         const gender = localStorage.getItem('userGender') || 'neutral';
 
@@ -617,7 +618,7 @@ async function loadMatrixData(prediction, userAnswers) {
     try {
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3000'
-            : 'https://auramatrix.onrender.com';
+            : BACK;
 
         const response = await fetch(`${baseUrl}/extra-info`, {
             method: 'POST',
@@ -685,7 +686,7 @@ async function displayResult() {
     const userAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
     const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:3000'
-        : 'https://auramatrix.onrender.com';
+        : BACK;
 
     if (firstName || lastName) {
         document.getElementById('user-name').textContent = `${firstName} ${lastName}`;

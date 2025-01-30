@@ -8,9 +8,10 @@ import Groq from 'groq-sdk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
+const FORNT = process.env.FRONT_END;
 
 app.use(cors({
-  origin: ['https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
+  origin: [FORNT, 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 app.use(express.json());
 
@@ -83,10 +84,10 @@ app.post('/api/generate-stickers', async (req, res) => {
     const role = roleMatch ? roleMatch[1] : personalityType;
 
     const prompts = [
-      `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
-      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, Pop art/Comic sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, Boho sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, Vintage sticker with white border stroke of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style with white border stroke sticker of ${role} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
     ];
 
     const stickerPromises = prompts.map((prompt, index) =>
@@ -264,9 +265,11 @@ app.post('/extra-info', async (req, res) => {
       1. For each answer, assess whether it demonstrates a preference for one trait over another (e.g., high E for extroverted responses, high T for logical responses).\n
       2. Assign "None" for traits that are not clearly indicated by the answer.\n
       3. Use patterns from the provided example matrix for consistency in analysis.\n
-      4. Ensure the traits assigned are directly aligned with the context and wording of the answer.\n
-      5. Avoid randomness; consistency and accuracy are top priorities.\n
-      6. Only use "High X" when answer clearly demonstrates that trait\
+      4. Use cells[1, 5, 9, 13, 17, 21, 25, 29, 33, 37] for Extrovesion/Introversion.\n
+      5. Use cells[2, 6, 10, 14, 18, 22, 26, 30, 34, 38] for Sensing/Intuition.\n
+      6. Use cells[3, 7, 11, 15, 19, 23, 27, 31, 35, 39] for Thinking/Feeling.\n
+      7. Use cells[4, 8, 12, 16, 20, 24, 28, 32, 36, 40] for Judging/Perceiving.\n
+      8. Only use "High X(trait)" when answer clearly demonstrates that trait.\n
 
       Example Matrix:\n
       | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |\n
