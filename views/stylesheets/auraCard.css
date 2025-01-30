@@ -37,11 +37,9 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-left: 24px solid #fff;
-    /* Increased side borders */
+    border-left: 24px solid #fff;  /* Increased side borders */
     border-right: 24px solid #fff;
-    border-top: 16px solid #fff;
-    /* Original top/bottom */
+    border-top: 16px solid #fff;    /* Original top/bottom */
     border-bottom: 16px solid #fff;
     box-sizing: border-box;
     position: relative;
@@ -60,11 +58,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    border-left: 24px solid #fff;
-    /* Increased side borders */
+    border-left: 24px solid #fff;  /* Increased side borders */
     border-right: 24px solid #fff;
-    border-top: 16px solid #fff;
-    /* Original top/bottom */
+    border-top: 16px solid #fff;    /* Original top/bottom */
     border-bottom: 16px solid #fff;
     box-sizing: border-box;
 }

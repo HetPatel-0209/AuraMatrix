@@ -22,23 +22,15 @@ const NVIDIA_API_KEY = process.env.NVIDIA;
 
 async function generateImage(prompt, attempt = 0) {
   const payload = {
-    height: 1024,
-    width: 1024,
-    text_prompts: [{
-      text: prompt,
-      weight: 1.0
-    }, {
-      text: 'Do not make background cluttered. Do not include text from prompt or unrelated objects. Do not give blank images',
-      weight: -1.0
-    }
-    ],
-    cfg_scale: 7,
-    clip_guidance_preset: "NONE",
-    sampler: "K_EULER_ANCESTRAL",
-    samples: 1,
-    seed: Math.floor(Math.random() * 10000),
-    steps: 25,
-    style_preset: "none"
+    prompt: prompt, // BRIA 2.3 uses direct prompt string
+    aspect_ratio: '1:1',
+    mode: 'text-to-image',
+    negative_prompt: 'Avoid overly complex designs, cluttered backgrounds, soft or pastel colors, cartoonish or childlike features, unrealistic proportions, flat or dull textures, lack of symmetry, and excessive accessories. Do not include text, logos, or unrelated objects.',
+    model: 'bria-2.3',
+    seed: '000000', // Better to randomize seed
+    output_format: 'jpeg',
+    cfg_scale: 9,
+    steps: 30
   };
 
   try {
@@ -53,24 +45,30 @@ async function generateImage(prompt, attempt = 0) {
       data: payload
     });
 
-    // Directly return the base64 artifact from the response
-    if (response.data.artifacts && response.data.artifacts.length > 0) {
-      return response.data.artifacts[0].base64;
-    } else {
+    // Handle BRIA 2.3 response format
+    if (response.data.finish_reason === 'CONTENT_FILTERED') {
+      throw new Error('Content filtered by safety system');
+    }
+
+    if (!response.data.image) {
       throw new Error('No image data in response');
     }
-  } catch (error) {
-    console.error(`Error generating image (attempt ${attempt}):, 
-    error.response?.data || error.message`);
 
-    if (attempt < 1) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    // Return as data URL with correct JPEG MIME type
+    return `data:image/jpeg;base64,${response.data.image}`;
+
+  } catch (error) {
+    console.error(`Error generating image (attempt ${attempt}):`, error.response?.data || error.message);
+
+    if (attempt < 2) { // Retry up to 3 times
+      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
       return generateImage(prompt, attempt + 1);
     }
 
     throw error;
   }
 }
+
 app.post('/api/generate-stickers', async (req, res) => {
   try {
     const { personalityType, gender = 'neutral' } = req.body;
@@ -85,15 +83,15 @@ app.post('/api/generate-stickers', async (req, res) => {
     const role = roleMatch ? roleMatch[1] : personalityType;
 
     const prompts = [
-      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
-      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
-      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
-      `Low poly art Sticker for ${role} personality with a clean black background for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType}} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
+      `A detailed, minimalist-style sticker of ${personalityType} personality with a black background. Depict a powerful yet sleek design, emphasizing bold colors and a clean aesthetic for ${gender} `,
     ];
 
     const stickerPromises = prompts.map((prompt, index) =>
       generateImage(prompt).catch(error => {
-        console.error(`Sticker ${index + 1} failed:, error`);
+        console.error(`Sticker ${index + 1} failed:`, error);
         return null;
       })
     );
@@ -266,11 +264,9 @@ app.post('/extra-info', async (req, res) => {
       1. For each answer, assess whether it demonstrates a preference for one trait over another (e.g., high E for extroverted responses, high T for logical responses).\n
       2. Assign "None" for traits that are not clearly indicated by the answer.\n
       3. Use patterns from the provided example matrix for consistency in analysis.\n
-      4. Use cells[1, 5, 9, 13, 17, 21, 25, 29, 33, 37] for Extrovesion/Introversion.\n
-      5. Use cells[2, 6, 10, 14, 18, 22, 26, 30, 34, 38] for Sensing/Intuition.\n
-      6. Use cells[3, 7, 11, 15, 19, 23, 27, 31, 35, 39] for Thinking/Feeling.\n
-      7. Use cells[4, 8, 12, 16, 20, 24, 28, 32, 36, 40] for Judging/Perceiving.\n
-      8. Only use "High X(trait)" when answer clearly demonstrates that trait.\n
+      4. Ensure the traits assigned are directly aligned with the context and wording of the answer.\n
+      5. Avoid randomness; consistency and accuracy are top priorities.\n
+      6. Only use "High X" when answer clearly demonstrates that trait\
 
       Example Matrix:\n
       | Answer                                     | Extraversion (E)/Introversion (I) | Sensing (S)/Intuition (N) | Thinking (T)/Feeling (F) | Judging (J)/Perceiving (P) |\n
@@ -420,4 +416,5 @@ app.get('/health', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+
 });
