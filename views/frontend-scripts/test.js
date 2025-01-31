@@ -54,7 +54,7 @@ const questions = [
     {
         id: 1,
         question: "When you're in a group, how do you usually behave?",
-        helpText: "Reflect on your typical behavior in group settings, such as meetings, social gatherings, or team projects. Consider your natural tendencies in these situations.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[1]}<br><br><strong>Hindi : </strong>${hinQue[1]}<br><br><strong>Hinglish : </strong>${hinEnQue[1]}<br><br>`,
         options: [
             { value: "A", text: "I take the lead and guide the group when necessary." },
             { value: "B", text: "I contribute ideas and participate actively." },
@@ -65,7 +65,7 @@ const questions = [
     {
         id: 2,
         question: "How do you handle criticism?",
-        helpText: "Think about past situations where you received feedback or criticism. Consider your initial reaction and how you processed the feedback afterward.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[2]}<br><br><strong>Hindi : </strong>${hinQue[2]}<br><br><strong>Hinglish : </strong>${hinEnQue[2]}<br><br>`,
         options: [
             { value: "A", text: "I welcome criticism as a way to grow and improve." },
             { value: "B", text: "I try to reflect on it and make changes if needed." },
@@ -76,7 +76,7 @@ const questions = [
     {
         id: 3,
         question: "How do you approach planning for the future?",
-        helpText: "Consider how you typically organize your life goals and make decisions about your future. Think about both short-term and long-term planning.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[3]}<br><br><strong>Hindi : </strong>${hinQue[3]}<br><br><strong>Hinglish : </strong>${hinEnQue[3]}<br><br>`,
         options: [
             { value: "A", text: "I set long-term goals and create detailed plans." },
             { value: "B", text: "I make flexible plans and adjust as I go." },
@@ -87,7 +87,7 @@ const questions = [
     {
         id: 4,
         question: "How do you feel about helping others?",
-        helpText: "Think about situations where you've had the opportunity to help others. Consider your natural inclination to offer assistance and how you feel when helping.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[4]}<br><br><strong>Hindi : </strong>${hinQue[4]}<br><br><strong>Hinglish : </strong>${hinEnQue[4]}<br><br>`,
         options: [
             { value: "A", text: "I enjoy helping others whenever I can." },
             { value: "B", text: "I help when I'm asked or see a clear need." },
@@ -98,7 +98,7 @@ const questions = [
     {
         id: 5,
         question: "How do you react when faced with a challenging problem?",
-        helpText: "Reflect on past situations where you encountered difficult problems. Think about your typical approach to solving complex challenges.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[5]}<br><br><strong>Hindi : </strong>${hinQue[5]}<br><br><strong>Hinglish : </strong>${hinEnQue[5]}<br><br>`,
         options: [
             { value: "A", text: "I enjoy tackling challenges and finding solutions." },
             { value: "B", text: "I approach it logically and seek help if needed." },
@@ -109,7 +109,7 @@ const questions = [
     {
         id: 6,
         question: "How do you feel about expressing your opinions in a group?",
-        helpText: "Think about situations where you've had the opportunity to share your thoughts in group settings. Consider your comfort level with speaking up.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[6]}<br><br><strong>Hindi : </strong>${hinQue[6]}<br><br><strong>Hinglish : </strong>${hinEnQue[6]}<br><br>`,
         options: [
             { value: "A", text: "I confidently express my thoughts and ideas." },
             { value: "B", text: "I share my opinions when asked or necessary." },
@@ -120,7 +120,7 @@ const questions = [
     {
         id: 7,
         question: "How do you handle deadlines?",
-        helpText: "Consider your typical approach to managing tasks with deadlines. Think about how you organize your time and prioritize work.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[7]}<br><br><strong>Hindi : </strong>${hinQue[7]}<br><br><strong>Hinglish : </strong>${hinEnQue[7]}<br><br>`,
         options: [
             { value: "A", text: "I complete my tasks well ahead of deadlines." },
             { value: "B", text: "I prioritize and meet deadlines efficiently." },
@@ -131,7 +131,7 @@ const questions = [
     {
         id: 8,
         question: "How do you feel about people who are very different from you?",
-        helpText: "Think about your interactions with people who have different backgrounds, beliefs, or perspectives. Consider your typical reaction to diversity.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[8]}<br><br><strong>Hindi : </strong>${hinQue[8]}<br><br><strong>Hinglish : </strong>${hinEnQue[8]}<br><br>`,
         options: [
             { value: "A", text: "I'm curious and enjoy learning from them." },
             { value: "B", text: "I respect their differences but find it hard to connect sometimes." },
@@ -142,7 +142,7 @@ const questions = [
     {
         id: 9,
         question: "How do you feel about taking risks?",
-        helpText: "Reflect on situations where you've had to make decisions involving uncertainty or potential risks. Consider your typical approach to such situations.",
+        helpText: `<br><strong>Gujrati : </strong>${gujQue[9]}<br><br><strong>Hindi : </strong>${hinQue[9]}<br><br><strong>Hinglish : </strong>${hinEnQue[9]}<br><br>`,
         options: [
             { value: "A", text: "I'm enthusiastic about taking calculated risks." },
             { value: "B", text: "I take risks after considering all possible outcomes." },
