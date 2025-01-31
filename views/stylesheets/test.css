@@ -433,7 +433,7 @@ body {
 }
 
 .navigation-buttons.buttons-with-dropdown {
-  margin-top: 160px; /* Adjust this value based on your dropdown height */
+  margin-top: 200px; /* Adjust this value based on your dropdown height */
 }
 
 .dynamic-input:focus + .dropdown-options {
