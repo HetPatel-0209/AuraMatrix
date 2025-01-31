@@ -539,15 +539,16 @@ async function handleGenerateClick() {
     });
 
     try {
-        // Get personality type from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const predictionStr = urlParams.get('prediction');
+        // Get prediction from localStorage
+        const predictionStr = localStorage.getItem('personalityTypePrediction');
         
         if (!predictionStr) {
             throw new Error('No prediction data found');
         }
 
-        const prediction = JSON.parse(decodeURIComponent(predictionStr));
+        const prediction = JSON.parse(predictionStr);
+        const gender = localStorage.getItem('userGender') || 'neutral';
+
         await generateStickers(prediction.personalityType);
 
         // Show download all button after successful generation
@@ -567,7 +568,6 @@ async function handleGenerateClick() {
         }
     }
 }
-
 // Generate stickers based on personality type
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
@@ -921,14 +921,15 @@ async function displayResult() {
             }
 
             addGenerateButton();
-            
 
             document.getElementById('description').textContent =
                 "This personality assessment is based on your responses to our questionnaire. " +
                 "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
+            
             if (userAnswers.length > 0) {
                 await loadMatrixData(prediction, userAnswers);
             }
+
             try {
                 const descResponse = await fetch(`${baseUrl}/description`, {
                     method: 'POST',
@@ -960,7 +961,11 @@ async function displayResult() {
             }
 
             updateSVGCard(prediction);
-            await generateStickers(prediction.personalityType);
+
+            // Remove automatic sticker generation
+            // Store prediction for later use in generate button
+            localStorage.setItem('personalityTypePrediction', JSON.stringify(prediction));
+
         } catch (error) {
             console.error('Error parsing prediction:', error);
             document.getElementById('personality-type').textContent = "Error displaying results";
