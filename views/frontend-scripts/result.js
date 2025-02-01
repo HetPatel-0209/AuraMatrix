@@ -491,6 +491,84 @@ document.getElementById('downloadCard').addEventListener('click', downloadAuraCa
 
 
 
+function addGenerateButton() {
+    const stickerGrid = document.querySelector('.sticker-grid');
+    if (!stickerGrid) return;
+
+    // Create generate button
+    const generateButton = document.createElement('button');
+    generateButton.className = 'generate-stickers-btn';
+    generateButton.textContent = 'Generate Stickers';
+
+    // Insert generate button before the sticker cards
+    const firstCard = stickerGrid.querySelector('.sticker-card');
+    if (firstCard) {
+        stickerGrid.insertBefore(generateButton, firstCard);
+    }
+
+    // Hide sticker cards and download all button initially
+    const stickerCards = document.querySelectorAll('.sticker-card');
+    const downloadAllBtn = document.querySelector('.download-all-btn');
+    
+    stickerCards.forEach(card => {
+        card.style.display = 'none';
+    });
+    if (downloadAllBtn) {
+        downloadAllBtn.style.display = 'none';
+    }
+
+    // Add click event listener
+    generateButton.addEventListener('click', handleGenerateClick);
+}
+
+// Handle generate button click
+async function handleGenerateClick() {
+    const generateButton = document.querySelector('.generate-stickers-btn');
+    const stickerCards = document.querySelectorAll('.sticker-card');
+    const downloadAllBtn = document.querySelector('.download-all-btn');
+
+    // Disable generate button and show loading state
+    if (generateButton) {
+        generateButton.disabled = true;
+        generateButton.textContent = 'Generating...';
+    }
+
+    // Show sticker cards
+    stickerCards.forEach(card => {
+        card.style.display = 'block';
+    });
+
+    try {
+        // Get prediction from localStorage
+        const predictionStr = localStorage.getItem('personalityTypePrediction');
+        
+        if (!predictionStr) {
+            throw new Error('No prediction data found');
+        }
+
+        const prediction = JSON.parse(predictionStr);
+        const gender = localStorage.getItem('userGender') || 'neutral';
+
+        await generateStickers(prediction.personalityType);
+
+        // Show download all button after successful generation
+        if (downloadAllBtn) {
+            downloadAllBtn.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error generating stickers:', error);
+        stickerCards.forEach(card => {
+            displayStickerError(card, 'Failed to generate stickers. Please try again.');
+        });
+    } finally {
+        // Re-enable generate button
+        if (generateButton) {
+            generateButton.disabled = false;
+            generateButton.textContent = 'Generate Stickers';
+        }
+    }
+}
+// Generate stickers based on personality type
 async function generateStickers(personalityType) {
     const stickerCards = document.querySelectorAll('.sticker-card');
     
@@ -498,7 +576,6 @@ async function generateStickers(personalityType) {
     stickerCards.forEach(card => {
         card.querySelector('.sticker-loader').style.display = 'block';
         card.querySelector('.sticker').style.backgroundImage = '';
-        card.style.display = 'block';
     });
 
     try {
@@ -525,7 +602,6 @@ async function generateStickers(personalityType) {
 
         const data = await response.json();
 
-        // Check for images array in the response
         if (!data.images || data.images.length === 0) {
             throw new Error('No stickers were generated');
         }
@@ -536,7 +612,6 @@ async function generateStickers(personalityType) {
                 if (!base64Image) {
                     displayStickerError(stickerCards[index], 'Invalid sticker data received.');
                 } else {
-                    // Remove the "data:image/..." prefix if it exists in the base64 string
                     const base64Data = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
                     const imageUrl = `data:image/png;base64,${base64Data}`;
                     displaySticker(stickerCards[index], imageUrl, index);
@@ -560,6 +635,7 @@ async function generateStickers(personalityType) {
     }
 }
 
+// Display a single sticker
 function displaySticker(card, stickerUrl, index) {
     const sticker = card.querySelector('.sticker');
     const downloadBtn = card.querySelector('.download-sticker-btn');
@@ -591,6 +667,7 @@ function displaySticker(card, stickerUrl, index) {
     img.src = stickerUrl;
 }
 
+// Display error message for sticker
 function displayStickerError(card, message = 'Error loading sticker') {
     const sticker = card.querySelector('.sticker');
     const downloadBtn = card.querySelector('.download-sticker-btn');
@@ -602,13 +679,52 @@ function displayStickerError(card, message = 'Error loading sticker') {
             <p>Please try refreshing the page.</p>
         </div>
     `;
-    
-    sticker.style.color = "red"
 
     if (downloadBtn) {
         downloadBtn.style.display = 'none';
     }
 }
+
+// Download a single sticker
+async function downloadSticker(url, filename) {
+    try {
+        if (!filename.endsWith('.png')) filename += '.png';
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Error downloading sticker:', error);
+        alert('Failed to download sticker. Please try again.');
+    }
+}
+
+// Download all stickers
+async function downloadAllStickers() {
+    const stickerCards = document.querySelectorAll('.sticker-card');
+    for (let i = 0; i < stickerCards.length; i++) {
+        const card = stickerCards[i];
+        const sticker = card.querySelector('.sticker');
+        const backgroundImage = sticker.style.backgroundImage;
+
+        if (backgroundImage) {
+            try {
+                const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                const filename = `personality-sticker-${i + 1}.png`;
+
+                // Add slight delay between downloads to prevent overwhelming the browser
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await downloadSticker(url, filename);
+            } catch (error) {
+                console.error(`Error downloading sticker ${i + 1}:`, error);
+            }
+        }
+    }
+}
+
 
 async function convertWebPToPNG(webpUrl) {
     try {
@@ -644,46 +760,9 @@ async function convertWebPToPNG(webpUrl) {
     }
 }
 
-async function downloadSticker(url, filename) {
-    try {
-        if (!filename.endsWith('.png')) filename += '.png';
 
-        // Create download link
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
 
-        // Trigger download
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } catch (error) {
-        console.error('Error downloading sticker:', error);
-        alert('Failed to download sticker. Please try again.');
-    }
-}
 
-async function downloadAllStickers() {
-    const stickerCards = document.querySelectorAll('.sticker-card');
-    for (let i = 0; i < stickerCards.length; i++) {
-        const card = stickerCards[i];
-        const sticker = card.querySelector('.sticker');
-        const backgroundImage = sticker.style.backgroundImage;
-
-        if (backgroundImage) {
-            try {
-                const url = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-                const filename = `personality-sticker-${i + 1}.png`;
-
-                // Add slight delay between downloads to prevent overwhelming the browser
-                await new Promise(resolve => setTimeout(resolve, 500));
-                await downloadSticker(url, filename);
-            } catch (error) {
-                console.error(`Error downloading sticker ${i + 1}:, error`);
-            }
-        }
-    }
-}
 
 async function updatePersonalityMatrix(answers, matrixData) {
     const matrixBody = document.querySelector('#personalityMatrix tbody');
@@ -841,12 +920,16 @@ async function displayResult() {
                 updateTraitsDisplay(prediction);
             }
 
+            addGenerateButton();
+
             document.getElementById('description').textContent =
                 "This personality assessment is based on your responses to our questionnaire. " +
                 "Remember that personality is complex and multifaceted, and this is just one perspective on your unique characteristics.";
+            
             if (userAnswers.length > 0) {
                 await loadMatrixData(prediction, userAnswers);
             }
+
             try {
                 const descResponse = await fetch(`${baseUrl}/description`, {
                     method: 'POST',
@@ -878,7 +961,11 @@ async function displayResult() {
             }
 
             updateSVGCard(prediction);
-            await generateStickers(prediction.personalityType);
+
+            // Remove automatic sticker generation
+            // Store prediction for later use in generate button
+            localStorage.setItem('personalityTypePrediction', JSON.stringify(prediction));
+
         } catch (error) {
             console.error('Error parsing prediction:', error);
             document.getElementById('personality-type').textContent = "Error displaying results";
