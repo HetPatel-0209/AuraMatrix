@@ -103,6 +103,5 @@ This project is **MIT Licensed** – feel free to tweak and use it as you like! 
 Got questions? Wanna chat? Let's connect! 📩
 
 - **Het B. Patel** – [GitHub Profile](https://github.com/HetPatel-0209)  
-- Email: [your-email@example.com](mailto:your-email@example.com)
 
 💡 Since this is my first production-ready project, I’d love to hear your thoughts and feedback. Let’s make it better together! 🚀
