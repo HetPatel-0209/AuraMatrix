@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['https://auramatrix-px4p.onrender.com','https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
+  origin: ['https://auramatrix-px4p.onrender.com', 'https://aura-matrix.vercel.app', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 app.use(express.json());
 app.use(express.static("public"));
@@ -63,7 +63,7 @@ async function generateImage(prompt, attempt = 0, maxAttempts = 3) {
     return base64Data;
 
   } catch (error) {
-    console.error(`Error generating image (attempt ${attempt + 1}/${maxAttempts}):`, 
+    console.error(`Error generating image (attempt ${attempt + 1}/${maxAttempts}):`,
       error.response?.data || error.message);
 
     // Implement exponential backoff
@@ -99,7 +99,7 @@ app.post('/api/generate-stickers', async (req, res) => {
     ];
 
     const results = await Promise.allSettled(prompts.map(prompt => generateImage(prompt)));
-    
+
     const validUrls = results
       .filter(result => result.status === 'fulfilled')
       .map(result => result.value);
@@ -390,6 +390,7 @@ app.post('/description', async (req, res) => {
           role: "user",
           content: `
             User's personality is ${role}. Create a personality description using valid JSON syntax (no markdown). Follow this structure:
+            Note: Give Indian examples.
             Expected output (ONLY valid JSON):
             {
               "description": "ENFJs, known as Protagonists, are charismatic...",
