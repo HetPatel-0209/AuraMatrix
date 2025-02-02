@@ -1,6 +1,6 @@
 # 🌟 AuraMatrix - Your AI Personality Decoder! 🚀
 
-Hey there, curious mind! Welcome to **AuraMatrix**, where cutting-edge AI meets personality analysis. Ever wondered what an AI thinks about *you*? Well, it's time to find out! 😎
+Hey there, curious mind! Welcome to **AuraMatrix**, where AI meets personality analysis. Ever wondered what an AI thinks about *you*? Well, it's time to find out! 😎
 
 🔗 [Live Demo Here!](https://aura-matrix.vercel.app)
 
@@ -21,7 +21,7 @@ Hey there, curious mind! Welcome to **AuraMatrix**, where cutting-edge AI meets 
 
 ## 🤔 What's AuraMatrix?
 
-AuraMatrix is a web-based tool that analyzes personality traits using super-smart AI magic. It started as a fun experiment for **Gyanotsav-2025** and turned into a full-blown **production-ready project**! 🌍✨
+AuraMatrix is a web-based tool that analyzes personality traits using AI. It started as a fun experiment for **Gyanotsav-2025** and turned into a full-blown **production-ready project**! 🌍✨
 
 Our goal? Make AI-powered personality analysis **fun, engaging, and insightful**! 🎭
 
@@ -94,7 +94,7 @@ For major changes, let’s chat first by opening an issue! 😊
 
 ## 📜 License
 
-This project is **MIT Licensed** – feel free to tweak and use it as you like! 🎉
+This project is **Open Source** – feel free to tweak and use it as you like! 🎉
 
 ---
 
