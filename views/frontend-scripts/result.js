@@ -97,10 +97,14 @@ function updateTraitsDisplay(prediction) {
 
     if (!traitsContainer) return;
 
+    // Clear existing content
     traitsContainer.innerHTML = '';
     auraMeterWrapper.innerHTML = '';
+
+    // Create a wrapper for the aura meter
     auraMeterWrapper.appendChild(createAuraMeter(prediction.traits));
 
+    // Add traits in a separate wrapper
     Object.entries(prediction.traits).forEach(([trait, value]) => {
         const traitElement = createTraitElement(trait, value);
         traitsContainer.appendChild(traitElement);
@@ -113,14 +117,16 @@ function updateTraitsDisplay(prediction) {
 
 function createTraitCircle(trait, value, index, color) {
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    circle.setAttribute("transform", translate(0, `${index * 140}`));
+    circle.setAttribute("transform", `translate(0, ${index * 140})`);
 
+    // Create circle
     const circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circleElement.setAttribute("cx", "60");
     circleElement.setAttribute("cy", "60");
     circleElement.setAttribute("r", "60");
     circleElement.setAttribute("fill", color);
 
+    // Create value text
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     valueText.setAttribute("x", "60");
     valueText.setAttribute("y", "65");
@@ -131,6 +137,7 @@ function createTraitCircle(trait, value, index, color) {
     valueText.setAttribute("font-family", "Poppins");
     valueText.textContent = Math.round(value);
 
+    // Create trait name text
     const traitText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     traitText.setAttribute("x", "60");
     traitText.setAttribute("y", "87");
@@ -148,14 +155,12 @@ function createTraitCircle(trait, value, index, color) {
     return circle;
 }
 
-// Font cache object
 let fontCache = {
     bricolage: null,
     poppins: null,
     poppins1: null
 };
 
-// Font loading functions
 async function loadAndCacheFonts() {
     try {
         const [bricolageBlob, poppinsBlob] = await Promise.all([
@@ -179,32 +184,8 @@ function blobToBase64(blob) {
     });
 }
 
-function ensureFontsLoaded() {
-    return new Promise(async (resolve) => {
-        if (document.fonts && document.fonts.ready) {
-            await document.fonts.ready;
-        }
-        
-        const fontCheckElement = document.createElement('span');
-        fontCheckElement.style.visibility = 'hidden';
-        fontCheckElement.style.position = 'absolute';
-        fontCheckElement.style.fontSize = '42px';
-        document.body.appendChild(fontCheckElement);
-
-        const fonts = ['BricolageGrotesque', 'Poppins'];
-        await Promise.all(fonts.map(font => {
-            fontCheckElement.style.fontFamily = font;
-            return new Promise(resolve => setTimeout(resolve, 100));
-        }));
-
-        document.body.removeChild(fontCheckElement);
-        resolve();
-    });
-}
-
-
 function createFontStyles() {
-    if (!fontCache.bricolage || !fontCache.poppins || !fontCache.poppins1) {
+    if (!fontCache.bricolage || !fontCache.poppins) {
         return '';
     }
 
@@ -213,29 +194,27 @@ function createFontStyles() {
             font-family: 'BricolageGrotesque';
             src: url('${fontCache.bricolage}') format('truetype');
             font-weight: 200 800;
-            font-display: block;
         }
         
         @font-face {
             font-family: 'Poppins';
             src: url('${fontCache.poppins}') format('truetype');
             font-weight: 300 700;
-            font-display: block;
         }
         @font-face {
-            font-family: 'Poppins1';
-            src: url('${fontCache.poppins1}') format('truetype');
-            font-weight: 300;
-            font-display: block;
-        }
+        font-family: 'Poppins1';
+        src: url('${fontCache.poppins1}') format('truetype');
+        font-weight: 300 ;
+}
 
         #userName { 
             font-family: 'BricolageGrotesque', sans-serif;
             font-weight: 700;
         }
-        #userType {
+        #userType{
             font-family: 'Poppins1', sans-serif;
             font-weight: 300;
+            
         }
         
         #auraDescription, #auraPercentage, .brand {
@@ -244,7 +223,6 @@ function createFontStyles() {
         }
     `;
 }
-
 
 function updateSVGCard(prediction) {
     const svg = document.querySelector('#auraCard svg');
@@ -418,82 +396,79 @@ async function downloadAuraCard() {
         const svg = document.querySelector('#auraCard svg');
         if (!svg) return;
 
-        const downloadButton = document.getElementById('downloadCard');
-        downloadButton.disabled = true;
-        downloadButton.textContent = 'Preparing...';
-
         // Ensure fonts are loaded
-        await loadAndCacheFonts();
-        await ensureFontsLoaded();
-        await new Promise(resolve => setTimeout(resolve, 500));
+        if (!fontCache.bricolage || !fontCache.poppins) {
+            await loadAndCacheFonts();
+        }
 
+        // Create a copy of the SVG with embedded fonts
         const svgCopy = svg.cloneNode(true);
+        
+        // Set the original dimensions
         const width = parseInt(svg.getAttribute('width'));
         const height = parseInt(svg.getAttribute('height'));
-
+        
+        // Create a new wrapper SVG that includes the border
         const wrapperSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        wrapperSvg.setAttribute('width', width + 48);
-        wrapperSvg.setAttribute('height', height + 32);
+        
+        // Add padding for borders (24px on sides, 16px top/bottom)
+        wrapperSvg.setAttribute('width', width + 48); // 24px * 2 for left and right borders
+        wrapperSvg.setAttribute('height', height + 32); // 16px * 2 for top and bottom borders
         wrapperSvg.setAttribute('xmlns', "http://www.w3.org/2000/svg");
-        wrapperSvg.setAttribute('shape-rendering', 'crispEdges');
-
-        // Add font preloading
-        const fontPreload = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-        fontPreload.innerHTML = `
-            <style>
-                ${createFontStyles()}
-            </style>
-        `;
-        wrapperSvg.appendChild(fontPreload);
-
-        // Create white background/border
+        
+        // Create a white background rectangle that serves as the border
         const borderRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         borderRect.setAttribute('width', width + 48);
         borderRect.setAttribute('height', height + 32);
         borderRect.setAttribute('fill', '#ffffff');
-
-        // Create content group
+        
+        // Create a group to position the original SVG content
         const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        contentGroup.setAttribute('transform', 'translate(24, 16)');
+        contentGroup.setAttribute('transform', `translate(24, 16)`); // Position content inside borders
+        
+        // Add the original SVG content to the group
         contentGroup.appendChild(svgCopy);
-
+        
+        // Add everything to the wrapper SVG
         wrapperSvg.appendChild(borderRect);
         wrapperSvg.appendChild(contentGroup);
 
-        // Set up high-resolution canvas
-        const canvas = document.createElement('canvas');
-        const scale = 2; // For Retina displays
-        canvas.width = (width + 48) * scale;
-        canvas.height = (height + 32) * scale;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(scale, scale);
+        // Add embedded fonts
+        const defs = svgCopy.querySelector('defs');
+        const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+        styleElement.textContent = createFontStyles();
+        defs.prepend(styleElement);
 
-        // Enable better text rendering
-        ctx.textRendering = 'optimizeLegibility';
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
+        // Convert to string with proper XML declaration
+        const svgString = new XMLSerializer().serializeToString(wrapperSvg);
+        const svgBlob = new Blob([
+            '<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
+            '<!DOCTYPE svg PUBLIC "-//W3//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
+            svgString
+        ], { type: 'image/svg+xml;charset=utf-8' });
 
-        // Create and load image
+        // Create URL and image
+        const url = URL.createObjectURL(svgBlob);
         const img = new Image();
+
+        // Set up canvas with new dimensions including borders
+        const canvas = document.createElement('canvas');
+        canvas.width = width + 48; // Include border width
+        canvas.height = height + 32; // Include border height
+        const ctx = canvas.getContext('2d');
+
+        // Wait for image to load
         await new Promise((resolve, reject) => {
             img.onload = resolve;
             img.onerror = reject;
-            const svgString = new XMLSerializer().serializeToString(wrapperSvg);
-            const svgBlob = new Blob([
-                '<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
-                '<!DOCTYPE svg PUBLIC "-//W3//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
-                svgString
-            ], { type: 'image/svg+xml;charset=utf-8' });
-            img.src = URL.createObjectURL(svgBlob);
+            img.src = url;
         });
 
-        // Draw and create PNG
-        ctx.drawImage(img, 0, 0, width + 48, height + 32);
-        const pngBlob = await new Promise(resolve => {
-            canvas.toBlob(resolve, 'image/png', 1.0);
-        });
+        // Draw and convert to PNG
+        ctx.drawImage(img, 0, 0);
+        const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
-        // Trigger download
+        // Download
         const downloadUrl = URL.createObjectURL(pngBlob);
         const link = document.createElement('a');
         link.href = downloadUrl;
@@ -503,20 +478,17 @@ async function downloadAuraCard() {
         document.body.removeChild(link);
 
         // Cleanup
+        URL.revokeObjectURL(url);
         URL.revokeObjectURL(downloadUrl);
-        downloadButton.disabled = false;
-        downloadButton.textContent = 'Download AuraCard';
     } catch (error) {
         console.error('Error generating card:', error);
         alert('Failed to generate card. Please try again.');
-        const downloadButton = document.getElementById('downloadCard');
-        downloadButton.disabled = false;
-        downloadButton.textContent = 'Download AuraCard';
     }
 }
 
-// Event listeners
+// Add event listener to download button
 document.getElementById('downloadCard').addEventListener('click', downloadAuraCard);
+
 
 
 function addGenerateButton() {
