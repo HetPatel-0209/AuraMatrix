@@ -204,7 +204,7 @@ app.post('/predict', async (req, res) => {
           `,
         },
       ],
-      model: "llama3-70b-8192",
+      model: "llama-3.3-70b-versatile",
       max_tokens: 100,
       temperature: 0,
     });
@@ -341,7 +341,7 @@ app.post('/extra-info', async (req, res) => {
       }
       `},
       ],
-      model: "llama3-70b-8192",
+      model: "llama-3.3-70b-versatile",
       max_tokens: 700,
       temperature: 0,
     });
