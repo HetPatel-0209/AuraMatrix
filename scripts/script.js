@@ -172,7 +172,8 @@ app.post('/predict', async (req, res) => {
           Analyze the following:
           1. Look for specific keywords, behavioral tendencies, and sentiment in each answer to determine the dominant and secondary traits.\n
           2. Use context and emotional cues to provide an accurate breakdown of the personality traits.\n
-          3. If the input contains random gibberish, nonsensical characters, or unintelligible responses that cannot be interpreted or mapped to a valid personality type, return an 'Unknown' personality type with all traits set to 0%.\n
+          3. Analyze user answer, according to their answer give accurate trait percentages.\n
+          4. If the input contains random gibberish, nonsensical characters, or unintelligible responses that cannot be interpreted or mapped to a valid personality type, return an 'Unknown' personality type with all traits set to 0%.\n
       
           Task: Predict the personality type and assign percentages to the traits:
           - Extraversion/Introversion
