@@ -102,6 +102,8 @@ This project is **Open Source** – feel free to tweak and use it as you like! �
 
 Got questions? Wanna chat? Let's connect! 📩
 
-- **Het B. Patel** – [GitHub Profile](https://github.com/HetPatel-0209)  
+- **Het B. Patel** – [GitHub Profile](https://github.com/HetPatel-0209)
+- **Krish Parmar** – [GitHub Profile](https://github.com/Krish4251)
+- **Jay Patel** – [GitHub Profile](https://github.com/HetPatel-0209)  
 
 💡 Since this is my first production-ready project, I’d love to hear your thoughts and feedback. Let’s make it better together! 🚀
